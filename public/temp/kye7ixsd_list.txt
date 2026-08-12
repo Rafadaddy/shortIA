@@ -1,0 +1,4 @@
+file 'C:/PROGRAMAS/short  IA/public/temp/kye7ixsd_clip_0.mp4'
+file 'C:/PROGRAMAS/short  IA/public/temp/kye7ixsd_clip_1.mp4'
+file 'C:/PROGRAMAS/short  IA/public/temp/kye7ixsd_clip_2.mp4'
+file 'C:/PROGRAMAS/short  IA/public/temp/kye7ixsd_clip_3.mp4'
