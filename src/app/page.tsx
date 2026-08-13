@@ -20,9 +20,6 @@ export default function Home() {
   const [ideaText, setIdeaText] = useState("");
   const [urlText, setUrlText] = useState("");
   const [duration, setDuration] = useState("30");
-  const [voice, setVoice] = useState("es-MX");
-  const [theme, setTheme] = useState("Libre / Creativo");
-  const [visualStyle, setVisualStyle] = useState("Cinemático y Realista");
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -55,7 +52,7 @@ export default function Home() {
       const res = await fetch("/api/generate-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, ideaText, urlText, duration, voice, theme, style: visualStyle }),
+        body: JSON.stringify({ mode, ideaText, urlText, duration, voice: "es-MX", theme: "Libre", style: "Cinemático" }),
       });
       
       if (!res.ok) throw new Error("Error en la solicitud al backend");
