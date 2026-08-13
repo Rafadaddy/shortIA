@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Link as LinkIcon, Clapperboard, Settings2, Copy, Check } from "lucide-react";
+import { Sparkles, Link as LinkIcon, Clapperboard, Settings2, Copy, Check, Image as ImageIcon } from "lucide-react";
 
 interface Scene {
   scene_number: number;
