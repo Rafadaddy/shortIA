@@ -23,6 +23,7 @@ interface ReflectionData {
 
 export default function ReflexionesPage() {
   const [topic, setTopic] = useState("");
+  const [visualStyle, setVisualStyle] = useState("Fotografía Realista");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ReflectionData | null>(null);
   
@@ -46,7 +47,7 @@ export default function ReflexionesPage() {
     const res = await fetch("/api/generate-reflection", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: currentTopic }),
+      body: JSON.stringify({ topic: currentTopic, style: visualStyle }),
     });
     if (!res.ok) throw new Error("Error en la solicitud");
     return await res.json();
@@ -109,6 +110,25 @@ export default function ReflexionesPage() {
               placeholder="Ej. El miedo a fracasar, dejar ir el pasado, la presión de la sociedad..."
               className="w-full h-24 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
             />
+            
+            <div className="space-y-2 mt-4 mb-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual del Prompt
+              </label>
+              <select
+                value={visualStyle}
+                onChange={(e) => setVisualStyle(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+              >
+                <option value="Fotografía Realista">Fotografía Realista</option>
+                <option value="Animación 3D (Pixar/Disney)">Animación 3D (Pixar)</option>
+                <option value="Cinemático Oscuro">Cinemático Oscuro</option>
+                <option value="Ilustración Digital 2D">Ilustración Digital 2D</option>
+                <option value="Anime / Manga">Anime / Manga</option>
+                <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
+                <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
+              </select>
+            </div>
             
             <div className="pt-2 relative z-50" ref={dropdownRef}>
               <div className="relative">

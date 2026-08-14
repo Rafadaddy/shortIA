@@ -21,6 +21,7 @@ export default function Home() {
   const [urlText, setUrlText] = useState("");
   const [duration, setDuration] = useState("30");
   const [theme, setTheme] = useState("Libre / Creativo");
+  const [visualStyle, setVisualStyle] = useState("Fotografía Realista");
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -53,7 +54,7 @@ export default function Home() {
       const res = await fetch("/api/generate-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, ideaText, urlText, duration, voice: "es-MX", theme, style: "Cinemático" }),
+        body: JSON.stringify({ mode, ideaText, urlText, duration, voice: "es-MX", theme, style: visualStyle }),
       });
       
       if (!res.ok) throw new Error("Error en la solicitud al backend");
@@ -141,7 +142,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <Settings2 className="w-4 h-4 text-slate-400" /> Tema
@@ -155,6 +156,24 @@ export default function Home() {
                   <option value="Datos Curiosos y Ciencia">Datos Curiosos y Ciencia</option>
                   <option value="Motivación y Éxito">Motivación y Éxito</option>
                   <option value="Terror y Misterio">Terror y Misterio</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual
+                </label>
+                <select
+                  value={visualStyle}
+                  onChange={(e) => setVisualStyle(e.target.value)}
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+                >
+                  <option value="Fotografía Realista">Fotografía Realista</option>
+                  <option value="Animación 3D (Pixar/Disney)">Animación 3D (Pixar)</option>
+                  <option value="Cinemático Oscuro">Cinemático Oscuro</option>
+                  <option value="Ilustración Digital 2D">Ilustración Digital 2D</option>
+                  <option value="Anime / Manga">Anime / Manga</option>
+                  <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
+                  <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
                 </select>
               </div>
               <div className="space-y-2">

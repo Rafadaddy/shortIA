@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic } = await req.json();
+    const { topic, style } = await req.json();
 
     const angles = [
       "una anécdota personal impactante",
@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       "una comparación con la naturaleza o el universo"
     ];
     const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+    const requestedStyle = style || "Fotografía Realista";
 
     const prompt = `
 Eres un creador de contenido viral y un experto en psicología persuasiva, de los mejores del mundo reteniendo la atención del lector.
@@ -41,9 +42,9 @@ Además, debes generar un "image_prompt" en INGLÉS.
 Este prompt visual ES CRÍTICO y debe estar **100% RELACIONADO con el texto que acabas de inventar**.
 Piensa en el PROTAGONISTA de tu texto y la situación exacta que describes.
 Sigue ESTA ESTRUCTURA EXACTA:
-"[Personaje principal haciendo una acción literal relacionada al texto], [Entorno detallado y luminoso], [Estilo visual: 3D Pixar style / high quality comic style], [Iluminación: bright cinematic lighting, masterpiece, clear face, highly detailed]".
+"[Personaje principal haciendo una acción literal relacionada al texto], [Entorno detallado y luminoso], [Estilo visual: ${requestedStyle}], [Iluminación/Detalles: masterpiece, highly detailed, dramatic lighting]".
 
-Ejemplo si tu texto habla de salir de la zona de confort: "A clear 3D Pixar style cartoon of a young man looking nervous but excited, stepping out of a boring gray office into a bright, colorful magical forest. Masterpiece, vibrant colors, clear expressive face, bright lighting."
+Ejemplo si tu texto habla de salir de la zona de confort y el estilo es Fotografía Realista: "A highly realistic photograph of a nervous but excited young man stepping out of a boring gray office into a vibrant magical forest. Masterpiece, 8k resolution, cinematic lighting, photorealistic."
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 {
