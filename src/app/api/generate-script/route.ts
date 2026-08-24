@@ -53,7 +53,7 @@ IMPORTANTE: Debes responder ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido c
           content: prompt,
         },
       ],
-      model: "llama-3.3-70b-versatile", // Modelo actualizado de LLaMA 3.3 súper potente y gratuito
+      model: "groq/compound", // Modelo actualizado por obsolescencia del anterior
       response_format: { type: "json_object" }, // Obligamos a Groq a devolver JSON
       temperature: 0.7,
     });

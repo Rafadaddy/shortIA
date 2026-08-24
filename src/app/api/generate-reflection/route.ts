@@ -56,7 +56,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama-3.3-70b-versatile",
+      model: "groq/compound",
       response_format: { type: "json_object" },
       temperature: 0.7,
     });
