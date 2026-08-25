@@ -1,7 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, Link as LinkIcon, Clapperboard, Settings2, Copy, Check, Image as ImageIcon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Sparkles, Link as LinkIcon, Clapperboard, Settings2, Copy, Check, Image as ImageIcon, Search } from "lucide-react";
+import { shortTopicCategories } from "./short-topics";
+
+let globalTopicId = 1;
+const allShortTopicsList = shortTopicCategories.flatMap(cat => 
+  cat.topics.map(t => ({
+    id: globalTopicId++,
+    category: cat.category,
+    icon: cat.icon,
+    text: t,
+    displayString: `${globalTopicId - 1}. ${t}`
+  }))
+);
 
 interface Scene {
   scene_number: number;
@@ -28,6 +40,20 @@ export default function Home() {
   
   const [scriptData, setScriptData] = useState<ScriptData | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Estados para los botones de copiar
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
@@ -45,16 +71,18 @@ export default function Home() {
     await handleCopy(allText, 'all_script');
   };
 
-  const handleGenerateScript = async () => {
+  const handleGenerateScript = async (overrideIdea?: string) => {
+    const finalIdea = overrideIdea || ideaText;
     setIsGenerating(true);
     setLoadingText("Pensando y escribiendo con IA...");
     setScriptData(null);
+    if (overrideIdea) setIdeaText(overrideIdea);
     
     try {
       const res = await fetch("/api/generate-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, ideaText, urlText, duration, voice: "es-MX", theme, style: visualStyle }),
+        body: JSON.stringify({ mode, ideaText: finalIdea, urlText, duration, voice: "es-MX", theme, style: visualStyle }),
       });
       
       if (!res.ok) throw new Error("Error en la solicitud al backend");
@@ -122,6 +150,46 @@ export default function Home() {
                     placeholder="Ej. Datos psicológicos que no sabías..."
                     className="w-full h-28 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none"
                   />
+                  <div className="pt-2 relative z-50" ref={dropdownRef}>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="w-5 h-5 text-slate-500" />
+                      </div>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        placeholder="🔍 Busca una idea o escribe un número..."
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-3 py-3 text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                          setShowDropdown(true);
+                        }}
+                        onFocus={() => setShowDropdown(true)}
+                      />
+                    </div>
+                    
+                    {showDropdown && (
+                      <div className="absolute w-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
+                        {allShortTopicsList.filter(t => 
+                          t.text.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          t.id.toString() === searchTerm.trim()
+                        ).map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => {
+                              setSearchTerm("");
+                              setShowDropdown(false);
+                              handleGenerateScript(t.text);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-slate-800 border-b border-slate-800/50 flex items-center gap-3 transition-colors last:border-0"
+                          >
+                            <span className="font-mono text-indigo-400 font-bold min-w-[24px]">{t.id}.</span>
+                            <span className="text-slate-300 text-sm">{t.icon} {t.text}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -193,14 +261,14 @@ export default function Home() {
             </div>
 
             <button
-              onClick={handleGenerateScript}
-              disabled={isGenerating || (mode === "idea" && !ideaText) || (mode === "url" && !urlText)}
+              onClick={() => handleGenerateScript()}
+              disabled={isGenerating || (mode === "url" && !urlText)}
               className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 disabled:opacity-50 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]"
             >
               {isGenerating ? (
                 <><Sparkles className="w-5 h-5 animate-pulse" /> {loadingText}</>
               ) : (
-                <><Clapperboard className="w-5 h-5" /> Generar Guión y Prompts</>
+                <><Clapperboard className="w-5 h-5" /> {mode === "idea" && !ideaText ? "Sorpréndeme (Aleatorio 🎲)" : "Generar Guión y Prompts"}</>
               )}
             </button>
           </div>
