@@ -40,6 +40,7 @@ Instrucciones:
 3. "image_prompt": EL PROMPT EN INGLÉS PARA GENERAR LA IMAGEN EN DALL-E 3 O MIDJOURNEY v6. 
 ESTRUCTURA ESTRICTA DEL PROMPT:
 "[Describe exactamente la escena principal y el sujeto]. ${styleInstruction} Integrated into the artwork, there is bold typography that perfectly reads: '[SUGGESTED_PHRASE_EN_ESPAÑOL]'. [Describe dónde está el texto, ej. escrito gigante en la pared, texto flotante brillante, tipografía elegante en el espacio negativo]. ${aspectRatioFlag}"
+4. "caption": Un pequeño texto para publicar junto a la imagen en redes sociales (pie de foto). Debe ser altamente relacionado con la imagen, empático o motivacional. Extensión: entre 20 y 50 palabras. Usa emojis relevantes 🔥🚀. JAMÁS uses etiquetas estructurales como "Caption:" o "Texto:". Escribe solo el texto limpio y directo.
 
 IMPORTANTE: El prompt DEBE estar en inglés (porque DALL-E/Midjourney entienden mejor), pero la FRASE que le pides que escriba ("...") DEBE ESTAR EN EL ESPAÑOL EXACTO que generaste en suggested_phrase.
 
@@ -47,7 +48,8 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 {
   "title": "...",
   "suggested_phrase": "...",
-  "image_prompt": "..."
+  "image_prompt": "...",
+  "caption": "..."
 }
 `;
 

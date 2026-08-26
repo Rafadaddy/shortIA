@@ -7,6 +7,7 @@ interface IllustrationData {
   title: string;
   suggested_phrase: string;
   image_prompt: string;
+  caption: string;
 }
 
 const illustrationNiches = [
@@ -184,9 +185,28 @@ export default function IlustracionesPage() {
                   {data.image_prompt}
                 </p>
                 <p className="text-xs text-slate-500 mt-3 flex items-center gap-2">
-                  <Sparkles className="w-3 h-3" /> Tip: Pega este texto en DALL-E 3 (ChatGPT Plus) o Midjourney v6 para obtener la imagen con el texto incluido.
+                  <Sparkles className="w-3 h-3" /> Tip: Pega este texto en DALL-E 3 o Midjourney v6 para generar la imagen con el texto integrado.
                 </p>
               </div>
+
+              {/* Nueva Caja: Caption para redes sociales */}
+              <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-5">
+                <div className="flex items-center justify-between gap-4 mb-3">
+                  <span className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+                    <Quote className="w-4 h-4" /> Texto para Pie de Foto (Caption)
+                  </span>
+                  <button
+                    onClick={() => handleCopy(data.caption, 'caption')}
+                    className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
+                  >
+                    {copiedStates['caption'] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Texto</>}
+                  </button>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed bg-slate-950/50 p-4 rounded-lg whitespace-pre-wrap">
+                  {data.caption}
+                </p>
+              </div>
+
             </div>
           </div>
         )}
