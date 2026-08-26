@@ -7,7 +7,12 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { mode, ideaText, urlText, duration, voice, theme, style } = body;
+    const { mode, ideaText, urlText, duration, voice, theme, style, format } = body;
+
+    const requestedFormat = format || "Vertical (9:16)";
+    let aspectRatioFlag = "--ar 9:16";
+    if (requestedFormat.includes("16:9")) aspectRatioFlag = "--ar 16:9";
+    if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
     const angles = [
       "un enfoque en datos científicos perturbadores o alucinantes",
@@ -28,35 +33,37 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-Eres un creador experto de Shorts/Reels virales y un director cinematográfico.
+Eres un creador experto de Shorts/Reels virales, un guionista maestro y un director cinematográfico de clase mundial.
 Tema o contenido base: "${sourceContent}"
 Temática/Tono Narrativo Seleccionado: "${theme}"
 Estilo Visual Seleccionado: "${style}"
+Formato de Imagen: ${requestedFormat} (${aspectRatioFlag})
 Duración objetivo: ${duration} segundos.
 
-⚠️ MUY IMPORTANTE PARA NO REPETIRTE NUNCA: 
-HOY debes abordar el tema desde este ángulo específico y único: **${randomAngle}**. 
-Si te piden el mismo tema de nuevo, inventa una anécdota, un dato o una situación completamente nueva. NUNCA uses la misma estructura o datos exactos que usaste antes.
+⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
+1. NO TE REPITAS: Hoy debes abordar el tema desde este ángulo: **${randomAngle}**. Inventa una anécdota, dato o situación completamente nueva y fascinante.
+2. GUION MAGNÉTICO: Estructura el guion con un GANCHO BRUTAL en los primeros 3 segundos, un DESARROLLO lleno de intriga o valor, y un CLÍMAX/LLAMADO A LA ACCIÓN al final. Queremos que el usuario se quede pegado a la pantalla.
+3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: La queja número 1 es que tus imágenes no coinciden con tu texto. El "image_prompt" DEBE reflejar **LITERALMENTE** lo que se narra en esa escena específica. Si hablas de un reloj antiguo rompiéndose, la imagen DEBE describir un reloj antiguo rompiéndose en pedazos. No pongas paisajes genéricos si la voz habla de una persona.
 
-Tu tarea es generar un guión altamente dinámico y estructurado en escenas.
-Para cada escena provee:
-1. "scene_number": El número de escena en secuencia.
-2. "narration": El texto que dirá el narrador en la voz en off. DEBE ser extremadamente atrapante. MUY IMPORTANTE: La narración de CADA escena debe ser rica y detallada, de entre 25 a 40 palabras como mínimo.
-3. "image_prompt": Un prompt visual EXTREMADAMENTE DETALLADO, EN INGLÉS. Es vital que la imagen represente **DIRECTAMENTE Y LITERALMENTE lo que está pasando en la narración de esta misma escena**. 
-ESTRUCTURA OBLIGATORIA DEL PROMPT:
-"[Sujeto principal realizando la acción descrita en la narración], [Entorno altamente detallado], [Estilo visual: ${style}], [Iluminación/Detalles: masterpiece, highly detailed, cinematic lighting]".
-4. "duration_seconds": Duración estimada de la escena (en segundos). La suma total debe ser ~${duration} segundos.
+Tu tarea es generar el guión escena por escena.
+Para CADA escena provee:
+1. "scene_number": El número de escena.
+2. "narration": El texto que dirá el narrador. Debe ser conversacional, fluido y muy atrapante (mínimo 20-35 palabras por escena).
+3. "image_prompt": Un prompt visual EXTREMADAMENTE DETALLADO EN INGLÉS. 
+ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT:
+"[Descripción exacta y literal de la acción principal que coincide con la narración], [Entorno altamente detallado], [Estilo visual: ${style}], [Iluminación: masterpiece, highly detailed, cinematic lighting] ${aspectRatioFlag}".
+(Asegúrate de SIEMPRE poner ${aspectRatioFlag} al mismísimo final del texto del image_prompt).
+4. "duration_seconds": Duración estimada (ej. 5). La suma total debe ser ~${duration}.
 
-
-IMPORTANTE: Debes responder ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con la siguiente estructura, sin texto adicional ni formato de markdown:
+IMPORTANTE: Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con la siguiente estructura:
 {
-  "title": "Título del video",
+  "title": "Título súper viral",
   "scenes": [
     {
       "scene_number": 1,
-      "narration": "Texto de narración",
-      "image_prompt": "english visual prompt",
-      "duration_seconds": 5
+      "narration": "Texto de la voz en off...",
+      "image_prompt": "english visual prompt ending with ${aspectRatioFlag}",
+      "duration_seconds": 6
     }
   ]
 }

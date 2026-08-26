@@ -34,6 +34,7 @@ export default function Home() {
   const [duration, setDuration] = useState("30");
   const [theme, setTheme] = useState("Libre / Creativo");
   const [visualStyle, setVisualStyle] = useState("Fotografía Realista");
+  const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingText, setLoadingText] = useState("");
@@ -82,7 +83,7 @@ export default function Home() {
       const res = await fetch("/api/generate-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, ideaText: finalIdea, urlText, duration, voice: "es-MX", theme, style: visualStyle }),
+        body: JSON.stringify({ mode, ideaText: finalIdea, urlText, duration, voice: "es-MX", theme, style: visualStyle, format: imageFormat }),
       });
       
       if (!res.ok) throw new Error("Error en la solicitud al backend");
@@ -210,7 +211,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <Settings2 className="w-4 h-4 text-slate-400" /> Tema
@@ -242,6 +243,20 @@ export default function Home() {
                   <option value="Anime / Manga">Anime / Manga</option>
                   <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
                   <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-slate-400" /> Formato
+                </label>
+                <select
+                  value={imageFormat}
+                  onChange={(e) => setImageFormat(e.target.value)}
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+                >
+                  <option value="Vertical (9:16)">Vertical 9:16 (Shorts/TikTok)</option>
+                  <option value="Horizontal (16:9)">Horizontal 16:9 (YouTube)</option>
+                  <option value="Cuadrado (1:1)">Cuadrado 1:1 (Instagram)</option>
                 </select>
               </div>
               <div className="space-y-2">

@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, style } = await req.json();
+    const { topic, style, format } = await req.json();
 
     const angles = [
       "una anécdota personal impactante",
@@ -18,33 +18,36 @@ export async function POST(req: NextRequest) {
     ];
     const randomAngle = angles[Math.floor(Math.random() * angles.length)];
     const requestedStyle = style || "Fotografía Realista";
+    
+    const requestedFormat = format || "Vertical (9:16)";
+    let aspectRatioFlag = "--ar 9:16";
+    if (requestedFormat.includes("16:9")) aspectRatioFlag = "--ar 16:9";
+    if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
     const prompt = `
 Eres un creador de contenido viral y un experto en psicología persuasiva, de los mejores del mundo reteniendo la atención del lector.
 
 ${topic ? `El tema o situación es: "${topic}".` : `Elige aleatoriamente un tema universal, polémico o profundamente emocional.`}
 
-⚠️ MUY IMPORTANTE PARA NO REPETIRTE: 
-Incluso si el usuario te pide el mismo tema varias veces, HOY debes abordarlo desde este ángulo específico y único: **${randomAngle}**. 
-NUNCA uses las mismas palabras, la misma historia o el mismo ejemplo de antes. Inventa una situación completamente nueva cada vez.
+⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
+1. NO TE REPITAS: Incluso si el usuario te pide el mismo tema, HOY debes abordarlo desde este ángulo: **${randomAngle}**. Inventa una situación completamente nueva cada vez.
+2. TEXTO MAGNÉTICO:
+   - Título Viral: Corto (máx 6 palabras), súper llamativo ("clickbait" elegante).
+   - Gancho Brutal: Una revelación dura que obligue a leer.
+   - Desarrollo: Explica con un tono directo, crudo y empático. Usa párrafos cortos y emojis 🔥.
+   - Desenlace: Un consejo práctico que deje pensando.
+3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: El "image_prompt" en inglés DEBE reflejar **LITERALMENTE** lo que pasa en tu reflexión. Si hablas de una persona llorando bajo la lluvia, el prompt debe describir a una persona llorando bajo la lluvia.
 
-Tu tarea es escribir un texto impactante, magnético y transformador relacionado con el tema.
-DEBES cumplir estrictamente con los siguientes requisitos:
-1. **Longitud:** Mínimo absoluto de 150 palabras.
-2. **Estructura Magnética:** 
-   - **Título Viral:** Genera un título corto (máximo 6 palabras), súper llamativo y "clickbait" elegante que resuma la reflexión.
-   - **Gancho Brutal (Inicio):** Una afirmación controversial, una pregunta que rompa la mente o una revelación dura que obligue a la persona a seguir leyendo. 
-   - **Desarrollo (Psicología pura):** Explica por qué nos pasa eso con un tono directo, crudo y empático. Sin sonar como poesía barata. Habla de frente, como un amigo sabio que te dice verdades a la cara.
-   - **Desenlace (Conclusión):** Un consejo súper práctico, empoderador y que te deje pensando.
-3. **Estilo:** Usa un ritmo de lectura dinámico, párrafos cortos y usa **emojis estratégicos** 🚀🔥 a lo largo de todo el texto.
+ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT VISUAL:
+"[Descripción exacta y literal de la acción principal que coincide con la reflexión], [Entorno altamente detallado], [Estilo visual: ${requestedStyle}], [Iluminación/Detalles: masterpiece, highly detailed, dramatic lighting] ${aspectRatioFlag}".
+(Asegúrate de SIEMPRE poner ${aspectRatioFlag} al mismísimo final del texto del image_prompt).
 
-Además, debes generar un "image_prompt" en INGLÉS. 
-Este prompt visual ES CRÍTICO y debe estar **100% RELACIONADO con el texto que acabas de inventar**.
-Piensa en el PROTAGONISTA de tu texto y la situación exacta que describes.
-Sigue ESTA ESTRUCTURA EXACTA:
-"[Personaje principal haciendo una acción literal relacionada al texto], [Entorno detallado y luminoso], [Estilo visual: ${requestedStyle}], [Iluminación/Detalles: masterpiece, highly detailed, dramatic lighting]".
-
-Ejemplo si tu texto habla de salir de la zona de confort y el estilo es Fotografía Realista: "A highly realistic photograph of a nervous but excited young man stepping out of a boring gray office into a vibrant magical forest. Masterpiece, 8k resolution, cinematic lighting, photorealistic."
+Ejemplo de JSON:
+{
+  "title": "TÍTULO LLAMATIVO AQUÍ",
+  "reflection_text": "Tu reflexión de al menos 150 palabras aquí...",
+  "image_prompt": "A highly realistic photograph of... masterpiece, cinematic lighting ${aspectRatioFlag}"
+}
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 {
