@@ -41,6 +41,9 @@ export default function RootLayout({
               <a href="/reflexiones" className="text-slate-300 hover:text-white transition-colors">
                 Reflexiones
               </a>
+              <a href="/ilustraciones" className="text-slate-300 hover:text-white transition-colors">
+                Ilustraciones con Frases
+              </a>
             </nav>
           </div>
         </header>
