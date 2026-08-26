@@ -31,11 +31,11 @@ ${topic ? `El tema o situación es: "${topic}".` : `Elige aleatoriamente un tema
 
 ⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
 1. NO TE REPITAS: Incluso si el usuario te pide el mismo tema, HOY debes abordarlo desde este ángulo: **${randomAngle}**. Inventa una situación completamente nueva cada vez.
-2. TEXTO MAGNÉTICO:
+2. TEXTO MAGNÉTICO Y LIMPIO:
    - Título Viral: Corto (máx 6 palabras), súper llamativo ("clickbait" elegante).
-   - Gancho Brutal: Una revelación dura que obligue a leer.
-   - Desarrollo: Explica con un tono directo, crudo y empático. Usa párrafos cortos y emojis 🔥.
-   - Desenlace: Un consejo práctico que deje pensando.
+   - Estructura: Ten un gancho inicial, un desarrollo empático y un consejo final.
+   - 🚫 REGLA DE ORO: **NUNCA escribas palabras estructurales dentro del texto como "Gancho:", "Desarrollo:", "Desenlace:", "Reflexión:"**. Escribe única y exclusivamente los párrafos fluidos y limpios para ser copiados y pegados.
+   - Usa párrafos cortos y emojis 🔥.
 3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: El "image_prompt" en inglés DEBE reflejar **LITERALMENTE** lo que pasa en tu reflexión. Si hablas de una persona llorando bajo la lluvia, el prompt debe describir a una persona llorando bajo la lluvia.
 
 ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT VISUAL:

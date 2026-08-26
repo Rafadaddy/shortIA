@@ -42,13 +42,13 @@ Duración objetivo: ${duration} segundos.
 
 ⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
 1. NO TE REPITAS: Hoy debes abordar el tema desde este ángulo: **${randomAngle}**. Inventa una anécdota, dato o situación completamente nueva y fascinante.
-2. GUION MAGNÉTICO: Estructura el guion con un GANCHO BRUTAL en los primeros 3 segundos, un DESARROLLO lleno de intriga o valor, y un CLÍMAX/LLAMADO A LA ACCIÓN al final. Queremos que el usuario se quede pegado a la pantalla.
+2. GUION MAGNÉTICO: Estructura el guion con un gancho brutal, desarrollo y clímax. PERO OJO: **NUNCA, JAMÁS escribas palabras estructurales como "Gancho:", "Desarrollo:", "Clímax:", "Voz en off:", etc.** dentro del campo "narration". Escribe ÚNICAMENTE el texto fluido y limpio que leerá el locutor, sin subtítulos.
 3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: La queja número 1 es que tus imágenes no coinciden con tu texto. El "image_prompt" DEBE reflejar **LITERALMENTE** lo que se narra en esa escena específica. Si hablas de un reloj antiguo rompiéndose, la imagen DEBE describir un reloj antiguo rompiéndose en pedazos. No pongas paisajes genéricos si la voz habla de una persona.
 
 Tu tarea es generar el guión escena por escena.
 Para CADA escena provee:
 1. "scene_number": El número de escena.
-2. "narration": El texto que dirá el narrador. Debe ser conversacional, fluido y muy atrapante (mínimo 20-35 palabras por escena).
+2. "narration": El texto LIMPIO que dirá el narrador (sin meta-etiquetas). Debe ser conversacional, fluido y muy atrapante (mínimo 20-35 palabras por escena).
 3. "image_prompt": Un prompt visual EXTREMADAMENTE DETALLADO EN INGLÉS. 
 ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT:
 "[Descripción exacta y literal de la acción principal que coincide con la narración], [Entorno altamente detallado], [Estilo visual: ${style}], [Iluminación: masterpiece, highly detailed, cinematic lighting] ${aspectRatioFlag}".
