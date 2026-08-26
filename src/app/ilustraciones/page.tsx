@@ -23,6 +23,7 @@ export default function IlustracionesPage() {
   const [niche, setNiche] = useState(illustrationNiches[0]);
   const [idea, setIdea] = useState("");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
+  const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<IllustrationData | null>(null);
   
@@ -36,7 +37,7 @@ export default function IlustracionesPage() {
       const res = await fetch("/api/generate-illustration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, format: imageFormat }),
+        body: JSON.stringify({ niche, idea, format: imageFormat, style: visualStyle }),
       });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
@@ -64,15 +65,15 @@ export default function IlustracionesPage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Quote className="w-8 h-8 md:w-10 md:h-10 text-pink-400" />
-            Ilustraciones con Frases
+            Imágenes con Frases Virales
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Crea prompts visuales con frases integradas al estilo "dibujo aesthetic". Ideales para subir directamente a Instagram, Pinterest o TikTok.
+            Crea prompts para imágenes con textos impactantes integrados. Desde ilustraciones tiernas hasta fotos oscuras de motivación.
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 Nicho / Temática
@@ -88,6 +89,23 @@ export default function IlustracionesPage() {
               </select>
             </div>
             
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual
+              </label>
+              <select
+                value={visualStyle}
+                onChange={(e) => setVisualStyle(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none"
+              >
+                <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
+                <option value="Aesthetic Tierno (Dibujo a mano)">Aesthetic Tierno (Dibujo)</option>
+                <option value="Minimalista Elegante">Minimalista Elegante</option>
+                <option value="3D Pixar/Disney">3D Pixar/Disney</option>
+                <option value="Arte Callejero / Urbano">Arte Callejero / Urbano</option>
+              </select>
+            </div>
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-slate-400" /> Formato de Imagen
