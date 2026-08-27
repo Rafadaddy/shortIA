@@ -16,13 +16,13 @@ interface ComicData {
 }
 
 const comicNiches = [
-  "Humor de Pareja / Tierno",
-  "Humor de Trabajo / Godín",
-  "Terror y Suspenso (Corto)",
-  "Motivación y Superación",
-  "Situaciones Random de la Vida",
-  "Mascotas Gracioso",
-  "Reflexión Filosófica"
+  "El 'Plot Twist' (Final Inesperado / Humor Negro)",
+  "POV: Perspectivas Curiosas (Ej. Ansiedad, Mascotas)",
+  "Terror Psicológico Corto (Creepypasta)",
+  "El Héroe Cotidiano (Humor de Vida Adulta y Trabajo)",
+  "Amor, 'Red Flags' y Relaciones",
+  "Fábulas y Metáforas (Filosofía Profunda)",
+  "Sátira de Dinero y Emprendimiento"
 ];
 
 export default function HistorietasPage() {
@@ -127,10 +127,14 @@ export default function HistorietasPage() {
                 onChange={(e) => setPanelCount(e.target.value)}
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
               >
-                <option value="3">3 Viñetas</option>
-                <option value="4">4 Viñetas (Clásico)</option>
-                <option value="5">5 Viñetas</option>
-                <option value="6">6 Viñetas (Carrusel largo)</option>
+                {[...Array(18)].map((_, i) => {
+                  const num = i + 3;
+                  return (
+                    <option key={num} value={num}>
+                      {num} Viñetas {num === 4 ? "(Clásico)" : num > 10 ? "(Tardará más)" : ""}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
