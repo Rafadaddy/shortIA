@@ -6,67 +6,67 @@ export interface TopicCategory {
 
 export const topicCategories: TopicCategory[] = [
   {
-    category: "Crecimiento Personal",
-    icon: "🌱",
-    topics: [
-      "Superar el síndrome del impostor",
-      "Salir de la zona de confort",
-      "El miedo al fracaso en nuevos proyectos",
-      "La importancia de la disciplina sobre la motivación",
-      "Redefinir el éxito bajo tus propios términos",
-      "Aprender a decir 'No' sin sentir culpa",
-      "El perfeccionismo como enemigo del progreso",
-      "Celebrar las pequeñas victorias del día a día"
-    ]
-  },
-  {
-    category: "Relaciones y Vínculos",
-    icon: "❤️",
-    topics: [
-      "Dejar ir a alguien que ya no te aporta",
-      "La importancia de la responsabilidad afectiva",
-      "Sanar las heridas de amistades perdidas",
-      "Aprender a estar solo sin sentirse solitario",
-      "Poner límites sanos a personas tóxicas",
-      "El perdón como herramienta para uno mismo, no para el otro",
-      "El miedo a la vulnerabilidad emocional"
-    ]
-  },
-  {
-    category: "Filosofía y Estoicismo",
-    icon: "🏛️",
-    topics: [
-      "Amor Fati: Amar tu destino y lo que te sucede",
-      "Memento Mori: Recordar la mortalidad para vivir intensamente",
-      "La dicotomía del control: Enfocarse solo en lo que puedes controlar",
-      "Encontrar paz en medio del caos moderno",
-      "El peligro de desear constantemente más",
-      "La riqueza de tener menos (minimalismo mental)",
-      "El tiempo como el recurso más valioso que existe"
-    ]
-  },
-  {
-    category: "Salud Mental y Bienestar",
+    category: "Psicología y Comportamiento",
     icon: "🧠",
     topics: [
-      "Sobrellevar los días oscuros y la ansiedad",
-      "La presión de la sociedad y las redes sociales",
-      "Hacer las paces con tu pasado",
-      "La belleza de la soledad y el silencio",
-      "Dejar de compararse con la vida de otros en internet",
-      "El agotamiento silencioso (Burnout)",
-      "Ser más amable con tu crítico interno"
+      "Por qué el ser humano se autoboicotea cuando al fin es feliz",
+      "La extraña adicción de la mente a crear problemas que no existen",
+      "Por qué idealizamos tanto el pasado y olvidamos lo malo",
+      "La diferencia entre intuición y ansiedad paranoica",
+      "Por qué duele más la traición de un amigo que de una pareja",
+      "El extraño placer de la melancolía y la tristeza",
+      "Por qué nos aterra tanto la incertidumbre del futuro"
     ]
   },
   {
-    category: "Profesión y Vida",
-    icon: "💼",
+    category: "Verdades Incómodas y Vida",
+    icon: "👁️",
     topics: [
-      "El peso del éxito y las altas expectativas",
-      "Cuando el trabajo consume tu identidad",
-      "Empezar de cero después de los 30 o 40 años",
-      "La ilusión de la inmediatez en el éxito moderno",
-      "Encontrar propósito en tareas aburridas"
+      "El día que descubres que tus padres también están improvisando",
+      "La dura realidad de que nadie sabe realmente lo que hace con su vida",
+      "El peligro tóxico de vivir para impresionar a desconocidos en internet",
+      "Por qué el concepto moderno de 'éxito' nos deja más vacíos",
+      "El duelo silencioso de dejar morir a la persona que solías ser",
+      "La hipocresía del positivismo tóxico en redes sociales",
+      "Aceptar que a veces tú eres el 'malo' en la historia de alguien"
+    ]
+  },
+  {
+    category: "Amor, Relaciones y Desapego",
+    icon: "💔",
+    topics: [
+      "El extraño fenómeno de extrañar a alguien que te hizo tanto daño",
+      "Por qué el amor verdadero a veces se siente aburrido y sin drama",
+      "Cómo saber si estás enamorado o solo tienes pánico a la soledad",
+      "Por qué a veces el mayor acto de amor es alejarte para siempre",
+      "La delgada y peligrosa línea entre amar y depender emocionalmente",
+      "Aceptar que el 'para siempre' a veces dura solo unos meses",
+      "Por qué nos atraen tanto las personas que no están disponibles"
+    ]
+  },
+  {
+    category: "Existencialismo y Misterio",
+    icon: "🌌",
+    topics: [
+      "La aterradora pero liberadora idea de lo pequeños que somos en el universo",
+      "¿Qué hay realmente más allá de nuestro profundo miedo a la muerte?",
+      "La extraña sensación de que el tiempo pasa más rápido cada año",
+      "¿Somos realmente dueños de nuestro destino o todo ya está escrito?",
+      "El misterio de tener una conexión inexplicable con un extraño",
+      "La sensación de vivir en modo automático (Efecto NPC)",
+      "Por qué las madrugadas nos hacen cuestionar toda nuestra existencia"
+    ]
+  },
+  {
+    category: "Crecimiento, Éxito y Soledad",
+    icon: "🐺",
+    topics: [
+      "La soledad inevitable y fría que llega cuando decides cambiar de vida",
+      "El precio oculto de querer agradarle y caerle bien a todo el mundo",
+      "Cómo tu entorno y amigos cambian cuando decides ser más ambicioso",
+      "Por qué fracasar rápidamente es mejor que dudar para siempre",
+      "El mito de que la motivación constante es la clave del éxito",
+      "La paz que encuentras cuando dejas de intentar tener siempre la razón"
     ]
   }
 ];
