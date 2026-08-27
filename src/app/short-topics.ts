@@ -96,5 +96,20 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "Cómo aumentar tu testosterona de forma natural",
       "Alimentos que literalmente destruyen tu cerebro"
     ]
+  },
+  {
+    category: "Nicho: ¿Qué Pasaría Si...?",
+    icon: "🤔",
+    topics: [
+      "¿Qué pasaría si todos los humanos desaparecieran hoy?",
+      "¿Qué pasaría si cayeras en un pozo hacia el centro de la Tierra?",
+      "¿Qué pasaría si pudieras usar el 100% de tu cerebro?",
+      "¿Qué pasaría si descubrimos que vivimos en una simulación?",
+      "¿Qué pasaría si no durmieras durante 30 días?",
+      "¿Qué pasaría si el sol se apagara de repente?",
+      "¿Qué pasaría si pudieras detener el tiempo por un día?",
+      "¿Qué pasaría si te comiera una ballena?",
+      "¿Qué pasaría si la gravedad de la Tierra se invirtiera?"
+    ]
   }
 ];
