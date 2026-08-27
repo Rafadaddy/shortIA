@@ -13,6 +13,7 @@ interface ComicData {
   title: string;
   panels: ComicPanel[];
   caption: string;
+  music_recommendation: string;
 }
 
 const comicNiches = [
@@ -211,9 +212,16 @@ export default function HistorietasPage() {
               ))}
             </div>
 
-            <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5 text-center">
-              <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2 block">Caption para Instagram/TikTok</span>
-              <p className="text-slate-300">{data.caption}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 block">🎵 Sugerencia de Música / Audio</span>
+                <p className="text-slate-300 font-medium">{data.music_recommendation}</p>
+              </div>
+
+              <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
+                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2 block">Caption para Instagram/TikTok</span>
+                <p className="text-slate-300">{data.caption}</p>
+              </div>
             </div>
           </div>
         )}

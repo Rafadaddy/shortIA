@@ -59,7 +59,8 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
       "image_prompt": "..."
     }
   ],
-  "caption": "Un pie de foto para redes sociales (20-40 palabras) invitando a comentar, con emojis 🔥."
+  "caption": "Un pie de foto para redes sociales (20-40 palabras) invitando a comentar, con emojis 🔥.",
+  "music_recommendation": "Describe qué tipo de música exacta deben ponerle al video/carrusel (ej. Beat de phonk oscuro, piano triste y lento, etc.)"
 }
 `;
 
