@@ -21,6 +21,8 @@ export async function POST(req: NextRequest) {
       styleInstruction = "A cozy, cute, hand-drawn aesthetic illustration style. Watercolor textures, soft pastel colors, emotional and tender. The typography should look like beautiful hand-written calligraphy or cute bubble letters integrated playfully into the environment.";
     } else if (requestedStyle.includes("Minimalista Elegante")) {
       styleInstruction = "A clean, minimalist, high-end editorial style. Lots of negative space, neutral colors (black, white, beige). The typography must be sleek, modern serif or sans-serif, elegant and sophisticated.";
+    } else if (requestedStyle.includes("Mural Urbano")) {
+      styleInstruction = "An urban street photography style. A highly realistic photo of a large concrete wall, brick wall, or city surface. The typography MUST look like it is physically painted directly onto the wall (like a clean mural or stencil street art). Natural daylight, shadows of trees or buildings, ultra-realistic street aesthetic.";
     } else {
       styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}. Integrated typography that fits the mood.`;
     }
