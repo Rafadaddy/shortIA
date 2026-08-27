@@ -111,5 +111,18 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "¿Qué pasaría si te comiera una ballena?",
       "¿Qué pasaría si la gravedad de la Tierra se invirtiera?"
     ]
+  },
+  {
+    category: "Nicho: Seducción y Psicología del Atractivo",
+    icon: "🔥",
+    topics: [
+      "El error número 1 al intentar conquistar a una mujer",
+      "Cómo hackear la atracción visual (Lenguaje corporal)",
+      "Textos que generan obsesión inmediata",
+      "La regla del silencio para volverte inolvidable",
+      "Qué significa cuando ella hace ESTO",
+      "Cómo construir confianza inquebrantable en ti mismo",
+      "Psicología oscura de la atracción (Úsalo con cuidado)"
+    ]
   }
 ];

@@ -16,6 +16,7 @@ const illustrationNiches = [
   "Métodos para ser Millonario y Riqueza",
   "Emprendimiento y Cómo Crear un Negocio",
   "Finanzas Personales y Cómo Ahorrar",
+  "Seducción y Psicología del Atractivo",
   "¿Qué Pasaría Si...? / Curiosidad Surrealista",
   "Humor Sarcástico de Vida Adulta",
   "Amor Tierno y Relaciones Random",
