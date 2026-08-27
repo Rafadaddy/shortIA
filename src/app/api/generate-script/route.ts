@@ -48,7 +48,7 @@ Duración objetivo: ${duration} segundos.
 Tu tarea es generar el guión escena por escena.
 Para CADA escena provee:
 1. "scene_number": El número de escena.
-2. "narration": El texto LIMPIO que dirá el narrador (sin meta-etiquetas). Debe ser conversacional, fluido y muy atrapante (mínimo 20-35 palabras por escena).
+2. "narration": El texto LIMPIO que dirá el narrador (sin meta-etiquetas). **DEBE ESTAR ESCRITO ESTRICTAMENTE EN ESPAÑOL.** Debe ser conversacional, fluido y muy atrapante (mínimo 20-35 palabras por escena).
 3. "image_prompt": Un prompt visual EXTREMADAMENTE DETALLADO EN INGLÉS. 
 ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT:
 "[Descripción exacta y literal de la acción principal que coincide con la narración], [Entorno altamente detallado], [Estilo visual: ${style}], [Iluminación: masterpiece, highly detailed, cinematic lighting] ${aspectRatioFlag}".

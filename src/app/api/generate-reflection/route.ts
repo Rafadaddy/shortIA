@@ -31,7 +31,7 @@ ${topic ? `El tema o situación es: "${topic}".` : `Elige aleatoriamente un tema
 
 ⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
 1. NO TE REPITAS: Incluso si el usuario te pide el mismo tema, HOY debes abordarlo desde este ángulo: **${randomAngle}**. Inventa una situación completamente nueva cada vez.
-2. TEXTO MAGNÉTICO Y LIMPIO:
+2. TEXTO MAGNÉTICO Y LIMPIO (**ESTRICTAMENTE EN ESPAÑOL**):
    - Título Viral: Corto (máx 6 palabras), súper llamativo ("clickbait" elegante).
    - Estructura: Ten un gancho inicial, un desarrollo empático y un consejo final.
    - 🚫 REGLA DE ORO: **NUNCA escribas palabras estructurales dentro del texto como "Gancho:", "Desarrollo:", "Desenlace:", "Reflexión:"**. Escribe única y exclusivamente los párrafos fluidos y limpios para ser copiados y pegados.
