@@ -11,13 +11,16 @@ interface IllustrationData {
 }
 
 const illustrationNiches = [
-  "Motivación y Éxito Personal",
-  "Amor y Pareja (Gracioso)",
-  "Amor y Pareja (Tierno)",
-  "Humor de la Vida Adulta",
-  "Salud Mental y Paz Interior",
-  "Emprendimiento y Trabajo",
-  "Mascotas y Vida Diaria"
+  "Psicología Oscura y Verdades Crudas",
+  "Mentes Millonarias y Estoicismo",
+  "Métodos para ser Millonario y Riqueza",
+  "Emprendimiento y Cómo Crear un Negocio",
+  "Finanzas Personales y Cómo Ahorrar",
+  "¿Qué Pasaría Si...? / Curiosidad Surrealista",
+  "Humor Sarcástico de Vida Adulta",
+  "Amor Tierno y Relaciones Random",
+  "Desamor, Sanación y Soltar (Sad Aesthetic)",
+  "Espiritualidad y Ley de Atracción"
 ];
 
 export default function IlustracionesPage() {
