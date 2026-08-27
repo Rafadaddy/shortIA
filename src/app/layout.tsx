@@ -44,6 +44,9 @@ export default function RootLayout({
               <a href="/ilustraciones" className="text-slate-300 hover:text-white transition-colors">
                 Ilustraciones con Frases
               </a>
+              <a href="/historietas" className="text-slate-300 hover:text-white transition-colors">
+                Historietas (Cómics)
+              </a>
             </nav>
           </div>
         </header>
