@@ -57,7 +57,11 @@ ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT:
 
 IMPORTANTE: Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con la siguiente estructura:
 {
-  "title": "Título súper viral",
+  "hooks": [
+    "Opción de Gancho 1 (Agresivo)",
+    "Opción de Gancho 2 (Misterioso)",
+    "Opción de Gancho 3 (Pregunta)"
+  ],
   "scenes": [
     {
       "scene_number": 1,

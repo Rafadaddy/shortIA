@@ -23,8 +23,9 @@ interface ReflectionData {
 
 export default function ReflexionesPage() {
   const [topic, setTopic] = useState("");
-  const [visualStyle, setVisualStyle] = useState("Fotografía Realista");
+  const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
+  const [tone, setTone] = useState("Libre / Equilibrado");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ReflectionData | null>(null);
   
@@ -112,11 +113,28 @@ export default function ReflexionesPage() {
               className="w-full h-24 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
             />
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-2">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual del Prompt
-                </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Tono Emocional
+              </label>
+              <select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
+              >
+                <option value="Libre / Equilibrado">Libre / Equilibrado</option>
+                <option value="Melancólico y Triste">Melancólico y Triste</option>
+                <option value="Crudo / Verdades que Dulen">Crudo / Verdades que Dulen</option>
+                <option value="Esperanzador y Motivador">Esperanzador y Motivador</option>
+                <option value="Filosófico y Profundo">Filosófico y Profundo</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual
+              </label>
                 <select
                   value={visualStyle}
                   onChange={(e) => setVisualStyle(e.target.value)}

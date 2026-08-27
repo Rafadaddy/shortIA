@@ -5,7 +5,9 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, style, format } = await req.json();
+    const { topic, style, format, tone } = await req.json();
+
+    const requestedTone = tone || "Libre / Equilibrado";
 
     const angles = [
       "una anécdota personal impactante",
@@ -28,6 +30,7 @@ export async function POST(req: NextRequest) {
 Eres un creador de contenido viral y un experto en psicología persuasiva, de los mejores del mundo reteniendo la atención del lector.
 
 ${topic ? `El tema o situación es: "${topic}".` : `Elige aleatoriamente un tema universal, polémico o profundamente emocional.`}
+Tono Emocional Solicitado: "${requestedTone}"
 
 ⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
 1. NO TE REPITAS: Incluso si el usuario te pide el mismo tema, HOY debes abordarlo desde este ángulo: **${randomAngle}**. Inventa una situación completamente nueva cada vez.

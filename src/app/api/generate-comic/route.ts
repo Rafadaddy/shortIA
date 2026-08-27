@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, panels, style } = await req.json();
+    const { niche, idea, panels, style, characterDesc } = await req.json();
 
     const panelCount = panels || 4;
     const requestedStyle = style || "Estilo Cómic / Manga";
@@ -32,6 +32,10 @@ export async function POST(req: NextRequest) {
       styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}.`;
     }
 
+    const charInstruction = characterDesc 
+      ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todas las viñetas.` 
+      : "";
+
     const prompt = `
 Eres un escritor y dibujante de historietas virales para redes sociales (carruseles de Instagram / TikTok).
 Tu tarea es crear una historia corta y atractiva dividida en ${panelCount} viñetas (imágenes separadas).
@@ -39,6 +43,8 @@ Tu tarea es crear una historia corta y atractiva dividida en ${panelCount} viñe
 Temática: "${niche}"
 ${idea ? `Idea del usuario: "${idea}"` : `Genera una historia al azar súper original basada en este nicho.`}
 Estilo Visual Solicitado: "${requestedStyle}"
+
+${charInstruction}
 
 Para cada viñeta debes proporcionar:
 1. "panel_number": El número de viñeta (1 al ${panelCount}).

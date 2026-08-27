@@ -23,7 +23,7 @@ interface Scene {
 }
 
 interface ScriptData {
-  title?: string;
+  hooks?: string[];
   scenes: Scene[];
 }
 
@@ -293,10 +293,21 @@ export default function Home() {
         <div className="lg:col-span-7 pt-8 lg:pt-0">
           {scriptData ? (
             <div className="bg-slate-900/40 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in slide-in-from-right-4 duration-500">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <h2 className="text-2xl font-bold text-white leading-tight">
-                  {scriptData.title || "Tu Guión Viral"}
-                </h2>
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+                <div className="space-y-3 flex-1">
+                  <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider">Elige tu Gancho Favorito:</h3>
+                  {scriptData.hooks && scriptData.hooks.length > 0 ? (
+                    <ul className="space-y-2">
+                      {scriptData.hooks.map((hook, idx) => (
+                        <li key={idx} className="bg-slate-950/40 p-3 rounded-xl border border-slate-700/50 text-white font-medium text-lg leading-tight hover:border-indigo-500/50 transition-colors flex gap-3 items-start">
+                          <span className="text-indigo-500 font-black">{idx + 1}.</span> {hook}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <h2 className="text-2xl font-bold text-white leading-tight">Tu Guión Viral</h2>
+                  )}
+                </div>
                 <button
                   onClick={handleCopyAllScript}
                   className="flex-shrink-0 flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/30 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors"

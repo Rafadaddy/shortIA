@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, format, style } = await req.json();
+    const { niche, idea, format, style, textSurface } = await req.json();
 
     const requestedFormat = format || "Vertical (9:16)";
     const requestedStyle = style || "Cinemático Oscuro (Motivación)";
@@ -31,6 +31,19 @@ export async function POST(req: NextRequest) {
       styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}. Integrated typography that fits the mood.`;
     }
 
+    let textSurfaceInstruction = "written clearly and naturally within the scene";
+    if (textSurface === "Letrero de Neón") {
+      textSurfaceInstruction = "written in glowing neon lights mounted on a wall or structure";
+    } else if (textSurface === "Tallado en Madera") {
+      textSurfaceInstruction = "carved or engraved deeply into a rustic wooden surface";
+    } else if (textSurface === "Tiza en Pizarrón") {
+      textSurfaceInstruction = "handwritten in chalk on a dusty blackboard";
+    } else if (textSurface === "Papel Roto / Antiguo") {
+      textSurfaceInstruction = "handwritten on a torn, aged, vintage piece of paper";
+    } else if (textSurface === "Cielo / Nubes") {
+      textSurfaceInstruction = "formed by clouds or glowing floating letters in the sky";
+    }
+
     const prompt = `
 Eres un director de arte experto en crear contenido visual viral para redes sociales.
 Tu especialidad es generar imágenes impactantes que INCLUYEN TEXTO DIRECTAMENTE EN LA COMPOSICIÓN.
@@ -45,7 +58,7 @@ Instrucciones:
 2. "suggested_phrase": La frase exacta que irá escrita DENTRO de la imagen. Debe ser CORTA (entre 5 y 15 palabras máximo), brutalmente impactante, ingeniosa o motivacional. Usa un español neutro.
 3. "image_prompt": EL PROMPT EN INGLÉS PARA GENERAR LA IMAGEN EN DALL-E 3 O MIDJOURNEY v6. 
 ESTRUCTURA ESTRICTA DEL PROMPT:
-"[Describe exactamente la escena principal y el sujeto]. ${styleInstruction} Integrated into the artwork, there is bold typography that perfectly reads: '[SUGGESTED_PHRASE_EN_ESPAÑOL]'. [Describe dónde está el texto, ej. escrito gigante en la pared, texto flotante brillante, tipografía elegante en el espacio negativo]. ${aspectRatioFlag}"
+"[Describe exactamente la escena principal y el sujeto]. ${styleInstruction} Integrated into the artwork, there is bold typography that perfectly reads: '[SUGGESTED_PHRASE_EN_ESPAÑOL]'. The text should be ${textSurfaceInstruction}. ${aspectRatioFlag}"
 4. "caption": Un pequeño texto para publicar junto a la imagen en redes sociales (pie de foto). Debe ser altamente relacionado con la imagen, empático o motivacional. Extensión: entre 20 y 50 palabras. Usa emojis relevantes 🔥🚀. JAMÁS uses etiquetas estructurales como "Caption:" o "Texto:". Escribe solo el texto limpio y directo.
 
 IMPORTANTE: El prompt DEBE estar en inglés (porque DALL-E/Midjourney entienden mejor), pero la FRASE que le pides que escriba ("...") DEBE ESTAR EN EL ESPAÑOL EXACTO que generaste en suggested_phrase.

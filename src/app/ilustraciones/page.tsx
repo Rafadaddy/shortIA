@@ -29,6 +29,7 @@ export default function IlustracionesPage() {
   const [idea, setIdea] = useState("");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
   const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
+  const [textSurface, setTextSurface] = useState("Integrado (Por Defecto)");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<IllustrationData | null>(null);
   
@@ -42,7 +43,7 @@ export default function IlustracionesPage() {
       const res = await fetch("/api/generate-illustration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, format: imageFormat, style: visualStyle }),
+        body: JSON.stringify({ niche, idea, format: imageFormat, style: visualStyle, textSurface }),
       });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
@@ -78,7 +79,7 @@ export default function IlustracionesPage() {
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 Nicho / Temática
@@ -115,7 +116,25 @@ export default function IlustracionesPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-slate-400" /> Formato de Imagen
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Superficie del Texto
+              </label>
+              <select
+                value={textSurface}
+                onChange={(e) => setTextSurface(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none"
+              >
+                <option value="Integrado (Por Defecto)">Integrado (Por Defecto)</option>
+                <option value="Letrero de Neón">Letrero de Neón</option>
+                <option value="Tallado en Madera">Tallado en Madera</option>
+                <option value="Tiza en Pizarrón">Tiza en Pizarrón</option>
+                <option value="Papel Roto / Antiguo">Papel Roto / Antiguo</option>
+                <option value="Cielo / Nubes">Cielo / Nubes</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-slate-400" /> Formato
               </label>
               <select
                 value={imageFormat}

@@ -29,8 +29,9 @@ const comicNiches = [
 export default function HistorietasPage() {
   const [niche, setNiche] = useState(comicNiches[0]);
   const [idea, setIdea] = useState("");
+  const [characterDesc, setCharacterDesc] = useState("");
   const [panelCount, setPanelCount] = useState("4");
-  const [visualStyle, setVisualStyle] = useState("Estilo Cómic / Manga");
+  const [visualStyle, setVisualStyle] = useState("Estilo Cómic Web / Webtoon");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ComicData | null>(null);
   
@@ -44,7 +45,7 @@ export default function HistorietasPage() {
       const res = await fetch("/api/generate-comic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, panels: parseInt(panelCount), style: visualStyle }),
+        body: JSON.stringify({ niche, idea, panels: parseInt(panelCount), style: visualStyle, characterDesc }),
       });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
@@ -142,17 +143,31 @@ export default function HistorietasPage() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              ¿De qué trata la historia? (Opcional)
-            </label>
-            <input
-              type="text"
-              value={idea}
-              onChange={(e) => setIdea(e.target.value)}
-              placeholder="Ej. Un perro que cree que su dueño es una mascota..."
-              className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                ¿De qué trata la historia? (Opcional)
+              </label>
+              <input
+                type="text"
+                value={idea}
+                onChange={(e) => setIdea(e.target.value)}
+                placeholder="Ej. Un perro que cree que su dueño es una mascota..."
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                Apariencia del Personaje Principal
+              </label>
+              <input
+                type="text"
+                value={characterDesc}
+                onChange={(e) => setCharacterDesc(e.target.value)}
+                placeholder="Ej. Un chico de 20 años con pelo rojo alborotado y chaqueta amarilla..."
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              />
+            </div>
           </div>
 
           <button
