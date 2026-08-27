@@ -22,6 +22,10 @@ export async function POST(req: NextRequest) {
       styleInstruction = "A cozy, cute, aesthetic hand-drawn illustration style. Pastel colors, very soft and emotive.";
     } else if (requestedStyle.includes("3D")) {
       styleInstruction = "A 3D Pixar/Disney style animation render, highly detailed, expressive features, cinematic lighting.";
+    } else if (requestedStyle.includes("Animación 2D")) {
+      styleInstruction = "A classic 2D animated cartoon style. Flat colors, expressive and dynamic character designs, traditional western animation aesthetics.";
+    } else if (requestedStyle.includes("Lápiz")) {
+      styleInstruction = "A traditional pencil sketch drawing style. Highly detailed graphite shading, monochromatic, visible pencil strokes on textured paper, professional sketchbook aesthetic.";
     } else if (requestedStyle.includes("Noir")) {
       styleInstruction = "A dark noir comic style, black and white, heavy inking, dramatic shadows, Frank Miller style.";
     } else {

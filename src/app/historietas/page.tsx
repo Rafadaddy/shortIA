@@ -114,6 +114,8 @@ export default function HistorietasPage() {
                 <option value="Anime / Manga">Anime / Manga</option>
                 <option value="Dibujo Tierno Aesthetic">Dibujo Tierno Aesthetic</option>
                 <option value="Ilustración 3D (Pixar)">Ilustración 3D (Pixar)</option>
+                <option value="Animación 2D Clásica (Cartoon)">Animación 2D Clásica (Cartoon)</option>
+                <option value="Dibujo a Lápiz (Sketch Tradicional)">Dibujo a Lápiz (Sketch Tradicional)</option>
                 <option value="Arte Noir (Blanco y Negro)">Arte Noir (Blanco y Negro)</option>
               </select>
             </div>

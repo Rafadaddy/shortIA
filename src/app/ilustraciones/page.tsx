@@ -107,6 +107,8 @@ export default function IlustracionesPage() {
                 <option value="Aesthetic Tierno (Dibujo a mano)">Aesthetic Tierno (Dibujo)</option>
                 <option value="Minimalista Elegante">Minimalista Elegante</option>
                 <option value="3D Pixar/Disney">3D Pixar/Disney</option>
+                <option value="Animación 2D Clásica (Cartoon)">Animación 2D Clásica (Cartoon)</option>
+                <option value="Dibujo a Lápiz (Sketch Tradicional)">Dibujo a Lápiz (Sketch Tradicional)</option>
                 <option value="Mural Urbano (Texto en Pared)">Mural Urbano (Texto en Pared)</option>
               </select>
             </div>
