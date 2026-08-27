@@ -39,14 +39,14 @@ ${topic ? `El tema o situación es: "${topic}".` : `Elige aleatoriamente un tema
 3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: El "image_prompt" en inglés DEBE reflejar **LITERALMENTE** lo que pasa en tu reflexión. Si hablas de una persona llorando bajo la lluvia, el prompt debe describir a una persona llorando bajo la lluvia.
 
 ESTRUCTURA EXACTA Y OBLIGATORIA DEL PROMPT VISUAL:
-"[Descripción exacta y literal de la acción principal que coincide con la reflexión], [Entorno altamente detallado], [Estilo visual: ${requestedStyle}], [Iluminación/Detalles: masterpiece, highly detailed, dramatic lighting] ${aspectRatioFlag}".
+"[Descripción exacta y literal de la acción principal que coincide con la reflexión], [Entorno altamente detallado], [Estilo visual: ${requestedStyle}], [Iluminación/Detalles: masterpiece, highly detailed, dramatic lighting]. Integrated into the image, there is bold, stylish typography that perfectly reads: '[AQUÍ ESCRIBE EL TÍTULO VIRAL EN ESPAÑOL]'. ${aspectRatioFlag}".
 (Asegúrate de SIEMPRE poner ${aspectRatioFlag} al mismísimo final del texto del image_prompt).
 
 Ejemplo de JSON:
 {
-  "title": "TÍTULO LLAMATIVO AQUÍ",
+  "title": "EL DOLOR DE SOLTAR",
   "reflection_text": "Tu reflexión de al menos 150 palabras aquí...",
-  "image_prompt": "A highly realistic photograph of... masterpiece, cinematic lighting ${aspectRatioFlag}"
+  "image_prompt": "A highly realistic photograph of... masterpiece, cinematic lighting. Integrated into the image, there is bold, stylish typography that perfectly reads: 'EL DOLOR DE SOLTAR'. ${aspectRatioFlag}"
 }
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
