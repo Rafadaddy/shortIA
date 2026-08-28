@@ -106,6 +106,7 @@ export default function IlustracionesPage() {
               >
                 <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
                 <option value="Elegante B&W (Sigma / Mafia)">Elegante B&W (Sigma / Mafia)</option>
+                <option value="Personaje 3D Gracioso (Estilo Meme)">Personaje 3D Gracioso (Estilo Meme)</option>
                 <option value="Aesthetic Tierno (Dibujo a mano)">Aesthetic Tierno (Dibujo)</option>
                 <option value="Minimalista Elegante">Minimalista Elegante</option>
                 <option value="3D Pixar/Disney">3D Pixar/Disney</option>
