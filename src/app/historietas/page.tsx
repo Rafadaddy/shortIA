@@ -113,6 +113,7 @@ export default function HistorietasPage() {
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
               >
                 <option value="Estilo Cómic Web / Webtoon">Estilo Cómic / Webtoon</option>
+                <option value="Stickman Minimalista (Estilo Palitos)">Stickman Minimalista (Palitos)</option>
                 <option value="Anime / Manga">Anime / Manga</option>
                 <option value="Dibujo Tierno Aesthetic">Dibujo Tierno Aesthetic</option>
                 <option value="Ilustración 3D (Pixar)">Ilustración 3D (Pixar)</option>

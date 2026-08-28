@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
     let styleInstruction = "";
     if (requestedStyle.includes("Webtoon")) {
       styleInstruction = "A modern webtoon digital comic style, clean lines, vibrant colors.";
+    } else if (requestedStyle.includes("Stickman")) {
+      styleInstruction = "A minimalist stickman line-art drawing style on a clean off-white background. Simple, cute, and highly expressive stick figures. NO speech bubbles. The text MUST be floating cleanly at the top or in the empty space, written in a neat handwriting font.";
     } else if (requestedStyle.includes("Anime")) {
       styleInstruction = "A high-quality Japanese anime/manga aesthetic, detailed shading, expressive characters.";
     } else if (requestedStyle.includes("Dibujo Tierno")) {
