@@ -105,6 +105,7 @@ export default function IlustracionesPage() {
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none"
               >
                 <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
+                <option value="Elegante B&W (Sigma / Mafia)">Elegante B&W (Sigma / Mafia)</option>
                 <option value="Aesthetic Tierno (Dibujo a mano)">Aesthetic Tierno (Dibujo)</option>
                 <option value="Minimalista Elegante">Minimalista Elegante</option>
                 <option value="3D Pixar/Disney">3D Pixar/Disney</option>

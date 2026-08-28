@@ -17,6 +17,8 @@ export async function POST(req: NextRequest) {
     let styleInstruction = "";
     if (requestedStyle.includes("Cinemático Oscuro")) {
       styleInstruction = "A dark, cinematic, high-contrast, moody photography style. Think millionaire mindset, sigma male, dramatic shadows, silhouettes, glowing light at the end of a tunnel. The typography must be bold, aggressive, clean, often in white and yellow or gold. Masterpiece, 8k, photorealistic.";
+    } else if (requestedStyle.includes("Elegante B&W")) {
+      styleInstruction = "A highly elegant, black and white, cinematic photography style. Sigma male aesthetic, luxury, mafia style, adjusting cuffs, dark moody lighting, faceless subject. The typography must be written elegantly in white cursive or serif font over the dark areas of the center of the image.";
     } else if (requestedStyle.includes("Aesthetic Tierno")) {
       styleInstruction = "A cozy, cute, hand-drawn aesthetic illustration style. Watercolor textures, soft pastel colors, emotional and tender. The typography should look like beautiful hand-written calligraphy or cute bubble letters integrated playfully into the environment.";
     } else if (requestedStyle.includes("Minimalista Elegante")) {
