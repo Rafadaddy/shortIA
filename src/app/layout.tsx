@@ -51,6 +51,9 @@ export default function RootLayout({
               <a href="/timeline" className="flex-shrink-0 px-4 py-2 rounded-xl bg-slate-800/40 hover:bg-amber-500/20 border border-slate-700/50 hover:border-amber-500/50 text-slate-200 hover:text-amber-300 transition-all text-sm font-semibold flex items-center gap-2 shadow-sm">
                 ⏳ Líneas Temporales
               </a>
+              <a href="/faceless-youtube" className="flex-shrink-0 px-4 py-2 rounded-xl bg-slate-800/40 hover:bg-cyan-500/20 border border-slate-700/50 hover:border-cyan-500/50 text-slate-200 hover:text-cyan-300 transition-all text-sm font-semibold flex items-center gap-2 shadow-sm">
+                💪 Faceless Fitness
+              </a>
             </nav>
           </div>
         </header>
