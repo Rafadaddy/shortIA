@@ -16,7 +16,7 @@ interface TimelineData {
 
 export default function TimelinePage() {
   const [topic, setTopic] = useState("");
-  const [characterRef, setCharacterRef] = useState("Un esqueleto animado cl�sico con un sombrero de paja");
+  const [characterRef, setCharacterRef] = useState("Un esqueleto animado clásico (puedes especificar si lleva playera, traje, o nada)");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
   const [ideas, setIdeas] = useState<string[]>([]);
