@@ -42,7 +42,20 @@ export default function FacelessYouTubePage() {
   const [shortsColor, setShortsColor] = useState("black");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  const [ideas, setIdeas] = useState<FacelessIdea[]>([]);
+  const [ideas, setIdeas] = useState<FacelessIdea[]>([
+    {
+      title: "Transforma tu Cuerpo en 30 Días con Calistenia",
+      hook: "No necesitas un gimnasio para ponerte fuerte, solo necesitas tu propio peso.",
+      pain_point: "Falta de dinero o tiempo para ir al gimnasio.",
+      why_it_works: "Apunta a principiantes que quieren resultados rápidos en casa."
+    },
+    {
+      title: "El Error que Destruye tus Hombros en las Flexiones",
+      hook: "Si sientes dolor al hacer flexiones, estás cometiendo este grave error.",
+      pain_point: "Dolor en articulaciones y estancamiento muscular.",
+      why_it_works: "Genera miedo a lesionarse y curiosidad por arreglarlo."
+    }
+  ]);
   const [data, setData] = useState<FacelessData | null>(null);
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 

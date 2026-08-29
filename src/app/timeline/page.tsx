@@ -19,7 +19,13 @@ export default function TimelinePage() {
   const [characterRef, setCharacterRef] = useState("Un esqueleto animado clásico (puedes especificar si lleva playera, traje, o nada)");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
-  const [ideas, setIdeas] = useState<string[]>([]);
+  const [ideas, setIdeas] = useState<string[]>([
+    "¿Qué pasa si dejas de consumir azúcar por 30 días?",
+    "¿Qué pasaría si la gravedad de la Tierra se duplica de golpe?",
+    "¿Qué pasa en tu cuerpo si no duermes durante 7 días seguidos?",
+    "¿Qué pasa si solo bebes refresco en lugar de agua por un año?",
+    "¿Qué pasaría si te quedas encerrado en un supermercado 5 años?"
+  ]);
   const [data, setData] = useState<TimelineData | null>(null);
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
