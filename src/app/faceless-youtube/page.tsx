@@ -111,20 +111,20 @@ export default function FacelessYouTubePage() {
             Faceless Fitness (YouTube)
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animación Cartoon Fitness).
+            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animaciï¿½n Cartoon Fitness).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema del Video (Calistenia, Musculación, etc.)
+              Tema del Video (Calistenia, Musculaciï¿½n, etc.)
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. Cómo hacer tu primera dominada (Pull-up) paso a paso"
+              placeholder="Ej. Cï¿½mo hacer tu primera dominada (Pull-up) paso a paso"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
             />
           </div>
@@ -197,7 +197,7 @@ export default function FacelessYouTubePage() {
         {data && (
           <div className="space-y-8 animate-in slide-in-from-bottom-4">
             
-            {/* Título Principal */}
+            {/* Tï¿½tulo Principal */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-cyan-500/30 text-center">
               <h2 className="text-3xl font-extrabold text-white text-cyan-400">
                 {data.title}
@@ -243,7 +243,7 @@ export default function FacelessYouTubePage() {
                   <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.mistakes}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">5. Plan 7 Días / CTA</span>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">5. Plan 7 Dï¿½as / CTA</span>
                   <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.action_plan}&quot; <br/> &quot;{data.script_sections.cta}&quot;</p>
                 </div>
               </div>
@@ -259,12 +259,12 @@ export default function FacelessYouTubePage() {
                       <span className="bg-cyan-500/20 text-cyan-400 py-1 px-3 rounded-lg font-bold text-sm border border-cyan-500/30">
                         Escena {scene.scene_number}
                       </span>
-                      <span className="text-slate-500 text-xs">Duración: {scene.duration}</span>
+                      <span className="text-slate-500 text-xs">Duraciï¿½n: {scene.duration}</span>
                     </div>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                       <div className="lg:col-span-1 border-l-2 border-cyan-500/50 pl-3">
-                        <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
+                        <span className="text-xs font-semibold text-slate-500 uppercase">Narraciï¿½n</span>
                         <p className="text-slate-200 text-sm font-medium mt-1">&quot;{scene.narration}&quot;</p>
                       </div>
                       <div className="lg:col-span-2 border-l-2 border-purple-500/50 pl-3">
@@ -276,16 +276,16 @@ export default function FacelessYouTubePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 relative">
                         <span className="text-xs font-semibold text-pink-400 uppercase block mb-2">Prompt de Imagen</span>
-                        <button onClick={() => handleCopy(scene.image_prompt, \img_\\)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300">
-                          {copiedStates[\img_\\] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
+                        <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300">
+                          {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
                         </button>
                         <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">{scene.image_prompt}</p>
                       </div>
                       
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 relative">
-                        <span className="text-xs font-semibold text-emerald-400 uppercase block mb-2">Prompt de Animación (Veo 3/Runway)</span>
-                        <button onClick={() => handleCopy(scene.animation_prompt, \nim_\\)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
-                          {copiedStates[\nim_\\] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
+                        <span className="text-xs font-semibold text-emerald-400 uppercase block mb-2">Prompt de AnimaciÃ³n (Veo 3/Runway)</span>
+                        <button onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
+                          {copiedStates[`anim_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
                         </button>
                         <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">{scene.animation_prompt}</p>
                       </div>

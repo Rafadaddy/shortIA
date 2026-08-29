@@ -33,7 +33,7 @@ export default function Home() {
   const [urlText, setUrlText] = useState("");
   const [duration, setDuration] = useState("30");
   const [theme, setTheme] = useState("Libre / Creativo");
-  const [visualStyle, setVisualStyle] = useState("Fotografía Realista");
+  const [visualStyle, setVisualStyle] = useState("FotografÃ­a Realista");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
   
   const [isGenerating, setIsGenerating] = useState(false);
@@ -92,7 +92,7 @@ export default function Home() {
       setScriptData(data);
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al generar el guión.");
+      alert("Hubo un error al generar el guiÃ³n.");
     } finally {
       setIsGenerating(false);
       setLoadingText("");
@@ -144,11 +144,11 @@ export default function Home() {
             <div className="space-y-4">
               {mode === "idea" ? (
                 <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <label className="text-sm font-medium text-slate-300">¿De qué tratará el video?</label>
+                  <label className="text-sm font-medium text-slate-300">Â¿De quÃ© tratarÃ¡ el video?</label>
                   <textarea
                     value={ideaText}
                     onChange={(e) => setIdeaText(e.target.value)}
-                    placeholder="Ej. Datos psicológicos que no sabías..."
+                    placeholder="Ej. Datos psicolÃ³gicos que no sabÃ­as..."
                     className="w-full h-28 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none"
                   />
                   <div className="pt-2 relative z-50" ref={dropdownRef}>
@@ -159,7 +159,7 @@ export default function Home() {
                       <input
                         type="text"
                         value={searchTerm}
-                        placeholder="🔍 Busca una idea o escribe un número..."
+                        placeholder="ðŸ” Busca una idea o escribe un nÃºmero..."
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-3 py-3 text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
@@ -223,7 +223,7 @@ export default function Home() {
                 >
                   <option value="Libre / Creativo">Libre / Creativo</option>
                   <option value="Datos Curiosos y Ciencia">Datos Curiosos y Ciencia</option>
-                  <option value="Motivación y Éxito">Motivación y Éxito</option>
+                  <option value="MotivaciÃ³n y Ã‰xito">MotivaciÃ³n y Ã‰xito</option>
                   <option value="Terror y Misterio">Terror y Misterio</option>
                 </select>
               </div>
@@ -236,10 +236,10 @@ export default function Home() {
                   onChange={(e) => setVisualStyle(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
                 >
-                  <option value="Fotografía Realista">Fotografía Realista</option>
-                  <option value="Animación 3D (Pixar/Disney)">Animación 3D (Pixar)</option>
-                  <option value="Cinemático Oscuro">Cinemático Oscuro</option>
-                  <option value="Ilustración Digital 2D">Ilustración Digital 2D</option>
+                  <option value="FotografÃ­a Realista">FotografÃ­a Realista</option>
+                  <option value="AnimaciÃ³n 3D (Pixar/Disney)">AnimaciÃ³n 3D (Pixar)</option>
+                  <option value="CinemÃ¡tico Oscuro">CinemÃ¡tico Oscuro</option>
+                  <option value="IlustraciÃ³n Digital 2D">IlustraciÃ³n Digital 2D</option>
                   <option value="Anime / Manga">Anime / Manga</option>
                   <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
                   <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
@@ -261,7 +261,7 @@ export default function Home() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Settings2 className="w-4 h-4 text-slate-400" /> Duración
+                  <Settings2 className="w-4 h-4 text-slate-400" /> DuraciÃ³n
                 </label>
                 <select
                   value={duration}
@@ -283,7 +283,7 @@ export default function Home() {
               {isGenerating ? (
                 <><Sparkles className="w-5 h-5 animate-pulse" /> {loadingText}</>
               ) : (
-                <><Clapperboard className="w-5 h-5" /> {mode === "idea" && !ideaText ? "Sorpréndeme (Aleatorio 🎲)" : "Generar Guión y Prompts"}</>
+                <><Clapperboard className="w-5 h-5" /> {mode === "idea" && !ideaText ? "SorprÃ©ndeme (Aleatorio ðŸŽ²)" : "Generar GuiÃ³n y Prompts"}</>
               )}
             </button>
           </div>
@@ -305,7 +305,7 @@ export default function Home() {
                       ))}
                     </ul>
                   ) : (
-                    <h2 className="text-2xl font-bold text-white leading-tight">Tu Guión Viral</h2>
+                    <h2 className="text-2xl font-bold text-white leading-tight">Tu GuiÃ³n Viral</h2>
                   )}
                 </div>
                 <button
@@ -326,10 +326,10 @@ export default function Home() {
                       <span className="text-slate-500 text-sm font-medium">Escena de {scene.duration_seconds}s</span>
                     </div>
 
-                    {/* Texto del Guión */}
+                    {/* Texto del GuiÃ³n */}
                     <div className="mb-4">
                       <p className="text-slate-200 text-lg md:text-xl font-medium leading-relaxed italic border-l-4 border-indigo-500/50 pl-4 py-1">
-                        "{scene.narration}"
+                        &quot;{scene.narration}&quot;
                       </p>
                     </div>
 
@@ -346,9 +346,7 @@ export default function Home() {
                           {copiedStates[`prompt_${scene.scene_number}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
                         </button>
                       </div>
-                      <p className="text-sm text-slate-400 font-mono leading-relaxed">
-                        {scene.image_prompt}
-                      </p>
+                      <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">&quot;{scene.image_prompt}&quot;</p>
                     </div>
                   </div>
                 ))}
@@ -361,7 +359,7 @@ export default function Home() {
                </div>
                <h3 className="text-xl font-bold text-slate-400 mb-2">Listo para la magia</h3>
                <p className="text-slate-500 max-w-sm">
-                 Genera tu guión a la izquierda y aquí aparecerá el texto narrativo junto con los prompts visuales listos para copiar.
+                 Genera tu guiÃ³n a la izquierda y aquÃ­ aparecerÃ¡ el texto narrativo junto con los prompts visuales listos para copiar.
                </p>
              </div>
           )}

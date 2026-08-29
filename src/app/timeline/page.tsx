@@ -16,7 +16,7 @@ interface TimelineData {
 
 export default function TimelinePage() {
   const [topic, setTopic] = useState("");
-  const [characterRef, setCharacterRef] = useState("Un esqueleto animado clásico con un sombrero de paja");
+  const [characterRef, setCharacterRef] = useState("Un esqueleto animado clï¿½sico con un sombrero de paja");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
   const [ideas, setIdeas] = useState<string[]>([]);
@@ -64,7 +64,7 @@ export default function TimelinePage() {
       const generatedData = await res.json();
       setData(generatedData);
     } catch (error) {
-      alert("Hubo un error al generar la línea temporal.");
+      alert("Hubo un error al generar la lï¿½nea temporal.");
     } finally {
       setIsGeneratingTimeline(false);
     }
@@ -85,23 +85,23 @@ export default function TimelinePage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Hourglass className="w-8 h-8 md:w-10 md:h-10 text-amber-400" />
-            Líneas Temporales &quot;¿Qué pasaría si...?&quot;
+            Lï¿½neas Temporales &quot;ï¿½Quï¿½ pasarï¿½a si...?&quot;
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones y prompts consistentes para videos de progresión temporal (Ej: Qué pasaría si no duermes en 7 días).
+            Genera guiones y prompts consistentes para videos de progresiï¿½n temporal (Ej: Quï¿½ pasarï¿½a si no duermes en 7 dï¿½as).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema de la Línea Temporal
+              Tema de la Lï¿½nea Temporal
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. ¿Qué pasaría si solo comes comida basura durante 7 días?"
+              placeholder="Ej. ï¿½Quï¿½ pasarï¿½a si solo comes comida basura durante 7 dï¿½as?"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
             />
           </div>
@@ -114,7 +114,7 @@ export default function TimelinePage() {
               type="text"
               value={characterRef}
               onChange={(e) => setCharacterRef(e.target.value)}
-              placeholder="Ej. Un esqueleto animado clásico"
+              placeholder="Ej. Un esqueleto animado clï¿½sico"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
             />
           </div>
@@ -184,10 +184,10 @@ export default function TimelinePage() {
                         Prompt Visual
                       </span>
                       <button
-                        onClick={() => handleCopy(step.image_prompt, \prompt_\\)}
+                        onClick={() => handleCopy(step.image_prompt, `prompt_${idx}`)}
                         className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
                       >
-                        {copiedStates[\prompt_\\] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
+                        {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
                       </button>
                     </div>
                     <p className="text-sm text-slate-400 font-mono leading-relaxed">

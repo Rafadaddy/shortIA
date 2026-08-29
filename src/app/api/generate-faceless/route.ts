@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -9,10 +9,10 @@ export async function POST(req: NextRequest) {
 
     let prompt = "";
 
-    const characterBase = \Stylized muscular humanoid character with smooth \ skin, simple oval head with no facial features except two white oval eyes. Clean line art, thick black outlines, flat solid colors. Very defined but simplified musculature on chest, arms, and abs. Wearing short \ athletic shorts. Body proportions heroic and slightly exaggerated. Minimalist digital illustration style, no gradients, no detailed shading, only subtle contour lines. Soft pastel background. Modern, comic-like, simple, clean aesthetic.\;
+    const characterBase = `Stylized muscular humanoid character with smooth ${bodyColor || 'yellow'} skin, simple oval head with no facial features except two white oval eyes. Clean line art, thick black outlines, flat solid colors. Very defined but simplified musculature on chest, arms, and abs. Wearing short ${shortsColor || 'black'} athletic shorts. Body proportions heroic and slightly exaggerated. Minimalist digital illustration style, no gradients, no detailed shading, only subtle contour lines. Soft pastel background. Modern, comic-like, simple, clean aesthetic.`;
 
     if (mode === "ideas") {
-      prompt = \
+      prompt = `
 Eres un creador experto de contenido para YouTube.
 Genera 5 ideas de video altamente atractivas y muy clicables para un canal de YouTube faceless con animación de fitness (Público objetivo: hombres 18-40 años, calistenia, construcción muscular, pérdida de grasa).
 Responde ÚNICAMENTE con un JSON válido con esta estructura:
@@ -26,13 +26,13 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura:
     }
   ]
 }
-\;
+`;
     } else {
-      prompt = \
+      prompt = `
 Eres un guionista y director de animación para un canal de YouTube de Fitness Faceless.
-Tema: "\"
+Tema: "${topic}"
 
-Personaje Base: \
+Personaje Base: ${characterBase}
 
 Debes generar un paquete completo de video.
 El guion debe tener un tono conversacional, directo, en segunda persona ("tú"), seguro pero cercano, con un toque ligero de humor.
@@ -51,7 +51,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
   "title": "Título llamativo",
   "thumbnail": {
     "text": "TEXTO CORTO EN ESPAÑOL PARA LA MINIATURA",
-    "image_prompt": "English prompt: You are generating A YOUTUBE THUMBNAIL. AIM: Maximize CTR. SUBJECT: \ with [strong emotion/pose]. LIGHTING: Cinematic 3-point lighting, strong rim light. BACKGROUND: Simple gradient or bokeh. STYLE: Clean cartoon illustration, high contrast. NO small text, NO cluttered background. --ar 16:9"
+    "image_prompt": "English prompt: You are generating A YOUTUBE THUMBNAIL. AIM: Maximize CTR. SUBJECT: ${characterBase} with [strong emotion/pose]. LIGHTING: Cinematic 3-point lighting, strong rim light. BACKGROUND: Simple gradient or bokeh. STYLE: Clean cartoon illustration, high contrast. NO small text, NO cluttered background. --ar 16:9"
   },
   "script_sections": {
     "hook": "Narración del Hook (Primeros segundos)",
@@ -66,14 +66,14 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
       "scene_number": 1,
       "narration": "Línea exacta del guion que corresponde a esta escena...",
       "visual_concept": "Descripción en español de lo que se ve en pantalla...",
-      "image_prompt": "English prompt: \ performing [action]. Environment: [env]. Lighting: neutral soft light with hard shadows. Camera: [angle].",
+      "image_prompt": "English prompt: ${characterBase} performing [action]. Environment: [env]. Lighting: neutral soft light with hard shadows. Camera: [angle].",
       "animation_prompt": "Camera: [type]. Action: [movement]. Environment: [env]. Duration: 5 seconds.",
       "duration": "5s"
     }
   ]
 }
 Asegúrate de incluir al menos 8 escenas en el arreglo 'scenes'.
-\;
+`;
     }
 
     const chatCompletion = await groq.chat.completions.create({
