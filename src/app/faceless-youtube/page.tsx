@@ -1,4 +1,4 @@
-Ôªø"use client";
+"use client";
 
 import { useState } from "react";
 import { Sparkles, PlaySquare, Copy, Check, Palette } from "lucide-react";
@@ -111,20 +111,20 @@ export default function FacelessYouTubePage() {
             Faceless Fitness (YouTube)
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animaci√≥n Cartoon Fitness).
+            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo AnimaciÛn Cartoon Fitness).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema del Video (Calistenia, Musculaci√≥n, etc.)
+              Tema del Video (Calistenia, MusculaciÛn, etc.)
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. C√≥mo hacer tu primera dominada (Pull-up) paso a paso"
+              placeholder="Ej. CÛmo hacer tu primera dominada (Pull-up) paso a paso"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
             />
           </div>
@@ -185,7 +185,7 @@ export default function FacelessYouTubePage() {
                 className="text-left bg-slate-900/40 hover:bg-cyan-900/20 border border-slate-800 hover:border-cyan-500/50 p-5 rounded-2xl text-slate-200 transition-all"
               >
                 <h3 className="font-bold text-cyan-400 text-lg mb-2">{ideaItem.title}</h3>
-                <p className="text-sm text-slate-300 italic mb-2">"{ideaItem.hook}"</p>
+                <p className="text-sm text-slate-300 italic mb-2">&quot;{ideaItem.hook}&quot;</p>
                 <div className="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-800">
                   <span className="font-semibold text-slate-300">Resuelve:</span> {ideaItem.pain_point}
                 </div>
@@ -197,7 +197,7 @@ export default function FacelessYouTubePage() {
         {data && (
           <div className="space-y-8 animate-in slide-in-from-bottom-4">
             
-            {/* T√≠tulo Principal */}
+            {/* TÌtulo Principal */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-cyan-500/30 text-center">
               <h2 className="text-3xl font-extrabold text-white text-cyan-400">
                 {data.title}
@@ -206,7 +206,7 @@ export default function FacelessYouTubePage() {
 
             {/* Miniatura */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">üñºÔ∏è Miniatura del Video</h3>
+              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">??? Miniatura del Video</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <span className="text-xs font-semibold text-cyan-400 uppercase">Texto en la Imagen</span>
@@ -224,34 +224,34 @@ export default function FacelessYouTubePage() {
 
             {/* Guion Estructural */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">üìù Guion (Secciones Clave)</h3>
+              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">?? Guion (Secciones Clave)</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">1. Hook</span>
-                  <p className="text-sm text-slate-300 italic">"{data.script_sections.hook}"</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.hook}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">2. Promesa</span>
-                  <p className="text-sm text-slate-300 italic">"{data.script_sections.promise}"</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.promise}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50 md:col-span-2">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">3. Paso a Paso</span>
-                  <p className="text-sm text-slate-300 italic">"{data.script_sections.step_by_step}"</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.step_by_step}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">4. Errores Comunes</span>
-                  <p className="text-sm text-slate-300 italic">"{data.script_sections.mistakes}"</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.mistakes}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">5. Plan 7 D√≠as / CTA</span>
-                  <p className="text-sm text-slate-300 italic">"{data.script_sections.action_plan}" <br/> "{data.script_sections.cta}"</p>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">5. Plan 7 DÌas / CTA</span>
+                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.action_plan}&quot; <br/> &quot;{data.script_sections.cta}&quot;</p>
                 </div>
               </div>
             </div>
 
             {/* Escenas Detalladas */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-2">üé• Desglose por Escenas</h3>
+              <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-2">?? Desglose por Escenas</h3>
               <div className="space-y-6">
                 {data.scenes.map((scene, idx) => (
                   <div key={idx} className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800">
@@ -259,13 +259,13 @@ export default function FacelessYouTubePage() {
                       <span className="bg-cyan-500/20 text-cyan-400 py-1 px-3 rounded-lg font-bold text-sm border border-cyan-500/30">
                         Escena {scene.scene_number}
                       </span>
-                      <span className="text-slate-500 text-xs">Duraci√≥n: {scene.duration}</span>
+                      <span className="text-slate-500 text-xs">DuraciÛn: {scene.duration}</span>
                     </div>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                       <div className="lg:col-span-1 border-l-2 border-cyan-500/50 pl-3">
-                        <span className="text-xs font-semibold text-slate-500 uppercase">Narraci√≥n</span>
-                        <p className="text-slate-200 text-sm font-medium mt-1">"{scene.narration}"</p>
+                        <span className="text-xs font-semibold text-slate-500 uppercase">NarraciÛn</span>
+                        <p className="text-slate-200 text-sm font-medium mt-1">&quot;{scene.narration}&quot;</p>
                       </div>
                       <div className="lg:col-span-2 border-l-2 border-purple-500/50 pl-3">
                         <span className="text-xs font-semibold text-slate-500 uppercase">En Pantalla</span>
@@ -283,7 +283,7 @@ export default function FacelessYouTubePage() {
                       </div>
                       
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 relative">
-                        <span className="text-xs font-semibold text-emerald-400 uppercase block mb-2">Prompt de Animaci√≥n (Veo 3/Runway)</span>
+                        <span className="text-xs font-semibold text-emerald-400 uppercase block mb-2">Prompt de AnimaciÛn (Veo 3/Runway)</span>
                         <button onClick={() => handleCopy(scene.animation_prompt, \nim_\\)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
                           {copiedStates[\nim_\\] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
                         </button>
