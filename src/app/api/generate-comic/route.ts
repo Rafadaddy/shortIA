@@ -8,9 +8,8 @@ export async function POST(req: NextRequest) {
     const { niche, idea, panels, style, characterDesc } = await req.json();
 
     const panelCount = panels || 4;
-    const requestedStyle = style || "Estilo Cómic / Manga";
-    
-    // We force square images for carousels as it's standard, or portrait
+    const requestedStyle = style || "Estilo Cómic Web / Webtoon";
+
     const aspectRatioFlag = "--ar 1:1";
 
     let styleInstruction = "";
@@ -34,35 +33,59 @@ export async function POST(req: NextRequest) {
       styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}.`;
     }
 
-    const charInstruction = characterDesc 
-      ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todas las viñetas.` 
+    const charInstruction = characterDesc
+      ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todas las viñetas.`
       : "";
 
+    // Build narrative role instructions per panel
+    const narrativeGuide = buildNarrativeGuide(panelCount);
+
     const prompt = `
-Eres un escritor y dibujante de historietas virales para redes sociales (carruseles de Instagram / TikTok).
-Tu tarea es crear una historia corta y atractiva dividida en ${panelCount} viñetas (imágenes separadas).
+Eres un guionista de historietas virales para redes sociales con 20 años de experiencia escribiendo historias que hacen que la gente diga "esto me pasó a mí".
+
+Tu misión ahora es crear una historieta de ${panelCount} viñetas con una ESTRUCTURA NARRATIVA REAL Y COMPLETA que enganche desde el primer panel y deje una sensación o reflexión al final.
 
 Temática: "${niche}"
-${idea ? `Idea del usuario: "${idea}"` : `Genera una historia al azar súper original basada en este nicho.`}
+${idea ? `Idea del usuario: "${idea}"` : `Genera una historia original basada en este nicho. Elige una situación MUY CONCRETA y cotidiana, no algo vago o abstracto.`}
 Estilo Visual Solicitado: "${requestedStyle}"
 
 ${charInstruction}
 
-Para cada viñeta debes proporcionar:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎬 REGLA FUNDAMENTAL — ARCO NARRATIVO OBLIGATORIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cada viñeta tiene un ROL NARRATIVO específico que DEBES respetar:
+
+${narrativeGuide}
+
+❌ ESTÁ PROHIBIDO:
+- Que la historia empiece y se acabe en el panel 1 sin drama
+- Que los paneles del medio sean repetitivos o no aumenten la tensión
+- Que el final no entregue algo: un giro, una emoción, una verdad, un chiste que golpea
+- Usar frases vagas o filosóficas genéricas ("la vida es así", "todo pasa por algo")
+
+✅ DEBES LOGRAR:
+- Que el lector sienta que conoce a ese personaje o vivió esa situación
+- Que haya una progresión emocional clara: estado inicial → problema/tensión → resolución
+- Que el último panel deje algo: risa, nostalgia, revelación, o una verdad incómoda
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Para cada viñeta proporciona:
 1. "panel_number": El número de viñeta (1 al ${panelCount}).
-2. "dialogue": El diálogo o narración EXACTO que irá escrito dentro de la imagen. DEBE ESTAR ESTRICTAMENTE EN ESPAÑOL. Debe ser CORTO (máximo 15 palabras) para que quepa bien en un globo de texto o cartel en la imagen.
-3. "image_prompt": EL PROMPT EN INGLÉS PARA GENERAR LA IMAGEN DE ESTA VIÑETA EN DALL-E 3.
-ESTRUCTURA ESTRICTA DEL PROMPT:
-"${styleInstruction} [Describe la acción y los personajes detalladamente]. Integrated into the artwork, there is a clear speech bubble or caption box containing bold typography that reads exactly: '[DIALOGUE EN ESPAÑOL]'. Masterpiece, highly detailed. ${aspectRatioFlag}"
+2. "scene_role": El rol narrativo de esta viñeta en UNA PALABRA: "GANCHO", "DESARROLLO", "CLIMAX" o "DESENLACE".
+3. "dialogue": El diálogo o narración EXACTO en ESPAÑOL. CORTO (máximo 15 palabras). Debe ser específico, humano y emotivo — no genérico.
+4. "image_prompt": EL PROMPT EN INGLÉS PARA DALL-E 3.
+   FORMATO ESTRICTO: "${styleInstruction} [Describe la escena, la acción y los personajes de forma detallada y cinematográfica]. Integrated into the artwork, there is a clear speech bubble or caption box containing bold typography that reads exactly: '[DIALOGUE EN ESPAÑOL]'. Masterpiece, highly detailed. ${aspectRatioFlag}"
 
-IMPORTANTE: El prompt DEBE estar en inglés, pero la FRASE que le pides que escriba ("...") DEBE ESTAR EN EL ESPAÑOL EXACTO que generaste en "dialogue".
+IMPORTANTE: El prompt DEBE estar en inglés, pero la frase dentro de las comillas DEBE estar en el ESPAÑOL EXACTO del campo "dialogue".
 
-Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
+Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido:
 {
-  "title": "Un título atractivo para la historieta",
+  "title": "Un título atractivo que genera intriga sin spoilear el final",
   "panels": [
     {
       "panel_number": 1,
+      "scene_role": "GANCHO",
       "dialogue": "...",
       "image_prompt": "..."
     }
@@ -76,7 +99,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
       messages: [{ role: "user", content: prompt }],
       model: "openai/gpt-oss-120b",
       response_format: { type: "json_object" },
-      temperature: 0.8,
+      temperature: 0.85,
     });
 
     const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
@@ -87,4 +110,71 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
     console.error("Error generating comic:", error);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
+}
+
+/**
+ * Builds a per-panel narrative guide based on total panel count.
+ * Distributes narrative roles: Hook → Development(s) → Climax → Ending
+ */
+function buildNarrativeGuide(panelCount: number): string {
+  const roles: { role: string; label: string; instruction: string }[] = [];
+
+  if (panelCount <= 3) {
+    roles.push({
+      role: "GANCHO",
+      label: "Viñeta 1 — GANCHO",
+      instruction: "Presenta la situación cotidiana de forma que el lector se identifique al instante. Debe ser específica, no genérica.",
+    });
+    roles.push({
+      role: "CLIMAX",
+      label: `Viñeta 2 — TENSIÓN`,
+      instruction: "Introduce el problema, el giro o la contradicción que hace interesante la historia.",
+    });
+    roles.push({
+      role: "DESENLACE",
+      label: `Viñeta ${panelCount} — DESENLACE`,
+      instruction: "Cierra con impacto: una revelación, un giro emocional, una verdad que duele o que libera. El lector debe sentir algo.",
+    });
+  } else {
+    roles.push({
+      role: "GANCHO",
+      label: "Viñeta 1 — GANCHO",
+      instruction: "Presenta la situación cotidiana de forma que el lector se identifique al instante. Específica, no genérica.",
+    });
+
+    // Middle panels: development and climax
+    const middleCount = panelCount - 2;
+    const climaxIndex = Math.ceil(middleCount / 2); // which middle panel becomes the climax
+
+    for (let i = 1; i <= middleCount; i++) {
+      const panelNum = i + 1;
+      if (i === climaxIndex) {
+        roles.push({
+          role: "CLIMAX",
+          label: `Viñeta ${panelNum} — CLÍMAX`,
+          instruction: "El momento de mayor tensión, el giro inesperado, o la emoción más intensa de la historia. Debe sorprender o impactar.",
+        });
+      } else if (i < climaxIndex) {
+        roles.push({
+          role: "DESARROLLO",
+          label: `Viñeta ${panelNum} — DESARROLLO`,
+          instruction: "Profundiza en el conflicto o la situación. Agrega un detalle humano que hace al personaje más real y cercano.",
+        });
+      } else {
+        roles.push({
+          role: "DESARROLLO",
+          label: `Viñeta ${panelNum} — DESARROLLO POST-CLÍMAX`,
+          instruction: "Muestra la consecuencia o la reacción del personaje tras el clímax. La historia empieza a resolverse.",
+        });
+      }
+    }
+
+    roles.push({
+      role: "DESENLACE",
+      label: `Viñeta ${panelCount} — DESENLACE`,
+      instruction: "Cierra con impacto: una revelación, un giro emocional, una verdad que duele o que libera, o el humor perfecto. El lector debe sentir algo al terminar.",
+    });
+  }
+
+  return roles.map((r) => `• ${r.label}: ${r.instruction}`).join("\n");
 }

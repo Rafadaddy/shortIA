@@ -1,371 +1,140 @@
-"use client";
+import { Play, Download, Edit2, Trash2, Clock, CheckCircle2, AlertCircle, PlayCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import { useState, useRef, useEffect } from "react";
-import { Sparkles, Link as LinkIcon, Clapperboard, Settings2, Copy, Check, Image as ImageIcon, Search } from "lucide-react";
-import { shortTopicCategories } from "./short-topics";
-
-let globalTopicId = 1;
-const allShortTopicsList = shortTopicCategories.flatMap(cat => 
-  cat.topics.map(t => ({
-    id: globalTopicId++,
-    category: cat.category,
-    icon: cat.icon,
-    text: t,
-    displayString: `${globalTopicId - 1}. ${t}`
-  }))
-);
-
-interface Scene {
-  scene_number: number;
-  narration: string;
-  image_prompt: string;
-  duration_seconds: number;
-}
-
-interface ScriptData {
-  hooks?: string[];
-  scenes: Scene[];
-}
+// Mock data to simulate the user's projects before connecting the database
+const MOCK_PROJECTS = [
+  {
+    id: 1,
+    title: "Los antiguos romanos vomitaban para seguir comiendo",
+    status: "Completado",
+    engine: "unreal_engine",
+    scenes: 11,
+    time: "Hace 53 min",
+    thumbnail: "https://images.unsplash.com/photo-1547940254-2c70034a7428?q=80&w=600&auto=format&fit=crop",
+    mainText: "VOMITABAN PARA SEGUIR"
+  },
+  {
+    id: 2,
+    title: "Los 5 hombres más fuertes del mundo",
+    status: "Completado",
+    engine: "renaissance_oil",
+    scenes: 14,
+    time: "Hoy, 02:28",
+    thumbnail: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=600&auto=format&fit=crop",
+    mainText: "REDEFINEN LA FUERZA"
+  },
+  {
+    id: 3,
+    title: "La alarma como hábito destructivo",
+    status: "Completado",
+    engine: "comic_book",
+    scenes: 8,
+    time: "13 ago",
+    thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop",
+    mainText: "LA ALARMA COMO..."
+  },
+  {
+    id: 4,
+    title: "El libro de Enoc prohibido",
+    status: "En proceso",
+    engine: "cinematic",
+    scenes: 12,
+    time: "12 ago",
+    thumbnail: "https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=600&auto=format&fit=crop",
+    mainText: "RESULTARÁN DIFÍCILES DE..."
+  }
+];
 
 export default function Home() {
-  const [mode, setMode] = useState<"idea" | "url">("idea");
-  const [ideaText, setIdeaText] = useState("");
-  const [urlText, setUrlText] = useState("");
-  const [duration, setDuration] = useState("30");
-  const [theme, setTheme] = useState("Libre / Creativo");
-  const [visualStyle, setVisualStyle] = useState("FotografÃ­a Realista");
-  const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
-  
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [loadingText, setLoadingText] = useState("");
-  
-  const [scriptData, setScriptData] = useState<ScriptData | null>(null);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Estados para los botones de copiar
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
-
-  const handleCopy = async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedStates(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setCopiedStates(prev => ({ ...prev, [id]: false }));
-    }, 2000);
-  };
-
-  const handleCopyAllScript = async () => {
-    if (!scriptData) return;
-    const allText = scriptData.scenes.map(s => s.narration).join("\n\n");
-    await handleCopy(allText, 'all_script');
-  };
-
-  const handleGenerateScript = async (overrideIdea?: string) => {
-    const finalIdea = overrideIdea || ideaText;
-    setIsGenerating(true);
-    setLoadingText("Pensando y escribiendo con IA...");
-    setScriptData(null);
-    if (overrideIdea) setIdeaText(overrideIdea);
-    
-    try {
-      const res = await fetch("/api/generate-script", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, ideaText: finalIdea, urlText, duration, voice: "es-MX", theme, style: visualStyle, format: imageFormat }),
-      });
-      
-      if (!res.ok) throw new Error("Error en la solicitud al backend");
-      
-      const data = await res.json();
-      setScriptData(data);
-    } catch (error) {
-      console.error(error);
-      alert("Hubo un error al generar el guiÃ³n.");
-    } finally {
-      setIsGenerating(false);
-      setLoadingText("");
-    }
-  };
-
   return (
-    <main className="min-h-[calc(100vh-4rem)] p-4 md:p-6 lg:p-12 selection:bg-indigo-500/30">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-        
-        {/* Left Column - Controls */}
-        <div className="lg:col-span-5 flex flex-col gap-8">
-          <header className="space-y-3 relative">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent flex items-center gap-3">
-              Shorts Generator
-              <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-indigo-400" />
-            </h1>
-            <p className="text-slate-400 text-base md:text-lg max-w-2xl leading-relaxed">
-              Genera guiones ultra virales y los prompts visuales exactos para que los uses en tus herramientas de IA favoritas.
-            </p>
-          </header>
-
-          <div className="space-y-8 bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl">
-            <div className="flex bg-slate-800/50 p-1.5 rounded-2xl border border-slate-700/50">
-              <button
-                onClick={() => setMode("idea")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${
-                  mode === "idea"
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
-                }`}
-              >
-                <Sparkles className="w-4 h-4" />
-                Idea Nueva
-              </button>
-              <button
-                onClick={() => setMode("url")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 md:px-4 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 ${
-                  mode === "url"
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
-                }`}
-              >
-                <LinkIcon className="w-4 h-4" />
-                Desde URL
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {mode === "idea" ? (
-                <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <label className="text-sm font-medium text-slate-300">Â¿De quÃ© tratarÃ¡ el video?</label>
-                  <textarea
-                    value={ideaText}
-                    onChange={(e) => setIdeaText(e.target.value)}
-                    placeholder="Ej. Datos psicolÃ³gicos que no sabÃ­as..."
-                    className="w-full h-28 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none"
-                  />
-                  <div className="pt-2 relative z-50" ref={dropdownRef}>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="w-5 h-5 text-slate-500" />
-                      </div>
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        placeholder="ðŸ” Busca una idea o escribe un nÃºmero..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-3 py-3 text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setShowDropdown(true);
-                        }}
-                        onFocus={() => setShowDropdown(true)}
-                      />
-                    </div>
-                    
-                    {showDropdown && (
-                      <div className="absolute w-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
-                        {allShortTopicsList.filter(t => 
-                          t.text.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          t.id.toString() === searchTerm.trim()
-                        ).map((t) => (
-                          <button
-                            key={t.id}
-                            onClick={() => {
-                              setSearchTerm("");
-                              setShowDropdown(false);
-                              handleGenerateScript(t.text);
-                            }}
-                            className="w-full text-left px-4 py-3 hover:bg-slate-800 border-b border-slate-800/50 flex items-center gap-3 transition-colors last:border-0"
-                          >
-                            <span className="font-mono text-indigo-400 font-bold min-w-[24px]">{t.id}.</span>
-                            <span className="text-slate-300 text-sm">{t.icon} {t.text}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                  <label className="text-sm font-medium text-slate-300">Enlace del video fuente (TikTok/Reel)</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <LinkIcon className="h-5 w-5 text-slate-500" />
-                    </div>
-                    <input
-                      type="url"
-                      value={urlText}
-                      onChange={(e) => setUrlText(e.target.value)}
-                      placeholder="https://..."
-                      className="w-full bg-slate-950/50 border border-slate-700/50 rounded-2xl py-4 pl-11 pr-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Settings2 className="w-4 h-4 text-slate-400" /> Tema
-                </label>
-                <select
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-                >
-                  <option value="Libre / Creativo">Libre / Creativo</option>
-                  <option value="Datos Curiosos y Ciencia">Datos Curiosos y Ciencia</option>
-                  <option value="MotivaciÃ³n y Ã‰xito">MotivaciÃ³n y Ã‰xito</option>
-                  <option value="Terror y Misterio">Terror y Misterio</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual
-                </label>
-                <select
-                  value={visualStyle}
-                  onChange={(e) => setVisualStyle(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-                >
-                  <option value="FotografÃ­a Realista">FotografÃ­a Realista</option>
-                  <option value="AnimaciÃ³n 3D (Pixar/Disney)">AnimaciÃ³n 3D (Pixar)</option>
-                  <option value="CinemÃ¡tico Oscuro">CinemÃ¡tico Oscuro</option>
-                  <option value="IlustraciÃ³n Digital 2D">IlustraciÃ³n Digital 2D</option>
-                  <option value="Anime / Manga">Anime / Manga</option>
-                  <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
-                  <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-slate-400" /> Formato
-                </label>
-                <select
-                  value={imageFormat}
-                  onChange={(e) => setImageFormat(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-                >
-                  <option value="Vertical (9:16)">Vertical 9:16 (Shorts/TikTok)</option>
-                  <option value="Horizontal (16:9)">Horizontal 16:9 (YouTube)</option>
-                  <option value="Cuadrado (1:1)">Cuadrado 1:1 (Instagram)</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Settings2 className="w-4 h-4 text-slate-400" /> DuraciÃ³n
-                </label>
-                <select
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-                >
-                  <option value="30">30 Segundos</option>
-                  <option value="45">45 Segundos</option>
-                  <option value="60">60 Segundos</option>
-                </select>
-              </div>
-            </div>
-
-            <button
-              onClick={() => handleGenerateScript()}
-              disabled={isGenerating || (mode === "url" && !urlText)}
-              className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 disabled:opacity-50 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]"
-            >
-              {isGenerating ? (
-                <><Sparkles className="w-5 h-5 animate-pulse" /> {loadingText}</>
-              ) : (
-                <><Clapperboard className="w-5 h-5" /> {mode === "idea" && !ideaText ? "SorprÃ©ndeme (Aleatorio ðŸŽ²)" : "Generar GuiÃ³n y Prompts"}</>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Right Column - Results */}
-        <div className="lg:col-span-7 pt-8 lg:pt-0">
-          {scriptData ? (
-            <div className="bg-slate-900/40 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in slide-in-from-right-4 duration-500">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
-                <div className="space-y-3 flex-1">
-                  <h3 className="text-sm font-bold text-indigo-400 uppercase tracking-wider">Elige tu Gancho Favorito:</h3>
-                  {scriptData.hooks && scriptData.hooks.length > 0 ? (
-                    <ul className="space-y-2">
-                      {scriptData.hooks.map((hook, idx) => (
-                        <li key={idx} className="bg-slate-950/40 p-3 rounded-xl border border-slate-700/50 text-white font-medium text-lg leading-tight hover:border-indigo-500/50 transition-colors flex gap-3 items-start">
-                          <span className="text-indigo-500 font-black">{idx + 1}.</span> {hook}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <h2 className="text-2xl font-bold text-white leading-tight">Tu GuiÃ³n Viral</h2>
-                  )}
-                </div>
-                <button
-                  onClick={handleCopyAllScript}
-                  className="flex-shrink-0 flex items-center justify-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/30 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors"
-                >
-                  {copiedStates['all_script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo el Texto</>}
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {scriptData.scenes.map((scene) => (
-                  <div key={scene.scene_number} className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 relative group">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
-                        {scene.scene_number}
-                      </span>
-                      <span className="text-slate-500 text-sm font-medium">Escena de {scene.duration_seconds}s</span>
-                    </div>
-
-                    {/* Texto del GuiÃ³n */}
-                    <div className="mb-4">
-                      <p className="text-slate-200 text-lg md:text-xl font-medium leading-relaxed italic border-l-4 border-indigo-500/50 pl-4 py-1">
-                        &quot;{scene.narration}&quot;
-                      </p>
-                    </div>
-
-                    {/* Caja del Prompt Visual */}
-                    <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 mt-6">
-                      <div className="flex items-center justify-between gap-4 mb-2">
-                        <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider flex items-center gap-2">
-                          <ImageIcon className="w-4 h-4" /> Prompt Visual
-                        </span>
-                        <button
-                          onClick={() => handleCopy(scene.image_prompt, `prompt_${scene.scene_number}`)}
-                          className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
-                        >
-                          {copiedStates[`prompt_${scene.scene_number}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
-                        </button>
-                      </div>
-                      <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">&quot;{scene.image_prompt}&quot;</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-             <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-slate-900/30 rounded-3xl border border-slate-800/40 border-dashed min-h-[400px]">
-               <div className="w-20 h-20 bg-slate-800/50 rounded-3xl flex items-center justify-center mb-6 shadow-inner ring-1 ring-white/5">
-                 <Clapperboard className="w-10 h-10 text-slate-600" />
-               </div>
-               <h3 className="text-xl font-bold text-slate-400 mb-2">Listo para la magia</h3>
-               <p className="text-slate-500 max-w-sm">
-                 Genera tu guiÃ³n a la izquierda y aquÃ­ aparecerÃ¡ el texto narrativo junto con los prompts visuales listos para copiar.
-               </p>
-             </div>
-          )}
-        </div>
-
+    <div className="p-8 max-w-7xl mx-auto">
+      {/* Encabezado */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Mis Proyectos</h1>
+        <p className="text-slate-400">4 proyectos en total</p>
       </div>
-    </main>
+
+      {/* Pestañas (Tabs) */}
+      <div className="flex gap-2 mb-8 border-b border-slate-800 pb-px overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <button className="px-4 py-2 text-sm font-medium text-white border-b-2 border-indigo-500">Todos</button>
+        <button className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">Completados</button>
+        <button className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">Borradores</button>
+        <button className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">En proceso</button>
+        <button className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors">Con error</button>
+      </div>
+
+      {/* Cuadrícula de Proyectos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {MOCK_PROJECTS.map((project) => (
+          <div key={project.id} className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden hover:border-slate-700 transition-all flex flex-col group">
+            
+            {/* Imagen del Video (Thumbnail) */}
+            <div className="relative aspect-[4/5] bg-slate-800 overflow-hidden">
+              <img 
+                src={project.thumbnail} 
+                alt={project.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+              />
+              
+              {/* Badge de Estado */}
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-black/60 backdrop-blur-md border border-white/10">
+                {project.status === 'Completado' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                ) : project.status === 'En proceso' ? (
+                  <Clock className="w-3.5 h-3.5 text-amber-400" />
+                ) : (
+                  <AlertCircle className="w-3.5 h-3.5 text-red-400" />
+                )}
+                <span className={project.status === 'Completado' ? 'text-emerald-100' : 'text-amber-100'}>
+                  {project.status}
+                </span>
+              </div>
+
+              {/* Texto Grande superpuesto (Estilo TikTok/Reels) */}
+              <div className="absolute bottom-4 left-0 right-0 px-4 text-center">
+                <span className="font-black text-xl text-white uppercase tracking-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]" style={{ textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 4px 8px rgba(0,0,0,0.8)' }}>
+                  {project.mainText}
+                </span>
+              </div>
+            </div>
+
+            {/* Detalles de la Tarjeta */}
+            <div className="p-4 flex-1 flex flex-col">
+              <h3 className="font-semibold text-white leading-tight mb-2 line-clamp-2">
+                {project.title}
+              </h3>
+              
+              <div className="text-xs text-slate-400 flex items-center gap-1.5 mb-1">
+                <span>{project.engine}</span>
+                <span>•</span>
+                <span>{project.scenes} escenas</span>
+              </div>
+              
+              <div className="text-xs text-slate-500 mb-4">
+                {project.time}
+              </div>
+
+              <div className="mt-auto grid grid-cols-4 gap-2">
+                <Button variant="secondary" className="col-span-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30">
+                  <Play className="w-4 h-4 mr-2" />
+                  Ver
+                </Button>
+                <Button variant="secondary" size="icon" className="bg-slate-800 hover:bg-slate-700 text-slate-300">
+                  <Download className="w-4 h-4" />
+                </Button>
+                <Button variant="secondary" size="icon" className="bg-slate-800 hover:bg-slate-700 text-slate-300">
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+                {/* 
+                <Button variant="secondary" size="icon" className="bg-red-500/10 hover:bg-red-500/20 text-red-400">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+                */}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

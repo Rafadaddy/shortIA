@@ -1,0 +1,8 @@
+1
+00:00:00,000 --> 00:00:04,879
+Aladdin walks through a moonlight bazaar, the city swaying in shadows.
+
+2
+00:00:05,919 --> 00:00:11,839
+He stops at an ancient lamp, an elderly man watches with fearful, glowing eyes.
+

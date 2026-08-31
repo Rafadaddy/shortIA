@@ -5,6 +5,7 @@ import { Sparkles, Image as ImageIcon, Copy, Check, Search, MessageCircle } from
 
 interface ComicPanel {
   panel_number: number;
+  scene_role: "GANCHO" | "DESARROLLO" | "CLIMAX" | "DESENLACE";
   dialogue: string;
   image_prompt: string;
 }
@@ -17,13 +18,18 @@ interface ComicData {
 }
 
 const comicNiches = [
-  "El 'Plot Twist' (Final Inesperado / Humor Negro)",
-  "POV: Perspectivas Curiosas (Ej. Ansiedad, Mascotas)",
-  "Terror PsicolÃ³gico Corto (Creepypasta)",
-  "El HÃ©roe Cotidiano (Humor de Vida Adulta y Trabajo)",
-  "Amor, 'Red Flags' y Relaciones",
-  "FÃ¡bulas y MetÃ¡foras (FilosofÃ­a Profunda)",
-  "SÃ¡tira de Dinero y Emprendimiento"
+  "Ese momento en que te conviertes en tu papá o tu mamá sin darte cuenta",
+  "Cuando alguien que querías se convirtió en un completo extraño",
+  "El precio silencioso de querer caerle bien a todos",
+  "La trampa de comparar tu vida con lo que ves en redes sociales",
+  "Crecer y darte cuenta de que los adultos tampoco saben qué están haciendo",
+  "Amor que llegó en el momento equivocado (o con la persona equivocada)",
+  "Ese trabajo que te quitó la energía pero te enseñó quién eres",
+  "La soledad que sientes rodeado de gente que te quiere",
+  "Cuando tu mayor enemigo resultó ser tu propio cerebro",
+  "El día que decidiste dejar de esperar que las cosas cambiaran solas",
+  "Amistades que duran para siempre… hasta que no duran",
+  "Fracasar en algo que amabas y volver a intentarlo de todas formas",
 ];
 
 export default function HistorietasPage() {
@@ -198,39 +204,56 @@ export default function HistorietasPage() {
             </div>
 
             <div className="space-y-4">
-              {data.panels.map((panel, idx) => (
-                <div key={idx} className="bg-slate-900/40 rounded-2xl border border-slate-800/60 p-5 shadow-lg flex flex-col md:flex-row gap-6">
-                  
-                  <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-emerald-500/20 rounded-full border border-emerald-500/30 text-emerald-400 font-black text-xl">
-                    {panel.panel_number}
-                  </div>
-                  
-                  <div className="flex-1 space-y-4">
-                    <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
-                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">DiÃ¡logo / Texto en la imagen</span>
-                      <p className="text-slate-200 font-medium text-lg italic">&quot;{panel.dialogue}&quot;</p>
+              {data.panels.map((panel, idx) => {
+                const roleConfig: Record<string, { label: string; color: string }> = {
+                  GANCHO:    { label: "🎣 Gancho",    color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+                  DESARROLLO:{ label: "🔥 Desarrollo", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
+                  CLIMAX:    { label: "⚡ Clímax",    color: "bg-red-500/20 text-red-400 border-red-500/30" },
+                  DESENLACE: { label: "✨ Desenlace",  color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+                };
+                const role = roleConfig[panel.scene_role] ?? { label: panel.scene_role, color: "bg-slate-700/30 text-slate-400 border-slate-600/30" };
+
+                return (
+                  <div key={idx} className="bg-slate-900/40 rounded-2xl border border-slate-800/60 p-5 shadow-lg flex flex-col md:flex-row gap-6">
+
+                    <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                      <div className="flex items-center justify-center w-12 h-12 bg-emerald-500/20 rounded-full border border-emerald-500/30 text-emerald-400 font-black text-xl">
+                        {panel.panel_number}
+                      </div>
+                      {panel.scene_role && (
+                        <span className={`text-xs font-bold px-2 py-1 rounded-full border ${role.color} whitespace-nowrap`}>
+                          {role.label}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800/50">
-                      <div className="flex items-center justify-between gap-4 mb-2">
-                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Prompt de GeneraciÃ³n (DALL-E 3)</span>
-                        <button
-                          onClick={() => handleCopy(panel.image_prompt, `prompt_${idx}`)}
-                          className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
-                        >
-                          {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
-                        </button>
+                    <div className="flex-1 space-y-4">
+                      <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Diálogo / Texto en la imagen</span>
+                        <p className="text-slate-200 font-medium text-lg italic">&quot;{panel.dialogue}&quot;</p>
                       </div>
-                      <p className="text-sm text-slate-400 font-mono leading-relaxed">{panel.image_prompt}</p>
+
+                      <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800/50">
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Prompt de Generación (DALL-E 3)</span>
+                          <button
+                            onClick={() => handleCopy(panel.image_prompt, `prompt_${idx}`)}
+                            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                          >
+                            {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
+                          </button>
+                        </div>
+                        <p className="text-sm text-slate-400 font-mono leading-relaxed">{panel.image_prompt}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 block">ðŸŽµ Sugerencia de MÃºsica / Audio</span>
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 block">🎵 Sugerencia de Música / Audio</span>
                 <p className="text-sm text-slate-300 italic">&quot;{data.music_recommendation}&quot;</p>
               </div>
 

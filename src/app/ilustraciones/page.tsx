@@ -11,24 +11,24 @@ interface IllustrationData {
 }
 
 const illustrationNiches = [
-  "PsicologÃ­a Oscura y Verdades Crudas",
+  "Psicología Oscura y Verdades Crudas",
   "Mentes Millonarias y Estoicismo",
-  "MÃ©todos para ser Millonario y Riqueza",
-  "Emprendimiento y CÃ³mo Crear un Negocio",
-  "Finanzas Personales y CÃ³mo Ahorrar",
-  "SeducciÃ³n y PsicologÃ­a del Atractivo",
-  "Â¿QuÃ© PasarÃ­a Si...? / Curiosidad Surrealista",
-  "Humor SarcÃ¡stico de Vida Adulta",
+  "Métodos para ser Millonario y Riqueza",
+  "Emprendimiento y Cómo Crear un Negocio",
+  "Finanzas Personales y Cómo Ahorrar",
+  "Seducción y Psicología del Atractivo",
+  "¿Qué Pasaría Si...? / Curiosidad Surrealista",
+  "Humor Sarcástico de Vida Adulta",
   "Amor Tierno y Relaciones Random",
-  "Desamor, SanaciÃ³n y Soltar (Sad Aesthetic)",
-  "Espiritualidad y Ley de AtracciÃ³n"
+  "Desamor, Sanación y Soltar (Sad Aesthetic)",
+  "Espiritualidad y Ley de Atracción"
 ];
 
 export default function IlustracionesPage() {
   const [niche, setNiche] = useState(illustrationNiches[0]);
   const [idea, setIdea] = useState("");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
-  const [visualStyle, setVisualStyle] = useState("CinemÃ¡tico Oscuro (MotivaciÃ³n)");
+  const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
   const [textSurface, setTextSurface] = useState("Integrado (Por Defecto)");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<IllustrationData | null>(null);
@@ -50,7 +50,7 @@ export default function IlustracionesPage() {
       setData(generatedData);
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al generar el prompt de ilustraciÃ³n.");
+      alert("Hubo un error al generar el prompt de ilustración.");
     } finally {
       setIsGenerating(false);
     }
@@ -82,7 +82,7 @@ export default function IlustracionesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Nicho / TemÃ¡tica
+                Nicho / Temática
               </label>
               <select
                 value={niche}
@@ -104,14 +104,14 @@ export default function IlustracionesPage() {
                 onChange={(e) => setVisualStyle(e.target.value)}
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none"
               >
-                <option value="CinemÃ¡tico Oscuro (MotivaciÃ³n)">CinemÃ¡tico Oscuro (MotivaciÃ³n)</option>
+                <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
                 <option value="Elegante B&W (Sigma / Mafia)">Elegante B&W (Sigma / Mafia)</option>
                 <option value="Personaje 3D Gracioso (Estilo Meme)">Personaje 3D Gracioso (Estilo Meme)</option>
                 <option value="Aesthetic Tierno (Dibujo a mano)">Aesthetic Tierno (Dibujo)</option>
                 <option value="Minimalista Elegante">Minimalista Elegante</option>
                 <option value="3D Pixar/Disney">3D Pixar/Disney</option>
-                <option value="AnimaciÃ³n 2D ClÃ¡sica (Cartoon)">AnimaciÃ³n 2D ClÃ¡sica (Cartoon)</option>
-                <option value="Dibujo a LÃ¡piz (Sketch Tradicional)">Dibujo a LÃ¡piz (Sketch Tradicional)</option>
+                <option value="Animación 2D Clásica (Cartoon)">Animación 2D Clásica (Cartoon)</option>
+                <option value="Dibujo a Lápiz (Sketch Tradicional)">Dibujo a Lápiz (Sketch Tradicional)</option>
                 <option value="Mural Urbano (Texto en Pared)">Mural Urbano (Texto en Pared)</option>
               </select>
             </div>
@@ -126,9 +126,9 @@ export default function IlustracionesPage() {
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none"
               >
                 <option value="Integrado (Por Defecto)">Integrado (Por Defecto)</option>
-                <option value="Letrero de NeÃ³n">Letrero de NeÃ³n</option>
+                <option value="Letrero de Neón">Letrero de Neón</option>
                 <option value="Tallado en Madera">Tallado en Madera</option>
-                <option value="Tiza en PizarrÃ³n">Tiza en PizarrÃ³n</option>
+                <option value="Tiza en Pizarrón">Tiza en Pizarrón</option>
                 <option value="Papel Roto / Antiguo">Papel Roto / Antiguo</option>
                 <option value="Cielo / Nubes">Cielo / Nubes</option>
               </select>
@@ -153,13 +153,13 @@ export default function IlustracionesPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Â¿Alguna idea especÃ­fica? (Opcional)
+              Â¿Alguna idea específica? (Opcional)
             </label>
             <input
               type="text"
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              placeholder="Ej. Una niÃ±a arrastrando a otra de las trenzas, o una montaÃ±a de pasos..."
+              placeholder="Ej. Una niña arrastrando a otra de las trenzas, o una montaña de pasos..."
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all"
             />
           </div>
@@ -170,7 +170,7 @@ export default function IlustracionesPage() {
             className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 disabled:opacity-50 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-[0_0_40px_-10px_rgba(244,114,182,0.4)]"
           >
             {isGenerating ? (
-              <><Sparkles className="w-5 h-5 animate-pulse" /> DiseÃ±ando IlustraciÃ³n...</>
+              <><Sparkles className="w-5 h-5 animate-pulse" /> Diseñando Ilustración...</>
             ) : (
               <><ImageIcon className="w-5 h-5" /> Generar Idea y Prompt Visual</>
             )}
