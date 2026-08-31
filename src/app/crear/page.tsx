@@ -594,7 +594,7 @@ export default function CreateVideo() {
             </div>
             
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-              <label className="text-sm font-bold text-slate-400 mb-2 block flex items-center gap-2"><Image className="w-4 h-4"/> Fondo del Video</label>
+              <label className="text-sm font-bold text-slate-400 mb-2 block flex items-center gap-2"><ImageIcon className="w-4 h-4"/> Fondo del Video</label>
               <select value={bgMode} onChange={(e) => setBgMode(e.target.value)} className="w-full bg-slate-900 text-white p-3 rounded-lg outline-none border border-slate-700 hover:border-indigo-500 focus:border-indigo-500 transition-colors">
                 <option value="Pexels">Videos Reales de Stock (Pexels)</option>
                 <option value="AI_Images" disabled={generatedImages.length === 0}>
@@ -604,7 +604,7 @@ export default function CreateVideo() {
             </div>
 
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-              <label className="text-sm font-bold text-slate-400 mb-2 block flex items-center gap-2"><Type className="w-4 h-4"/> Estilo de Subtítulos</label>
+              <label className="text-sm font-bold text-slate-400 mb-2 block flex items-center gap-2"><FileText className="w-4 h-4"/> Estilo de Subtítulos</label>
               <select value={subColor} onChange={(e) => setSubColor(e.target.value)} className="w-full bg-slate-900 text-white p-3 rounded-lg outline-none border border-slate-700 hover:border-indigo-500 focus:border-indigo-500 transition-colors">
                 <option value="#FFFF00">Amarillo Viral (CapCut)</option>
                 <option value="#FFFFFF">Blanco Clásico</option>
