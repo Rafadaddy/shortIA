@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react';
-import { generateStory, generateScenes, generateAudio, generateImage, generateSubtitles } from '@/actions/generate';
-import { compileVideo } from '@/actions/compile';
+import { generateStory, generateScenes, generateImage } from '@/actions/generate';
+
 import { Button } from '@/components/ui/button';
 import { Loader2, Wand2, Video, CheckCircle, ArrowRight, Edit3, Image as ImageIcon, Settings2, FileText, Lightbulb, Link as LinkIcon, RefreshCw, Mic, Edit2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
