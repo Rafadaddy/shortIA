@@ -11,18 +11,18 @@ export async function POST(req: NextRequest) {
 
     // Rich, human-centered angles for the reflection
     const angles = [
-      "una escena muy específica del hogar o la infancia que todos reconocen pero nadie nombra",
-      "el punto de vista de alguien que cometió un error y tardó años en entender por qué lo hizo",
-      "una conversación que nunca tuviste pero necesitabas desesperadamente tener",
-      "ese momento exacto en que te diste cuenta de que algo había cambiado para siempre",
-      "la sensación de cargar algo que nadie a tu alrededor puede ver pero tú sientes todo el tiempo",
-      "un enfoque filosófico crudo que contradice lo que siempre nos enseñaron",
-      "una verdad incómoda que la gente sabe pero nunca dice en voz alta",
-      "la historia de alguien que se equivocó completamente y salió adelante de una manera inesperada",
-      "un golpe de realidad directo: lo que nadie te dice sobre [el tema] hasta que ya es tarde",
-      "una metáfora sacada de algo muy cotidiano: una cocina, un semáforo, una llamada perdida",
-      "el contraste entre lo que mostramos en redes y lo que sentimos a las 2am",
-      "la voz de alguien que pasó por lo peor de [el tema] y encontró algo valioso en el fondo",
+      "la perspectiva de alguien cansado en la cocina a las 3 de la mañana, fijándose en el silencio incómodo de la casa",
+      "el trayecto en transporte público o tráfico al trabajo, observando a extraños y dándote cuenta de una verdad cruda",
+      "la sensación de lavar los platos o hacer una tarea mundana y que de golpe te caiga un balde de realidad",
+      "la perspectiva de alguien que acaba de borrar un mensaje larguísimo y en su lugar mandó solo 'ok'",
+      "esa conversación incómoda en la sala de espera de un hospital o dentista, donde todo se siente frágil",
+      "la sensación de mirar el techo de la habitación un domingo por la tarde cuando cancelaste todos tus planes",
+      "el contraste entre estar rodeado de gente en una fiesta, con la música alta, y sentirte completamente aislado",
+      "el momento de empacar cajas en una mudanza, viendo cómo la vida entera cabe en cartón",
+      "el instante en el espejo del baño público, echándote agua en la cara para fingir que todo está bien",
+      "el sonido de la lluvia golpeando la ventana del copiloto, mientras piensas en el error que cometiste hace años",
+      "la calma fría y extraña que llega después de llorar hasta quedarte dormido",
+      "el momento de pagar en el supermercado, fingiendo normalidad mientras el mundo interno se desmorona"
     ];
     const randomAngle = angles[Math.floor(Math.random() * angles.length)];
     const requestedStyle = style || "Fotografía Realista";
@@ -33,15 +33,16 @@ export async function POST(req: NextRequest) {
     if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
     const prompt = `
-Eres un escritor de reflexiones virales de alto impacto para TikTok e Instagram. Tu voz es plana, directa, un poco cansada y profundamente realista. Escribe desde la perspectiva de alguien que está viviendo el proceso en silencio, como si lo estuvieras pensando a solas en la cocina a las 3 de la mañana.
+Eres un escritor de reflexiones virales de alto impacto para TikTok e Instagram. Tu voz es auténtica, directa y profundamente realista. Escribes desde el "barro" de la cotidianidad, sin filtros y sin pretensiones poéticas.
 
 ${topic ? `El tema central de la reflexión es: "${topic}".` : `Elige un tema profundamente humano (soledad, sanar, dejar ir, empezar de nuevo).`}
 Tono Emocional: "${requestedTone}"
 
 ================================================
-⭐ ÁNGULO ÚNICO PARA HOY
+⭐ ÁNGULO ÚNICO PARA HOY (ESCENARIO MUNDANO)
 ================================================
-Aborda el tema desde este ángulo: **${randomAngle}**
+Aborda el tema desde este escenario o perspectiva hiperrealista: **${randomAngle}**
+Concéntrate en los objetos físicos y la atmósfera de este lugar o momento.
 
 ================================================
 ⚠️ INSTRUCCIONES DE ESCRITURA CRÍTICAS
@@ -49,18 +50,18 @@ Aborda el tema desde este ángulo: **${randomAngle}**
 1. **TÍTULO VIRAL (máx. 6 palabras):** Provocador y directo al dolor o al alivio.
 
 2. **ESTRUCTURA NARRATIVA (mínimo 150 palabras):**
-   - **Apertura:** Una observación hiperespecífica y MUNDANA sobre el comportamiento humano o la rutina que cambia.
-   - **Desarrollo:** Nombra la emoción cruda que nadie dice en voz alta. Usa frases cortas. Concéntrate en detalles mundanos (el silencio incómodo, el café frío, etc.).
+   - **Apertura:** Inicia describiendo un detalle físico, mundano y aburrido del entorno asignado en el Ángulo Único. Ancla al lector a la realidad antes de hablar de emociones.
+   - **Desarrollo:** Nombra la emoción cruda que nadie dice en voz alta. Usa frases cortas y planas. Conecta el entorno mundano con la reflexión profunda.
    - **Cierre (EL REMATE FINAL):** EVITA finales esperanzadores y mágicos. El final DEBE usar uno de estos 3 formatos:
-     * *La Pregunta Incómoda:* "¿Hasta cuándo vas a seguir pidiendo perdón por...?" (Para forzar comentarios).
+     * *La Pregunta Incómoda:* "¿Hasta cuándo vas a seguir pidiendo perdón por...?"
      * *La Verdad Seca:* Una frase cortante de máximo 5 palabras. Ej: "Y eso está bien." o "Nadie vendrá a salvarte."
      * *El Giro de Trama:* Cambia la perspectiva. Ej: "Quizás no perdiste a esa persona, quizás te recuperaste a ti."
 
 3. **REGLAS DE ESTILO (CRÍTICAS):**
-   - Escribe en segunda persona ("tú") o primera persona ("yo"), según convenga, pero mantén un tono cansado y real.
+   - Escribe en segunda persona ("tú") o primera persona ("yo"), con un tono conversacional, plano y directo.
    - Párrafos de 1 o 2 oraciones máximo.
-   - EVITA metáforas poéticas, descripciones románticas, palabras como 'resiliencia', 'corazón roto' o frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos cruda realidad.
-   - ⚡ **REGLA OBLIGATORIA:** ¡DEBES incluir ABUNDANTES emojis a lo largo de todo el texto! Pon emojis (🔥, 💔, ✨, 🧠, 🌊, ☕, 🕰️, etc.) al final de las frases o párrafos para que tenga muchísima vida visual, incluso si el texto es cansado. NUNCA entregues un texto plano sin emojis.
+   - 🚫 ESTRICTAMENTE PROHIBIDO: Usar metáforas poéticas, descripciones románticas, palabras como 'resiliencia', 'corazón roto' o frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos cruda realidad.
+   - ⚡ **REGLA OBLIGATORIA:** ¡DEBES incluir ABUNDANTES emojis a lo largo de todo el texto! Pon emojis (🔥, 💔, ✨, 🧠, 🌊, ☕, 🕰️, etc.) al final de las frases o párrafos para que tenga muchísima vida visual. NUNCA entregues un texto plano sin emojis.
 
 4. **COHERENCIA DEL PROMPT DE IMAGEN Y TEXTO INTEGRADO (IMPORTANTE):**
    - El usuario NO quiere editar la imagen después. La imagen DEBE llevar el Título integrado de forma creativa.
