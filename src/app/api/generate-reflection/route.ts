@@ -54,12 +54,12 @@ Aborda el tema desde este ángulo: **${randomAngle}**
    - **Cierre (EL REMATE FINAL):** El final es lo más importante para que el video se haga viral. DEBE usar uno de estos 3 formatos:
      * *La Pregunta Incómoda:* "¿Hasta cuándo vas a seguir pidiendo perdón por...?" (Para forzar comentarios).
      * *La Verdad Seca:* Una frase cortante de máximo 5 palabras. Ej: "Y eso está bien." o "Nadie vendrá a salvarte."
-     * *El Giro de Trama:* Cambia la perspectiva. Ej: "Quéizás no perdiste a esa persona, quizás te recuperaste a ti."
+     * *El Giro de Trama:* Cambia la perspectiva. Ej: "Quizás no perdiste a esa persona, quizás te recuperaste a ti."
 
 3. **REGLAS DE ESTILO:**
    - Escribe en segunda persona ("tú").
    - Párrafos de 1 o 2 oraciones máximo.
-   - CERO frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Quéeremos profundidad literaria.
+   - CERO frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos profundidad literaria.
 
 4. **COHERENCIA DEL PROMPT DE IMAGEN Y TEXTO INTEGRADO (IMPORTANTE):**
    - El usuario NO quiere editar la imagen después. La imagen DEBE llevar el Título integrado de forma creativa.

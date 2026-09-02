@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quéote } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quote } from "lucide-react";
 
 interface IllustrationData {
   title: string;
@@ -11,13 +11,13 @@ interface IllustrationData {
 }
 
 const illustrationNiches = [
-  "Psicología Oscura y Verdades Crudías",
+  "Psicología Oscura y Verdades Crudas",
   "Mentes Millonarias y Estoicismo",
   "Métodos para ser Millonario y Riqueza",
   "Emprendimiento y Cómo Crear un Negocio",
   "Finanzas Personales y Cómo Ahorrar",
   "Seducción y Psicología del Atractivo",
-  "¿Quéé Pasaría Si...? / Curiosidad Surrealista",
+  "¿Qué Pasaría Si...? / Curiosidad Surrealista",
   "Humor Sarcástico de Vida Adulta",
   "Amor Tierno y Relaciones Random",
   "Desamor, Sanación y Soltar (Sad Aesthetic)",
@@ -70,11 +70,11 @@ export default function IlustracionesPage() {
         
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
-            <Quéote className="w-8 h-8 md:w-10 md:h-10 text-pink-400" />
-            Imágenes con Frases Virales
+            <Quote className="w-8 h-8 md:w-10 md:h-10 text-pink-400" />
+            ImÃ¡genes con Frases Virales
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Crea prompts para imágenes con textos impactantes integrados. Desde ilustraciones tiernas hasta fotos oscuras de motivación.
+            Crea prompts para imÃ¡genes con textos impactantes integrados. Desde ilustraciones tiernas hasta fotos oscuras de motivaciÃ³n.
           </p>
         </header>
 
@@ -153,7 +153,7 @@ export default function IlustracionesPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              ¿Alguna idea específica? (Opcional)
+              Â¿Alguna idea específica? (Opcional)
             </label>
             <input
               type="text"
@@ -188,7 +188,7 @@ export default function IlustracionesPage() {
               <div className="bg-slate-950/60 p-6 rounded-2xl border border-slate-800">
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <span className="text-sm font-semibold text-rose-400 uppercase tracking-wider flex items-center gap-2">
-                    <Quéote className="w-4 h-4" /> Frase Sugerida en la Imagen
+                    <Quote className="w-4 h-4" /> Frase Sugerida en la Imagen
                   </span>
                 </div>
                 <p className="text-slate-200 text-xl font-medium leading-relaxed italic text-center">
@@ -220,7 +220,7 @@ export default function IlustracionesPage() {
               <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-5">
                 <div className="flex items-center justify-between gap-4 mb-3">
                   <span className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                    <Quéote className="w-4 h-4" /> Texto para Pie de Foto (Caption)
+                    <Quote className="w-4 h-4" /> Texto para Pie de Foto (Caption)
                   </span>
                   <button
                     onClick={() => handleCopy(data.caption, 'caption')}

@@ -29,7 +29,7 @@ const comicNiches = [
   "Cuando tu mayor enemigo resultó ser tu propio cerebro",
   "El día que decidiste dejar de esperar que las cosas cambiaran solas",
   "Amistades que duran para siempre… hasta que no duran",
-  "Fracasar en algo que amabas y volver a intentarlo de todías formas",
+  "Fracasar en algo que amabas y volver a intentarlo de todas formas",
 ];
 
 export default function HistorietasPage() {
@@ -37,7 +37,7 @@ export default function HistorietasPage() {
   const [idea, setIdea] = useState("");
   const [characterDesc, setCharacterDesc] = useState("");
   const [panelCount, setPanelCount] = useState("4");
-  const [visualStyle, setVisualStyle] = useState("Estilo Cómic Web / Webtoon");
+  const [visualStyle, setVisualStyle] = useState("Estilo CÃ³mic Web / Webtoon");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ComicData | null>(null);
   
@@ -91,10 +91,10 @@ export default function HistorietasPage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <MessageCircle className="w-8 h-8 md:w-10 md:h-10 text-emerald-400" />
-            Historietas y Cómics
+            Historietas y CÃ³mics
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Crea secuencias de imágenes (carruseles) tipo historieta con diálogos integrados. Ideal para Instagram y TikTok.
+            Crea secuencias de imÃ¡genes (carruseles) tipo historieta con diÃ¡logos integrados. Ideal para Instagram y TikTok.
           </p>
         </header>
 
@@ -102,7 +102,7 @@ export default function HistorietasPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Temática
+                TemÃ¡tica
               </label>
               <select
                 value={niche}
@@ -124,20 +124,20 @@ export default function HistorietasPage() {
                 onChange={(e) => setVisualStyle(e.target.value)}
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
               >
-                <option value="Estilo Cómic Web / Webtoon">Estilo Cómic / Webtoon</option>
+                <option value="Estilo CÃ³mic Web / Webtoon">Estilo CÃ³mic / Webtoon</option>
                 <option value="Stickman Minimalista (Estilo Palitos)">Stickman Minimalista (Palitos)</option>
                 <option value="Anime / Manga">Anime / Manga</option>
                 <option value="Dibujo Tierno Aesthetic">Dibujo Tierno Aesthetic</option>
-                <option value="Ilustración 3D (Pixar)">Ilustración 3D (Pixar)</option>
-                <option value="Animación 2D Clásica (Cartoon)">Animación 2D Clásica (Cartoon)</option>
-                <option value="Dibujo a Lápiz (Sketch Tradicional)">Dibujo a Lápiz (Sketch Tradicional)</option>
+                <option value="IlustraciÃ³n 3D (Pixar)">IlustraciÃ³n 3D (Pixar)</option>
+                <option value="AnimaciÃ³n 2D ClÃ¡sica (Cartoon)">AnimaciÃ³n 2D ClÃ¡sica (Cartoon)</option>
+                <option value="Dibujo a LÃ¡piz (Sketch Tradicional)">Dibujo a LÃ¡piz (Sketch Tradicional)</option>
                 <option value="Arte Noir (Blanco y Negro)">Arte Noir (Blanco y Negro)</option>
               </select>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Cantidad de Viñetas
+                Cantidad de ViÃ±etas
               </label>
               <select
                 value={panelCount}
@@ -148,7 +148,7 @@ export default function HistorietasPage() {
                   const num = i + 3;
                   return (
                     <option key={num} value={num}>
-                      {num} Viñetas {num === 4 ? "(Clásico)" : num > 10 ? "(Tardará más)" : ""}
+                      {num} ViÃ±etas {num === 4 ? "(ClÃ¡sico)" : num > 10 ? "(TardarÃ¡ mÃ¡s)" : ""}
                     </option>
                   );
                 })}
@@ -159,13 +159,13 @@ export default function HistorietasPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                ¿De qué trata la historia? (Opcional)
+                Â¿De quÃ© trata la historia? (Opcional)
               </label>
               <input
                 type="text"
                 value={idea}
                 onChange={(e) => setIdea(e.target.value)}
-                placeholder="Ej. Un perro que cree que su dueño es una mascota..."
+                placeholder="Ej. Un perro que cree que su dueÃ±o es una mascota..."
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
               />
             </div>
@@ -177,7 +177,7 @@ export default function HistorietasPage() {
                 type="text"
                 value={characterDesc}
                 onChange={(e) => setCharacterDesc(e.target.value)}
-                placeholder="Ej. Un chico de 20 años con pelo rojo alborotado y chaqueta amarilla..."
+                placeholder="Ej. Un chico de 20 aÃ±os con pelo rojo alborotado y chaqueta amarilla..."
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
               />
             </div>

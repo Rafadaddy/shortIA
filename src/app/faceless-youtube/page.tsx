@@ -142,20 +142,20 @@ export default function FacelessYouTubePage() {
             Faceless Fitness (YouTube)
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animación Cartoon Fitness).
+            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animaci�n Cartoon Fitness).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema del Video (Calistenia, Musculación, etc.)
+              Tema del Video (Calistenia, Musculaci�n, etc.)
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. Cómo hacer tu primera dominada (Pull-up) paso a paso"
+              placeholder="Ej. C�mo hacer tu primera dominada (Pull-up) paso a paso"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
             />
           </div>
@@ -243,7 +243,7 @@ export default function FacelessYouTubePage() {
         {data && (
           <div className="space-y-8 animate-in slide-in-from-bottom-4">
             
-            {/* Título Principal */}
+            {/* T�tulo Principal */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-cyan-500/30 text-center">
               <h2 className="text-3xl font-extrabold text-white text-cyan-400">
                 {data.title}
@@ -295,7 +295,7 @@ export default function FacelessYouTubePage() {
               </div>
             </div>        </div>
 
-            {/* Escenas Detalladías */}
+            {/* Escenas Detalladas */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
               <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-2">?? Desglose por Escenas</h3>
               <div className="space-y-6">
@@ -305,12 +305,12 @@ export default function FacelessYouTubePage() {
                       <span className="bg-cyan-500/20 text-cyan-400 py-1 px-3 rounded-lg font-bold text-sm border border-cyan-500/30">
                         Escena {scene.scene_number}
                       </span>
-                      <span className="text-slate-500 text-xs">Duración: {scene.duration}</span>
+                      <span className="text-slate-500 text-xs">Duraci�n: {scene.duration}</span>
                     </div>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                       <div className="lg:col-span-1 border-l-2 border-cyan-500/50 pl-3">
-                        <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
+                        <span className="text-xs font-semibold text-slate-500 uppercase">Narraci�n</span>
                         <p className="text-slate-200 text-sm font-medium mt-1">&quot;{scene.narration}&quot;</p>
                       </div>
                       <div className="lg:col-span-2 border-l-2 border-purple-500/50 pl-3">

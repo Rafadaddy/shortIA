@@ -21,11 +21,11 @@ export default function TimelinePage() {
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
   const [ideas, setIdeas] = useState<string[]>([
-    "¿Quéé pasa si dejas de consumir azúcar por 30 días?",
-    "¿Quéé pasaría si la gravedad de la Tierra se duplica de golpe?",
-    "¿Quéé pasa en tu cuerpo si no duermes durante 7 días seguidos?",
-    "¿Quéé pasa si solo bebes refresco en lugar de agua por un año?",
-    "¿Quéé pasaría si te quedías encerrado en un supermercado 5 años?"
+    "¿Qué pasa si dejas de consumir azúcar por 30 días?",
+    "¿Qué pasaría si la gravedad de la Tierra se duplica de golpe?",
+    "¿Qué pasa en tu cuerpo si no duermes durante 7 días seguidos?",
+    "¿Qué pasa si solo bebes refresco en lugar de agua por un año?",
+    "¿Qué pasaría si te quedas encerrado en un supermercado 5 años?"
   ]);
   const [data, setData] = useState<TimelineData | null>(null);
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
@@ -71,7 +71,7 @@ export default function TimelinePage() {
       const generatedData = await res.json();
       setData(generatedData);
     } catch (error) {
-      alert("Hubo un error al generar la línea temporal.");
+      alert("Hubo un error al generar la l�nea temporal.");
     } finally {
       setIsGeneratingTimeline(false);
     }
@@ -98,23 +98,23 @@ export default function TimelinePage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Hourglass className="w-8 h-8 md:w-10 md:h-10 text-amber-400" />
-            Líneas Temporales &quot;¿Qué pasaría si...?&quot;
+            L�neas Temporales &quot;�Qu� pasar�a si...?&quot;
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones y prompts consistentes para videos de progresión temporal (Ej: Qué pasaría si no duermes en 7 días).
+            Genera guiones y prompts consistentes para videos de progresi�n temporal (Ej: Qu� pasar�a si no duermes en 7 d�as).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema de la Línea Temporal
+              Tema de la L�nea Temporal
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. Qué pasaría si solo comes comida basura durante 7 días?"
+              placeholder="Ej. Qu pasara si solo comes comida basura durante 7 das?"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
             />
           </div>
@@ -172,7 +172,7 @@ export default function TimelinePage() {
 
         {ideas.length > 0 && !data && (
           <div className="bg-slate-900/40 p-6 rounded-3xl border border-amber-500/30 animate-in fade-in">
-            <h3 className="text-xl font-bold text-amber-400 mb-4">Ideas Generadías:</h3>
+            <h3 className="text-xl font-bold text-amber-400 mb-4">Ideas Generadas:</h3>
             <ul className="space-y-2">
               {ideas.map((ideaItem, idx) => (
                 <li key={idx}>
