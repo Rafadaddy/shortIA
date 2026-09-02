@@ -117,7 +117,7 @@ export default function FacelessYouTubePage() {
 
   const handleCopyFullScript = () => {
     if (!data) return;
-    const { hook, development, climax, ending } = data.script_sections as any;
+    const { hook, development, climax, ending } = data.script_sections as Record<string, string>;
     let fullText = "";
     if (hook) fullText += `INICIO:\n${hook}\n\n`;
     if (development) fullText += `DESARROLLO:\n${development}\n\n`;
@@ -289,19 +289,19 @@ export default function FacelessYouTubePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">1. Inicio (Gancho y Contexto)</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).hook || data.script_sections.hook}&quot;</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as Record<string, string>).hook || data.script_sections.hook}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">2. Desarrollo (Progresión)</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).development}&quot;</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as Record<string, string>).development}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">3. Clímax (Mayor Tensión)</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).climax}&quot;</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as Record<string, string>).climax}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
                   <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">4. Final (Desenlace y Moraleja)</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).ending}&quot;</p>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as Record<string, string>).ending}&quot;</p>
                 </div>
               </div>
             </div>
