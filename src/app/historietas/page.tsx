@@ -72,9 +72,15 @@ export default function HistorietasPage() {
     }, 2000);
   };
 
+  const handleCopyDialogues = () => {
+    if (!data) return;
+    const text = data.panels.map(p => `Viñeta ${p.panel_number}:\n${p.dialogue}\n`).join("\n");
+    handleCopy(text, 'dialogues');
+  };
+
   const handleCopyAll = () => {
     if (!data) return;
-    const allText = data.panels.map(p => `ViÃ±eta ${p.panel_number}:\nDiÃ¡logo: "${p.dialogue}"\nPrompt: ${p.image_prompt}\n`).join("\n");
+    const allText = data.panels.map(p => `Viñeta ${p.panel_number}:\nDiálogo: "${p.dialogue}"\nPrompt: ${p.image_prompt}\n`).join("\n");
     handleCopy(allText, 'all');
   };
 
@@ -193,23 +199,30 @@ export default function HistorietasPage() {
         {/* Resultados */}
         {data && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center justify-between bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
               <h2 className="text-2xl font-bold text-white flex-1">{data.title}</h2>
-              <button
-                onClick={handleCopyAll}
-                className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-              >
-                {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCopyDialogues}
+                  className="flex items-center gap-2 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+                >
+                  {copiedStates['dialogues'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Solo Guion</>}
+                </button>
+                <button
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+                >
+                  {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
               {data.panels.map((panel, idx) => {
                 const roleConfig: Record<string, { label: string; color: string }> = {
-                  GANCHO:    { label: "🎣 Gancho",    color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+                  INICIO:    { label: "🎣 Inicio",    color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
                   DESARROLLO:{ label: "🔥 Desarrollo", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
-                  CLIMAX:    { label: "⚡ Clímax",    color: "bg-red-500/20 text-red-400 border-red-500/30" },
-                  DESENLACE: { label: "✨ Desenlace",  color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+                  FINAL:     { label: "✨ Final",      color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
                 };
                 const role = roleConfig[panel.scene_role] ?? { label: panel.scene_role, color: "bg-slate-700/30 text-slate-400 border-slate-600/30" };
 

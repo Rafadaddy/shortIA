@@ -5,8 +5,9 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { mode, topic, characterRef } = await req.json();
+    const { mode, topic, characterRef, stepCount } = await req.json();
 
+    const count = stepCount || 8;
     let prompt = "";
 
     if (mode === "ideas") {
@@ -28,10 +29,14 @@ Tu trabajo es generar videos cortos del tipo "Qué pasa si..." diseñados para f
 Tema: "${topic}"
 Referencia de Personaje Principal: "${characterRef || 'Un esqueleto animado clásico'}"
 
-Debes generar un guion de progresión temporal (ejemplo: 7 días, o 5 etapas) adecuado para un YouTube Short de 45 segundos.
-- El guion debe basarse en progresión.
+Debes generar un guion de progresión temporal con EXACTAMENTE ${count} pasos/etapas.
+- El guion debe basarse en una progresión dramática con una estructura narrativa clara: 
+  - Un INICIO (Planteamiento inicial)
+  - Un DESARROLLO (La situación empeora o evoluciona progresivamente)
+  - Un FINAL (El clímax o desenlace definitivo e impactante).
 - Cada paso debe escalar o evolucionar a partir del anterior.
-- Las líneas narrativas deben ser cortas, visuales y en ESPAÑOL.
+- Las líneas narrativas deben ser fluidas, atrapantes y en ESPAÑOL.
+- ¡DEBES GENERAR EXACTAMENTE ${count} PASOS!
 
 Para cada paso del guion, debes generar un prompt visual en INGLÉS.
 REGLA CRÍTICA: Debes usar SIEMPRE la misma referencia del personaje principal en los prompts visuales. No cambies su ropa ni apariencia.
@@ -44,18 +49,13 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
   "title": "Título del video",
   "timeline": [
     {
-      "step_name": "Toma Inicial de Gancho",
-      "narration": "Texto de narración en español...",
-      "image_prompt": "English visual prompt ending in --ar 9:16"
-    },
-    {
-      "step_name": "Día 1",
+      "step_name": "Inicio / Día 1",
       "narration": "Texto de narración en español...",
       "image_prompt": "English visual prompt ending in --ar 9:16"
     }
   ]
 }
-Asegúrate de incluir todos los días intermedios necesarios hasta el Resultado Final en el arreglo 'timeline'.
+Asegúrate de incluir EXACTAMENTE ${count} objetos en el arreglo 'timeline', cubriendo el inicio, desarrollo y final de la historia de progresión.
 `;
     }
 

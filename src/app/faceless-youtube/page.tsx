@@ -38,6 +38,7 @@ interface FacelessData {
 
 export default function FacelessYouTubePage() {
   const [topic, setTopic] = useState("");
+  const [sceneCount, setSceneCount] = useState("8");
   const [bodyColor, setBodyColor] = useState("yellow");
   const [shortsColor, setShortsColor] = useState("black");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
@@ -94,7 +95,7 @@ export default function FacelessYouTubePage() {
       const res = await fetch("/api/generate-faceless", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "full", topic: finalTopic, bodyColor, shortsColor }),
+        body: JSON.stringify({ mode: "full", topic: finalTopic, bodyColor, shortsColor, sceneCount: parseInt(sceneCount) }),
       });
       if (!res.ok) throw new Error("Error fetching video data");
       const generatedData = await res.json();
@@ -112,6 +113,23 @@ export default function FacelessYouTubePage() {
     setTimeout(() => {
       setCopiedStates(prev => ({ ...prev, [id]: false }));
     }, 2000);
+  };
+
+  const handleCopyFullScript = () => {
+    if (!data) return;
+    const { hook, development, climax, ending } = data.script_sections as any;
+    let fullText = "";
+    if (hook) fullText += `INICIO:\n${hook}\n\n`;
+    if (development) fullText += `DESARROLLO:\n${development}\n\n`;
+    if (climax) fullText += `CLÍMAX:\n${climax}\n\n`;
+    if (ending) fullText += `FINAL:\n${ending}\n\n`;
+    
+    fullText += `--- ESCENAS ---\n`;
+    data.scenes.forEach(s => {
+      fullText += `Escena ${s.scene_number}: ${s.narration}\n`;
+    });
+    
+    handleCopy(fullText, 'full_script');
   };
 
   return (
@@ -142,7 +160,7 @@ export default function FacelessYouTubePage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 <Palette className="w-4 h-4 text-cyan-400" /> Color de Piel del Personaje
@@ -166,6 +184,21 @@ export default function FacelessYouTubePage() {
                 placeholder="Ej. black, red, green"
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
               />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                Cantidad de Escenas
+              </label>
+              <select
+                value={sceneCount}
+                onChange={(e) => setSceneCount(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all appearance-none"
+              >
+                {[...Array(12)].map((_, i) => {
+                  const num = i + 4;
+                  return <option key={num} value={num}>{num} Escenas</option>;
+                })}
+              </select>
             </div>
           </div>
 
@@ -233,34 +266,34 @@ export default function FacelessYouTubePage() {
                   <p className="text-sm text-slate-400 font-mono">{data.thumbnail.image_prompt}</p>
                 </div>
               </div>
-            </div>
-
-            {/* Guion Estructural */}
-            <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">?? Guion (Secciones Clave)</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Guion Estructural */}
+            <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl relative">
+              <button
+                onClick={handleCopyFullScript}
+                className="absolute top-6 right-6 flex items-center gap-2 bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+              >
+                {copiedStates['full_script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Guion Completo</>}
+              </button>
+              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">📜 Guion Narrativo (Historia)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">1. Hook</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.hook}&quot;</p>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">1. Inicio (Gancho y Contexto)</span>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).hook || data.script_sections.hook}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">2. Promesa</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.promise}&quot;</p>
-                </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50 md:col-span-2">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">3. Paso a Paso</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.step_by_step}&quot;</p>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">2. Desarrollo (Progresión)</span>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).development}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">4. Errores Comunes</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.mistakes}&quot;</p>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">3. Clímax (Mayor Tensión)</span>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).climax}&quot;</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50">
-                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">5. Plan 7 D�as / CTA</span>
-                  <p className="text-sm text-slate-300 italic">&quot;{data.script_sections.action_plan}&quot; <br/> &quot;{data.script_sections.cta}&quot;</p>
+                  <span className="text-xs font-bold text-cyan-500 uppercase block mb-1">4. Final (Desenlace y Moraleja)</span>
+                  <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).ending}&quot;</p>
                 </div>
               </div>
-            </div>
+            </div>        </div>
 
             {/* Escenas Detalladas */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">

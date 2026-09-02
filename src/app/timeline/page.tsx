@@ -16,6 +16,7 @@ interface TimelineData {
 
 export default function TimelinePage() {
   const [topic, setTopic] = useState("");
+  const [stepCount, setStepCount] = useState("8");
   const [characterRef, setCharacterRef] = useState("Un esqueleto animado clásico (puedes especificar si lleva playera, traje, o nada)");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
@@ -64,7 +65,7 @@ export default function TimelinePage() {
       const res = await fetch("/api/generate-timeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "timeline", topic: finalTopic, characterRef }),
+        body: JSON.stringify({ mode: "timeline", topic: finalTopic, characterRef, stepCount: parseInt(stepCount) }),
       });
       if (!res.ok) throw new Error("Error fetching timeline");
       const generatedData = await res.json();
@@ -82,6 +83,12 @@ export default function TimelinePage() {
     setTimeout(() => {
       setCopiedStates(prev => ({ ...prev, [id]: false }));
     }, 2000);
+  };
+
+  const handleCopyFullScript = () => {
+    if (!data) return;
+    const fullText = data.timeline.map(step => `${step.step_name}:\n${step.narration}`).join("\n\n");
+    handleCopy(fullText, 'full_script');
   };
 
   return (
@@ -107,22 +114,40 @@ export default function TimelinePage() {
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. �Qu� pasar�a si solo comes comida basura durante 7 d�as?"
+              placeholder="Ej. Qu pasara si solo comes comida basura durante 7 das?"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje Principal (Para consistencia visual)
-            </label>
-            <input
-              type="text"
-              value={characterRef}
-              onChange={(e) => setCharacterRef(e.target.value)}
-              placeholder="Ej. Un esqueleto animado cl�sico"
-              className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje Principal (Para consistencia visual)
+              </label>
+              <input
+                type="text"
+                value={characterRef}
+                onChange={(e) => setCharacterRef(e.target.value)}
+                placeholder="Ej. Un esqueleto animado clásico"
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                Cantidad de Pasos / Escenas
+              </label>
+              <select
+                value={stepCount}
+                onChange={(e) => setStepCount(e.target.value)}
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
+              >
+                {[...Array(16)].map((_, i) => {
+                  const num = i + 5;
+                  return <option key={num} value={num}>{num} Pasos</option>;
+                })}
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -164,8 +189,14 @@ export default function TimelinePage() {
         )}
 
         {data && (
-          <div className="bg-slate-900/40 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in slide-in-from-bottom-4">
-            <h2 className="text-2xl font-bold text-white mb-6 text-center text-amber-400">
+          <div className="bg-slate-900/40 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in slide-in-from-bottom-4 relative">
+            <button
+              onClick={handleCopyFullScript}
+              className="absolute top-6 right-6 flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+            >
+              {copiedStates['full_script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Guion Completo</>}
+            </button>
+            <h2 className="text-2xl font-bold text-white mb-6 pr-48 text-amber-400">
               {data.title}
             </h2>
 

@@ -71,8 +71,8 @@ ${narrativeGuide}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Para cada viñeta proporciona:
-1. "panel_number": El número de viñeta (1 al ${panelCount}).
-2. "scene_role": El rol narrativo de esta viñeta en UNA PALABRA: "GANCHO", "DESARROLLO", "CLIMAX" o "DESENLACE".
+1. "panel_number": El número de viñeta (1 al ${panelCount}). ¡IMPORTANTE: DEBEN SER EXACTAMENTE ${panelCount} VIÑETAS!
+2. "scene_role": El rol narrativo de esta viñeta en UNA PALABRA: "INICIO", "DESARROLLO", o "FINAL".
 3. "dialogue": El diálogo o narración EXACTO en ESPAÑOL. CORTO (máximo 15 palabras). Debe ser específico, humano y emotivo — no genérico.
 4. "image_prompt": EL PROMPT EN INGLÉS PARA DALL-E 3.
    FORMATO ESTRICTO: "${styleInstruction} [Describe la escena, la acción y los personajes de forma detallada y cinematográfica]. Integrated into the artwork, there is a clear speech bubble or caption box containing bold typography that reads exactly: '[DIALOGUE EN ESPAÑOL]'. Masterpiece, highly detailed. ${aspectRatioFlag}"
@@ -85,7 +85,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido:
   "panels": [
     {
       "panel_number": 1,
-      "scene_role": "GANCHO",
+      "scene_role": "INICIO",
       "dialogue": "...",
       "image_prompt": "..."
     }
@@ -112,34 +112,30 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido:
   }
 }
 
-/**
- * Builds a per-panel narrative guide based on total panel count.
- * Distributes narrative roles: Hook → Development(s) → Climax → Ending
- */
 function buildNarrativeGuide(panelCount: number): string {
   const roles: { role: string; label: string; instruction: string }[] = [];
 
   if (panelCount <= 3) {
     roles.push({
-      role: "GANCHO",
-      label: "Viñeta 1 — GANCHO",
-      instruction: "Presenta la situación cotidiana de forma que el lector se identifique al instante. Debe ser específica, no genérica.",
+      role: "INICIO",
+      label: "Viñeta 1 — INICIO (Planteamiento)",
+      instruction: "Presenta la situación cotidiana de forma que el lector se identifique al instante. Establece el contexto.",
     });
     roles.push({
-      role: "CLIMAX",
-      label: `Viñeta 2 — TENSIÓN`,
-      instruction: "Introduce el problema, el giro o la contradicción que hace interesante la historia.",
+      role: "DESARROLLO",
+      label: `Viñeta 2 — DESARROLLO (Tensión)`,
+      instruction: "Introduce el problema, el conflicto o la complicación central de la historia.",
     });
     roles.push({
-      role: "DESENLACE",
-      label: `Viñeta ${panelCount} — DESENLACE`,
-      instruction: "Cierra con impacto: una revelación, un giro emocional, una verdad que duele o que libera. El lector debe sentir algo.",
+      role: "FINAL",
+      label: `Viñeta ${panelCount} — FINAL (Desenlace)`,
+      instruction: "Cierra la historia con una resolución clara, un giro emocional o una conclusión impactante.",
     });
   } else {
     roles.push({
-      role: "GANCHO",
-      label: "Viñeta 1 — GANCHO",
-      instruction: "Presenta la situación cotidiana de forma que el lector se identifique al instante. Específica, no genérica.",
+      role: "INICIO",
+      label: "Viñeta 1 — INICIO (Gancho)",
+      instruction: "Presenta a los personajes y el contexto. Atrapa la atención.",
     });
 
     // Middle panels: development and climax
@@ -150,29 +146,23 @@ function buildNarrativeGuide(panelCount: number): string {
       const panelNum = i + 1;
       if (i === climaxIndex) {
         roles.push({
-          role: "CLIMAX",
-          label: `Viñeta ${panelNum} — CLÍMAX`,
-          instruction: "El momento de mayor tensión, el giro inesperado, o la emoción más intensa de la historia. Debe sorprender o impactar.",
-        });
-      } else if (i < climaxIndex) {
-        roles.push({
           role: "DESARROLLO",
-          label: `Viñeta ${panelNum} — DESARROLLO`,
-          instruction: "Profundiza en el conflicto o la situación. Agrega un detalle humano que hace al personaje más real y cercano.",
+          label: `Viñeta ${panelNum} — DESARROLLO (Clímax)`,
+          instruction: "El punto de mayor tensión de la historia, el enfrentamiento del problema principal o el giro inesperado.",
         });
       } else {
         roles.push({
           role: "DESARROLLO",
-          label: `Viñeta ${panelNum} — DESARROLLO POST-CLÍMAX`,
-          instruction: "Muestra la consecuencia o la reacción del personaje tras el clímax. La historia empieza a resolverse.",
+          label: `Viñeta ${panelNum} — DESARROLLO (Progresión)`,
+          instruction: "Avanza la trama, complica la situación o profundiza en las emociones de los personajes.",
         });
       }
     }
 
     roles.push({
-      role: "DESENLACE",
-      label: `Viñeta ${panelCount} — DESENLACE`,
-      instruction: "Cierra con impacto: una revelación, un giro emocional, una verdad que duele o que libera, o el humor perfecto. El lector debe sentir algo al terminar.",
+      role: "FINAL",
+      label: `Viñeta ${panelCount} — FINAL (Desenlace)`,
+      instruction: "Cierra la historia con una resolución definitiva. Una moraleja, un alivio, o un impacto emocional que deje pensando al espectador.",
     });
   }
 
