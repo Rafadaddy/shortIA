@@ -118,17 +118,21 @@ export default function ReflexionesPage() {
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-slate-400" /> Tono Emocional
               </label>
-              <select
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
-              >
-                <option value="Libre / Equilibrado">Libre / Equilibrado</option>
-                <option value="Melancólico y Triste">Melancólico y Triste</option>
-                <option value="Crudo / Verdades que Dulen">Crudo / Verdades que Dulen</option>
-                <option value="Esperanzador y Motivador">Esperanzador y Motivador</option>
-                <option value="Filosófico y Profundo">Filosófico y Profundo</option>
-              </select>
+                <select
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
+                >
+                  <option value="Libre / Equilibrado">Libre / Equilibrado</option>
+                  <option value="Melancólico y Triste">Melancólico y Triste</option>
+                  <option value="Desamor y Decepción (Corazón Roto)">Desamor y Decepción (Corazón Roto)</option>
+                  <option value="Amor y Nostalgia (Sentimental)">Amor y Nostalgia (Sentimental)</option>
+                  <option value="Crudo / Verdades que Duelen">Crudo / Verdades que Duelen</option>
+                  <option value="Frustración y Cansancio Mental">Frustración y Cansancio Mental</option>
+                  <option value="Paz y Aceptación (Soltar)">Paz y Aceptación (Soltar)</option>
+                  <option value="Esperanzador y Motivador">Esperanzador y Motivador</option>
+                  <option value="Filosófico y Profundo">Filosófico y Profundo</option>
+                </select>
             </div>
 
             <div className="space-y-2">
