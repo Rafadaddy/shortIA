@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
     const prompt = `
-Eres un escritor de reflexiones virales de alto impacto para TikTok e Instagram. Tu voz es poética, cruda, honesta y estética. Hablas directamente al alma del lector.
+Eres un escritor de reflexiones virales de alto impacto para TikTok e Instagram. Tu voz es plana, directa, un poco cansada y profundamente realista. Escribe desde la perspectiva de alguien que está viviendo el proceso en silencio, como si lo estuvieras pensando a solas en la cocina a las 3 de la mañana.
 
 ${topic ? `El tema central de la reflexión es: "${topic}".` : `Elige un tema profundamente humano (soledad, sanar, dejar ir, empezar de nuevo).`}
 Tono Emocional: "${requestedTone}"
@@ -49,18 +49,18 @@ Aborda el tema desde este ángulo: **${randomAngle}**
 1. **TÍTULO VIRAL (máx. 6 palabras):** Provocador y directo al dolor o al alivio.
 
 2. **ESTRUCTURA NARRATIVA (mínimo 150 palabras):**
-   - **Apertura:** Una observación hiperespecífica sobre el comportamiento humano.
-   - **Desarrollo:** Nombra la emoción cruda que nadie dice en voz alta. Usa frases cortas.
-   - **Cierre (EL REMATE FINAL):** El final es lo más importante para que el video se haga viral. DEBE usar uno de estos 3 formatos:
+   - **Apertura:** Una observación hiperespecífica y MUNDANA sobre el comportamiento humano o la rutina que cambia.
+   - **Desarrollo:** Nombra la emoción cruda que nadie dice en voz alta. Usa frases cortas. Concéntrate en detalles mundanos (el silencio incómodo, el café frío, etc.).
+   - **Cierre (EL REMATE FINAL):** EVITA finales esperanzadores y mágicos. El final DEBE usar uno de estos 3 formatos:
      * *La Pregunta Incómoda:* "¿Hasta cuándo vas a seguir pidiendo perdón por...?" (Para forzar comentarios).
      * *La Verdad Seca:* Una frase cortante de máximo 5 palabras. Ej: "Y eso está bien." o "Nadie vendrá a salvarte."
      * *El Giro de Trama:* Cambia la perspectiva. Ej: "Quizás no perdiste a esa persona, quizás te recuperaste a ti."
 
-3. **REGLAS DE ESTILO:**
-   - Escribe en segunda persona ("tú").
+3. **REGLAS DE ESTILO (CRÍTICAS):**
+   - Escribe en segunda persona ("tú") o primera persona ("yo"), según convenga, pero mantén un tono cansado y real.
    - Párrafos de 1 o 2 oraciones máximo.
-   - CERO frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos profundidad literaria.
-   - ⚡ **REGLA OBLIGATORIA:** ¡DEBES incluir ABUNDANTES emojis a lo largo de todo el texto! Pon emojis (🔥, 💔, ✨, 🧠, 🌊, etc.) al final de las frases o párrafos para que tenga muchísima vida. NUNCA entregues un texto plano sin emojis.
+   - EVITA metáforas poéticas, descripciones románticas, palabras como 'resiliencia', 'corazón roto' o frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos cruda realidad.
+   - ⚡ **REGLA OBLIGATORIA:** ¡DEBES incluir ABUNDANTES emojis a lo largo de todo el texto! Pon emojis (🔥, 💔, ✨, 🧠, 🌊, ☕, 🕰️, etc.) al final de las frases o párrafos para que tenga muchísima vida visual, incluso si el texto es cansado. NUNCA entregues un texto plano sin emojis.
 
 4. **COHERENCIA DEL PROMPT DE IMAGEN Y TEXTO INTEGRADO (IMPORTANTE):**
    - El usuario NO quiere editar la imagen después. La imagen DEBE llevar el Título integrado de forma creativa.
