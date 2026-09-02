@@ -19,7 +19,7 @@ export const topicCategories: TopicCategory[] = [
     ]
   },
   {
-    category: "Verdades Incómodas y Vida",
+    category: "Verdades Incómodías y Vida",
     icon: "👁️",
     topics: [
       "El día que descubres que tus padres también están improvisando",
@@ -49,12 +49,12 @@ export const topicCategories: TopicCategory[] = [
     icon: "🌌",
     topics: [
       "La aterradora pero liberadora idea de lo pequeños que somos en el universo",
-      "¿Qué hay realmente más allá de nuestro profundo miedo a la muerte?",
+      "¿Quéé hay realmente más allá de nuestro profundo miedo a la muerte?",
       "La extraña sensación de que el tiempo pasa más rápido cada año",
       "¿Somos realmente dueños de nuestro destino o todo ya está escrito?",
       "El misterio de tener una conexión inexplicable con un extraño",
       "La sensación de vivir en modo automático (Efecto NPC)",
-      "Por qué las madrugadas nos hacen cuestionar toda nuestra existencia"
+      "Por qué las madrugadías nos hacen cuestionar toda nuestra existencia"
     ]
   },
   {

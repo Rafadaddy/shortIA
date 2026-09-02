@@ -42,7 +42,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "Señales de que alguien te está mintiendo en la cara",
       "El Efecto Mandela: Recuerdos falsos implantados",
       "Cómo destruir a tu enemigo usando solo el silencio",
-      "Qué dicen tus sueños más raros sobre ti",
+      "Quéé dicen tus sueños más raros sobre ti",
       "La técnica de FBI para leer la mente de cualquiera"
     ]
   },
@@ -51,11 +51,11 @@ export const shortTopicCategories: ShortTopicCategory[] = [
     icon: "👽",
     topics: [
       "Misterios aterradores que la ciencia no puede explicar",
-      "Grabaciones perturbadoras encontradas en el bosque",
+      "Grabaciones perturbadoras encontradías en el bosque",
       "Lugares en la Tierra donde el tiempo se detiene",
       "El misterio del vuelo 370 que desapareció en el aire",
       "Secretos desclasificados por la CIA que no creerás",
-      "Cosas extrañas encontradas en la Antártida",
+      "Cosas extrañas encontradías en la Antártida",
       "El caso real que inspiró la película de terror más famosa"
     ]
   },
@@ -64,10 +64,10 @@ export const shortTopicCategories: ShortTopicCategory[] = [
     icon: "🔬",
     topics: [
       "Cosas normales que en realidad son letales",
-      "Qué pasaría si la Tierra dejara de girar por un segundo",
+      "Quéé pasaría si la Tierra dejara de girar por un segundo",
       "El planeta hecho completamente de diamantes",
       "Animales con superpoderes que parecen alienígenas",
-      "Qué pasaría si cayeras en un agujero negro",
+      "Quéé pasaría si cayeras en un agujero negro",
       "Tecnologías futuristas que ya usamos hoy en secreto",
       "El fin del universo explicado de forma sencilla"
     ]
@@ -79,7 +79,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "Los castigos más crueles de la historia antigua",
       "Inventos de Nikola Tesla que el gobierno destruyó",
       "Secretos perturbadores de los Faraones de Egipto",
-      "Civilizaciones perdidas más avanzadas que nosotros",
+      "Civilizaciones perdidías más avanzadías que nosotros",
       "La verdad oculta sobre la construcción de las Pirámides",
       "Líderes históricos con las costumbres más extrañas"
     ]
@@ -91,25 +91,25 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "El truco de 2 minutos para eliminar la procrastinación",
       "Cómo hackear tu dopamina para ser imparable",
       "La rutina matutina de los emperadores romanos (Estoicismo)",
-      "Qué le pasa a tu cuerpo si dejas el azúcar por 14 días",
+      "Quéé le pasa a tu cuerpo si dejas el azúcar por 14 días",
       "El método militar para dormirte en 2 minutos",
       "Cómo aumentar tu testosterona de forma natural",
       "Alimentos que literalmente destruyen tu cerebro"
     ]
   },
   {
-    category: "Nicho: ¿Qué Pasaría Si...?",
+    category: "Nicho: ¿Quéé Pasaría Si...?",
     icon: "🤔",
     topics: [
-      "¿Qué pasaría si todos los humanos desaparecieran hoy?",
-      "¿Qué pasaría si cayeras en un pozo hacia el centro de la Tierra?",
-      "¿Qué pasaría si pudieras usar el 100% de tu cerebro?",
-      "¿Qué pasaría si descubrimos que vivimos en una simulación?",
-      "¿Qué pasaría si no durmieras durante 30 días?",
-      "¿Qué pasaría si el sol se apagara de repente?",
-      "¿Qué pasaría si pudieras detener el tiempo por un día?",
-      "¿Qué pasaría si te comiera una ballena?",
-      "¿Qué pasaría si la gravedad de la Tierra se invirtiera?"
+      "¿Quéé pasaría si todos los humanos desaparecieran hoy?",
+      "¿Quéé pasaría si cayeras en un pozo hacia el centro de la Tierra?",
+      "¿Quéé pasaría si pudieras usar el 100% de tu cerebro?",
+      "¿Quéé pasaría si descubrimos que vivimos en una simulación?",
+      "¿Quéé pasaría si no durmieras durante 30 días?",
+      "¿Quéé pasaría si el sol se apagara de repente?",
+      "¿Quéé pasaría si pudieras detener el tiempo por un día?",
+      "¿Quéé pasaría si te comiera una ballena?",
+      "¿Quéé pasaría si la gravedad de la Tierra se invirtiera?"
     ]
   },
   {
@@ -120,7 +120,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
       "Cómo hackear la atracción visual (Lenguaje corporal)",
       "Textos que generan obsesión inmediata",
       "La regla del silencio para volverte inolvidable",
-      "Qué significa cuando ella hace ESTO",
+      "Quéé significa cuando ella hace ESTO",
       "Cómo construir confianza inquebrantable en ti mismo",
       "Psicología oscura de la atracción (Úsalo con cuidado)"
     ]

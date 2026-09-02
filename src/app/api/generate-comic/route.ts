@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const charInstruction = characterDesc
-      ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todas las viñetas.`
+      ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todías las viñetas.`
       : "";
 
     // Build narrative role instructions per panel
@@ -59,15 +59,15 @@ Cada viñeta tiene un ROL NARRATIVO específico que DEBES respetar:
 ${narrativeGuide}
 
 ❌ ESTÁ PROHIBIDO:
-- Que la historia empiece y se acabe en el panel 1 sin drama
-- Que los paneles del medio sean repetitivos o no aumenten la tensión
-- Que el final no entregue algo: un giro, una emoción, una verdad, un chiste que golpea
+- Quée la historia empiece y se acabe en el panel 1 sin drama
+- Quée los paneles del medio sean repetitivos o no aumenten la tensión
+- Quée el final no entregue algo: un giro, una emoción, una verdad, un chiste que golpea
 - Usar frases vagas o filosóficas genéricas ("la vida es así", "todo pasa por algo")
 
 ✅ DEBES LOGRAR:
-- Que el lector sienta que conoce a ese personaje o vivió esa situación
-- Que haya una progresión emocional clara: estado inicial → problema/tensión → resolución
-- Que el último panel deje algo: risa, nostalgia, revelación, o una verdad incómoda
+- Quée el lector sienta que conoce a ese personaje o vivió esa situación
+- Quée haya una progresión emocional clara: estado inicial → problema/tensión → resolución
+- Quée el último panel deje algo: risa, nostalgia, revelación, o una verdad incómoda
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Para cada viñeta proporciona:

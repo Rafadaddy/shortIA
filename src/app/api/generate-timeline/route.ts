@@ -13,9 +13,9 @@ export async function POST(req: NextRequest) {
     if (mode === "ideas") {
       prompt = `
 Eres un generador de Shorts virales de líneas temporales hipotéticas.
-El usuario quiere ideas para videos del tipo "¿Qué pasa si..." o "Y si...".
+El usuario quiere ideas para videos del tipo "¿Quéé pasa si..." o "Y si...".
 Debes generar 10 ideas fuertes de videos hipotéticos.
-Las ideas deben ser impulsadas por la curiosidad, visualmente interesantes, capaces de desarrollarse con el tiempo y adecuadas para una progresión en línea temporal.
+Las ideas deben ser impulsadías por la curiosidad, visualmente interesantes, capaces de desarrollarse con el tiempo y adecuadías para una progresión en línea temporal.
 Responde ÚNICAMENTE con un JSON válido con la siguiente estructura:
 {
   "ideas": ["Idea 1", "Idea 2", "Idea 3", "Idea 4", "Idea 5", "Idea 6", "Idea 7", "Idea 8", "Idea 9", "Idea 10"]
@@ -24,7 +24,7 @@ Responde ÚNICAMENTE con un JSON válido con la siguiente estructura:
     } else {
       prompt = `
 Eres un generador de Shorts virales de líneas temporales hipotéticas.
-Tu trabajo es generar videos cortos del tipo "Qué pasa si..." diseñados para flujos de generación de imágenes/video con IA.
+Tu trabajo es generar videos cortos del tipo "Quéé pasa si..." diseñados para flujos de generación de imágenes/video con IA.
 
 Tema: "${topic}"
 Referencia de Personaje Principal: "${characterRef || 'Un esqueleto animado clásico'}"
@@ -35,12 +35,12 @@ Debes generar un guion de progresión temporal con EXACTAMENTE ${count} pasos/et
   - Un DESARROLLO (La situación empeora o evoluciona progresivamente)
   - Un FINAL (El clímax o desenlace definitivo e impactante).
 - Cada paso debe escalar o evolucionar a partir del anterior.
-- Las líneas narrativas deben ser fluidas, atrapantes y en ESPAÑOL.
+- Las líneas narrativas deben ser fluidías, atrapantes y en ESPAÑOL.
 - ¡DEBES GENERAR EXACTAMENTE ${count} PASOS!
 
 Para cada paso del guion, debes generar un prompt visual en INGLÉS.
 REGLA CRÍTICA: Debes usar SIEMPRE la misma referencia del personaje principal en los prompts visuales. No cambies su ropa ni apariencia.
-Los prompts visuales deben escribirse como instrucciones cinematográficas fluidas:
+Los prompts visuales deben escribirse como instrucciones cinematográficas fluidías:
 "Place the reference character [descripción] doing [acción] in [entorno]. Cinematic lighting, highly detailed, 8k."
 IMPORTANTE: Obliga a generar las imágenes en formato vertical añadiendo --ar 9:16 al final de CADA prompt visual.
 
