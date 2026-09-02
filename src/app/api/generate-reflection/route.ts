@@ -38,14 +38,14 @@ Eres un escritor de reflexiones virales de alto impacto para TikTok e Instagram.
 ${topic ? `El tema central de la reflexión es: "${topic}".` : `Elige un tema profundamente humano (soledad, sanar, dejar ir, empezar de nuevo).`}
 Tono Emocional: "${requestedTone}"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 ÁNGULO ÚNICO PARA HOY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+================================================
+⭐ ÁNGULO ÚNICO PARA HOY
+================================================
 Aborda el tema desde este ángulo: **${randomAngle}**
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 INSTRUCCIONES DE ESCRITURA CRÍTICAS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+================================================
+⚠️ INSTRUCCIONES DE ESCRITURA CRÍTICAS
+================================================
 1. **TÍTULO VIRAL (máx. 6 palabras):** Provocador y directo al dolor o al alivio.
 
 2. **ESTRUCTURA NARRATIVA (mínimo 150 palabras):**
@@ -60,6 +60,7 @@ Aborda el tema desde este ángulo: **${randomAngle}**
    - Escribe en segunda persona ("tú").
    - Párrafos de 1 o 2 oraciones máximo.
    - CERO frases de autoayuda baratas ("confía en el proceso", "vibra alto"). Queremos profundidad literaria.
+   - ⚡ **REGLA OBLIGATORIA:** ¡DEBES incluir ABUNDANTES emojis a lo largo de todo el texto! Pon emojis (🔥, 💔, ✨, 🧠, 🌊, etc.) al final de las frases o párrafos para que tenga muchísima vida. NUNCA entregues un texto plano sin emojis.
 
 4. **COHERENCIA DEL PROMPT DE IMAGEN Y TEXTO INTEGRADO (IMPORTANTE):**
    - El usuario NO quiere editar la imagen después. La imagen DEBE llevar el Título integrado de forma creativa.
@@ -72,7 +73,7 @@ ESTRUCTURA EXACTA DEL IMAGE PROMPT (EN INGLÉS):
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido:
 {
   "title": "TÍTULO LLAMATIVO AQUÍ",
-  "reflection_text": "Tu reflexión aquí...",
+  "reflection_text": "Tu reflexión aquí, llena de emojis y significado...",
   "image_prompt": "english visual prompt here..."
 }
 `;

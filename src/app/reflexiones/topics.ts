@@ -20,7 +20,7 @@ export const topicCategories: TopicCategory[] = [
   },
   {
     category: "Verdades Incómodas y Vida",
-    icon: "👁️",
+    icon: "👁️‍🗨️",
     topics: [
       "El día que descubres que tus padres también están improvisando",
       "La dura realidad de que nadie sabe realmente lo que hace con su vida",
@@ -59,7 +59,7 @@ export const topicCategories: TopicCategory[] = [
   },
   {
     category: "Crecimiento, Éxito y Soledad",
-    icon: "🐺",
+    icon: "🚀",
     topics: [
       "La soledad inevitable y fría que llega cuando decides cambiar de vida",
       "El precio oculto de querer agradarle y caerle bien a todo el mundo",

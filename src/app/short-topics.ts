@@ -7,7 +7,7 @@ export interface ShortTopicCategory {
 export const shortTopicCategories: ShortTopicCategory[] = [
   {
     category: "Nichos: Mentes Millonarias y Éxito",
-    icon: "💎",
+    icon: "💼",
     topics: [
       "Los 3 hábitos silenciosos de las mentes millonarias",
       "Por qué trabajar duro NO te hará rico",
@@ -21,7 +21,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
   },
   {
     category: "Nicho: Amor y Relaciones",
-    icon: "❤️",
+    icon: "❤️‍🔥",
     topics: [
       "Psicología oscura: Cómo saber si te están manipulando en el amor",
       "El lenguaje corporal de alguien que está enamorado de ti secretamente",
@@ -48,7 +48,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
   },
   {
     category: "Nicho: Misterios y Casos Sin Resolver",
-    icon: "👽",
+    icon: "🕵️",
     topics: [
       "Misterios aterradores que la ciencia no puede explicar",
       "Grabaciones perturbadoras encontradas en el bosque",
@@ -99,7 +99,7 @@ export const shortTopicCategories: ShortTopicCategory[] = [
   },
   {
     category: "Nicho: ¿Qué Pasaría Si...?",
-    icon: "🤔",
+    icon: "🕰️",
     topics: [
       "¿Qué pasaría si todos los humanos desaparecieran hoy?",
       "¿Qué pasaría si cayeras en un pozo hacia el centro de la Tierra?",
