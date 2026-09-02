@@ -74,7 +74,7 @@ export default function HistorietasPage() {
 
   const handleCopyDialogues = () => {
     if (!data) return;
-    const text = data.panels.map(p => `Viñeta ${p.panel_number}:\n${p.dialogue}\n`).join("\n");
+    const text = data.panels.map(p => `[${p.scene_role || "ESCENA"}]\nViñeta ${p.panel_number}:\n${p.dialogue}\n`).join("\n");
     handleCopy(text, 'dialogues');
   };
 
