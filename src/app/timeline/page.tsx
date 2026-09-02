@@ -71,7 +71,7 @@ export default function TimelinePage() {
       const generatedData = await res.json();
       setData(generatedData);
     } catch (error) {
-      alert("Hubo un error al generar la l�nea temporal.");
+      alert("Hubo un error al generar la línea temporal.");
     } finally {
       setIsGeneratingTimeline(false);
     }
@@ -98,17 +98,17 @@ export default function TimelinePage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Hourglass className="w-8 h-8 md:w-10 md:h-10 text-amber-400" />
-            L�neas Temporales &quot;�Qu� pasar�a si...?&quot;
+            Líneas Temporales &quot;¿Qué pasaría si...?&quot;
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones y prompts consistentes para videos de progresi�n temporal (Ej: Qu� pasar�a si no duermes en 7 d�as).
+            Genera guiones y prompts consistentes para videos de progresión temporal (Ej: Qué pasaría si no duermes en 7 días).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema de la L�nea Temporal
+              Tema de la Línea Temporal
             </label>
             <input
               type="text"

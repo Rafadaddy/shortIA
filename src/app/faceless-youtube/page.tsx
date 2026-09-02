@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, PlaySquare, Copy, Check, Palette } from "lucide-react";
+import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2 } from "lucide-react";
 
 interface FacelessIdea {
   title: string;
@@ -142,20 +142,20 @@ export default function FacelessYouTubePage() {
             Faceless Fitness (YouTube)
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animaci�n Cartoon Fitness).
+            Genera guiones completos, escenas, animaciones y miniaturas para videos largos de YouTube (Estilo Animación Cartoon).
           </p>
         </header>
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Tema del Video (Calistenia, Musculaci�n, etc.)
+              Tema del Video (Calistenia, Musculación, Reflexiones, etc.)
             </label>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. C�mo hacer tu primera dominada (Pull-up) paso a paso"
+              placeholder="Ej. Cómo hacer tu primera dominada (Pull-up) paso a paso"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all"
             />
           </div>
@@ -204,69 +204,80 @@ export default function FacelessYouTubePage() {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <button
-              onClick={() => handleGenerateIdeas()}
-              disabled={isGeneratingIdeas || isGeneratingVideo}
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl font-semibold transition-all border border-slate-700 hover:border-cyan-500/50 flex items-center justify-center gap-2"
+              onClick={handleGenerateIdeas}
+              disabled={isGeneratingIdeas || isGeneratingFull}
+              className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 border border-slate-700"
             >
-              {isGeneratingIdeas ? <Sparkles className="w-5 h-5 animate-pulse" /> : <Sparkles className="w-5 h-5" />}
-              Sugerir 5 Ideas Virales
+              {isGeneratingIdeas ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
+              Sugerir 5 Ideas
             </button>
             <button
               onClick={() => handleGenerateVideo()}
-              disabled={isGeneratingVideo || !topic}
-              className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={isGeneratingIdeas || isGeneratingFull || !topic}
+              className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-lg shadow-cyan-900/20"
             >
-              {isGeneratingVideo ? <PlaySquare className="w-5 h-5 animate-spin" /> : <PlaySquare className="w-5 h-5" />}
-              Generar Pack de Video Completo
+              {isGeneratingFull ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6" />}
+              Generar Guion Completo
             </button>
           </div>
         </div>
 
+        {/* Ideas Generadas */}
         {ideas.length > 0 && !data && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in">
-            {ideas.map((ideaItem, idx) => (
-              <button 
-                key={idx}
-                onClick={() => handleGenerateVideo(ideaItem.title)}
-                className="text-left bg-slate-900/40 hover:bg-cyan-900/20 border border-slate-800 hover:border-cyan-500/50 p-5 rounded-2xl text-slate-200 transition-all"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4">
+            {ideas.map((idea, idx) => (
+              <div 
+                key={idx} 
+                className="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all group"
+                onClick={() => handleGenerateVideo(idea.title)}
               >
-                <h3 className="font-bold text-cyan-400 text-lg mb-2">{ideaItem.title}</h3>
-                <p className="text-sm text-slate-300 italic mb-2">&quot;{ideaItem.hook}&quot;</p>
-                <div className="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-800">
-                  <span className="font-semibold text-slate-300">Resuelve:</span> {ideaItem.pain_point}
+                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-cyan-400 transition-colors">{idea.title}</h3>
+                <p className="text-sm text-slate-400 mb-4 border-l-2 border-cyan-500/30 pl-3 italic">
+                  &quot;{idea.hook}&quot;
+                </p>
+                <div className="space-y-2">
+                  <div className="text-xs bg-slate-950 p-2 rounded text-slate-300">
+                    <span className="text-rose-400 font-semibold">Dolor:</span> {idea.pain_point}
+                  </div>
+                  <div className="text-xs bg-slate-950 p-2 rounded text-slate-300">
+                    <span className="text-emerald-400 font-semibold">Por qué funciona:</span> {idea.why_it_works}
+                  </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         )}
 
+        {/* Video Completo Generado */}
         {data && (
-          <div className="space-y-8 animate-in slide-in-from-bottom-4">
+          <div className="space-y-8 animate-in slide-in-from-bottom-8">
             
-            {/* T�tulo Principal */}
-            <div className="bg-slate-900/40 p-6 rounded-3xl border border-cyan-500/30 text-center">
-              <h2 className="text-3xl font-extrabold text-white text-cyan-400">
+            {/* Título Principal */}
+            <div className="bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl text-center">
+              <h2 className="text-3xl font-black text-white mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                 {data.title}
               </h2>
             </div>
 
-            {/* Miniatura */}
+            {/* Thumbnail */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">??? Miniatura del Video</h3>
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
+                <ImageIcon className="w-5 h-5 text-cyan-500" /> Miniatura (Thumbnail)
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <span className="text-xs font-semibold text-cyan-400 uppercase">Texto en la Imagen</span>
-                  <p className="text-2xl font-black text-white mt-1 uppercase italic tracking-tight">{data.thumbnail.text}</p>
+                <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex items-center justify-center min-h-[200px]">
+                  <p className="text-2xl font-black text-white text-center uppercase tracking-tighter" style={{ textShadow: "0 4px 12px rgba(0,0,0,0.5)" }}>
+                    {data.thumbnail.text}
+                  </p>
                 </div>
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 relative">
-                  <button onClick={() => handleCopy(data.thumbnail.image_prompt, 'thumb_prompt')} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-cyan-300">
-                    {copiedStates['thumb_prompt'] ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>}
-                  </button>
-                  <span className="text-xs font-semibold text-cyan-400 uppercase block mb-2">Prompt Visual (16:9)</span>
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+                  <span className="text-xs font-bold text-cyan-500 uppercase">Prompt para Imagen (16:9)</span>
                   <p className="text-sm text-slate-400 font-mono">{data.thumbnail.image_prompt}</p>
                 </div>
               </div>
-                      {/* Guion Estructural */}
+            </div>
+
+            {/* Guion Estructural */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl relative">
               <button
                 onClick={handleCopyFullScript}
@@ -293,27 +304,29 @@ export default function FacelessYouTubePage() {
                   <p className="text-sm text-slate-300 italic">&quot;{(data.script_sections as any).ending}&quot;</p>
                 </div>
               </div>
-            </div>        </div>
+            </div>
 
             {/* Escenas Detalladas */}
             <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-2">?? Desglose por Escenas</h3>
+              <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-2">🎬 Desglose de Escenas</h3>
               <div className="space-y-6">
                 {data.scenes.map((scene, idx) => (
-                  <div key={idx} className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="bg-cyan-500/20 text-cyan-400 py-1 px-3 rounded-lg font-bold text-sm border border-cyan-500/30">
+                  <div key={scene.scene_number} className="bg-slate-950 p-5 md:p-6 rounded-2xl border border-slate-800 relative group overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500/50"></div>
+                    
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="bg-cyan-500/20 text-cyan-400 font-bold px-3 py-1 rounded-full text-sm">
                         Escena {scene.scene_number}
                       </span>
-                      <span className="text-slate-500 text-xs">Duraci�n: {scene.duration}</span>
+                      <span className="text-slate-500 text-xs">Duración: {scene.duration}</span>
                     </div>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-                      <div className="lg:col-span-1 border-l-2 border-cyan-500/50 pl-3">
-                        <span className="text-xs font-semibold text-slate-500 uppercase">Narraci�n</span>
+
+                    <div className="space-y-4">
+                      <div>
+                        <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
                         <p className="text-slate-200 text-sm font-medium mt-1">&quot;{scene.narration}&quot;</p>
                       </div>
-                      <div className="lg:col-span-2 border-l-2 border-purple-500/50 pl-3">
+                      <div className="border-l-2 border-purple-500/50 pl-3">
                         <span className="text-xs font-semibold text-slate-500 uppercase">En Pantalla</span>
                         <p className="text-slate-300 text-sm mt-1">{scene.visual_concept}</p>
                       </div>
