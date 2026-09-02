@@ -205,7 +205,7 @@ export default function FacelessYouTubePage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={handleGenerateIdeas}
-              disabled={isGeneratingIdeas || isGeneratingFull}
+              disabled={isGeneratingIdeas || isGeneratingVideo}
               className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 border border-slate-700"
             >
               {isGeneratingIdeas ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
@@ -213,10 +213,10 @@ export default function FacelessYouTubePage() {
             </button>
             <button
               onClick={() => handleGenerateVideo()}
-              disabled={isGeneratingIdeas || isGeneratingFull || !topic}
+              disabled={isGeneratingIdeas || isGeneratingVideo || !topic}
               className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-lg shadow-cyan-900/20"
             >
-              {isGeneratingFull ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6" />}
+              {isGeneratingVideo ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6" />}
               Generar Guion Completo
             </button>
           </div>
