@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quote } from "lucide-react";
+import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { useToast } from "@/components/Toast";
 
 interface IllustrationData {
   title: string;
@@ -33,7 +35,8 @@ export default function IlustracionesPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<IllustrationData | null>(null);
   
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { copiedStates, handleCopy } = useCopyToClipboard();
+  const { showToast } = useToast();
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -50,18 +53,10 @@ export default function IlustracionesPage() {
       setData(generatedData);
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al generar el prompt de ilustración.");
+      showToast("Hubo un error al generar el prompt de ilustración.", "error");
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleCopy = async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedStates(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setCopiedStates(prev => ({ ...prev, [id]: false }));
-    }, 2000);
   };
 
   return (
@@ -71,10 +66,10 @@ export default function IlustracionesPage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Quote className="w-8 h-8 md:w-10 md:h-10 text-pink-400" />
-            ImÃ¡genes con Frases Virales
+            Imágenes con Frases Virales
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Crea prompts para imÃ¡genes con textos impactantes integrados. Desde ilustraciones tiernas hasta fotos oscuras de motivaciÃ³n.
+            Crea prompts para imágenes con textos impactantes integrados. Desde ilustraciones tiernas hasta fotos oscuras de motivación.
           </p>
         </header>
 
@@ -153,7 +148,7 @@ export default function IlustracionesPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Â¿Alguna idea específica? (Opcional)
+              ¿Alguna idea específica? (Opcional)
             </label>
             <input
               type="text"

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -34,6 +34,10 @@ export function Sidebar() {
             <History className="w-5 h-5 text-emerald-400" />
             Líneas de Tiempo
           </Link>
+          <Link href="/faceless-youtube" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <PlaySquare className="w-5 h-5 text-cyan-400" />
+            Faceless YouTube
+          </Link>
         </nav>
         
         <div className="p-4 border-t border-slate-800">
@@ -63,6 +67,10 @@ export function Sidebar() {
         <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400">
           <History className="w-5 h-5" />
           <span className="text-[10px] font-medium">Timelines</span>
+        </Link>
+        <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400">
+          <PlaySquare className="w-5 h-5" />
+          <span className="text-[10px] font-medium">YouTube</span>
         </Link>
       </nav>
     </>

@@ -3,16 +3,20 @@
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon } from "lucide-react";
 import { topicCategories } from "./topics";
+import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { useToast } from "@/components/Toast";
 
-let globalTopicId = 1;
-export const allTopicsList = topicCategories.flatMap(cat => 
-  cat.topics.map(t => ({
-    id: globalTopicId++,
-    category: cat.category,
-    icon: cat.icon,
-    text: t,
-    displayString: `${globalTopicId - 1}. ${t}`
-  }))
+export const allTopicsList = topicCategories.flatMap((cat, catIdx) =>
+  cat.topics.map((t, topicIdx) => {
+    const id = topicCategories.slice(0, catIdx).reduce((acc, c) => acc + c.topics.length, 0) + topicIdx + 1;
+    return {
+      id,
+      category: cat.category,
+      icon: cat.icon,
+      text: t,
+      displayString: `${id}. ${t}`
+    };
+  })
 );
 
 interface ReflectionData {
@@ -29,7 +33,8 @@ export default function ReflexionesPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ReflectionData | null>(null);
   
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { copiedStates, handleCopy } = useCopyToClipboard();
+  const { showToast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -67,18 +72,10 @@ export default function ReflexionesPage() {
       setData(reflectionData);
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al generar la reflexión.");
+      showToast("Hubo un error al generar la reflexión.", "error");
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleCopy = async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedStates(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setCopiedStates(prev => ({ ...prev, [id]: false }));
-    }, 2000);
   };
 
   const handleCopyAllText = () => {

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Sparkles, Hourglass, Copy, Check, User } from "lucide-react";
+import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { useToast } from "@/components/Toast";
 
 interface TimelineStep {
   step_name: string;
@@ -28,7 +30,8 @@ export default function TimelinePage() {
     "¿Qué pasaría si te quedas encerrado en un supermercado 5 años?"
   ]);
   const [data, setData] = useState<TimelineData | null>(null);
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { copiedStates, handleCopy } = useCopyToClipboard();
+  const { showToast } = useToast();
 
   const handleGenerateIdeas = async () => {
     setIsGeneratingIdeas(true);
@@ -47,7 +50,7 @@ export default function TimelinePage() {
         setIdeas(generated.ideas);
       }
     } catch (error) {
-      alert("Hubo un error al generar ideas.");
+      showToast("Hubo un error al generar ideas.", "error");
     } finally {
       setIsGeneratingIdeas(false);
     }
@@ -55,7 +58,7 @@ export default function TimelinePage() {
 
   const handleGenerateTimeline = async (selectedTopic?: string) => {
     const finalTopic = selectedTopic || topic;
-    if (!finalTopic) return alert("Ingresa un tema primero");
+    if (!finalTopic) return showToast("Ingresa un tema primero", "error");
     
     setIsGeneratingTimeline(true);
     setData(null);
@@ -71,18 +74,10 @@ export default function TimelinePage() {
       const generatedData = await res.json();
       setData(generatedData);
     } catch (error) {
-      alert("Hubo un error al generar la línea temporal.");
+      showToast("Hubo un error al generar la línea temporal.", "error");
     } finally {
       setIsGeneratingTimeline(false);
     }
-  };
-
-  const handleCopy = async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedStates(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setCopiedStates(prev => ({ ...prev, [id]: false }));
-    }, 2000);
   };
 
   const handleCopyFullScript = () => {

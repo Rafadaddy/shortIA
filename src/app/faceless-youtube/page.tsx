@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2 } from "lucide-react";
+import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { useToast } from "@/components/Toast";
 
 interface FacelessIdea {
   title: string;
@@ -27,11 +29,9 @@ interface FacelessData {
   };
   script_sections: {
     hook: string;
-    promise: string;
-    step_by_step: string;
-    mistakes: string;
-    action_plan: string;
-    cta: string;
+    development: string;
+    climax: string;
+    ending: string;
   };
   scenes: Scene[];
 }
@@ -58,7 +58,8 @@ export default function FacelessYouTubePage() {
     }
   ]);
   const [data, setData] = useState<FacelessData | null>(null);
-  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const { copiedStates, handleCopy } = useCopyToClipboard();
+  const { showToast } = useToast();
 
   const handleGenerateIdeas = async () => {
     setIsGeneratingIdeas(true);
@@ -77,7 +78,7 @@ export default function FacelessYouTubePage() {
         setIdeas(generated.ideas);
       }
     } catch (error) {
-      alert("Hubo un error al generar ideas.");
+      showToast("Hubo un error al generar ideas.", "error");
     } finally {
       setIsGeneratingIdeas(false);
     }
@@ -85,7 +86,7 @@ export default function FacelessYouTubePage() {
 
   const handleGenerateVideo = async (selectedTopic?: string) => {
     const finalTopic = selectedTopic || topic;
-    if (!finalTopic) return alert("Ingresa un tema primero");
+    if (!finalTopic) return showToast("Ingresa un tema primero", "error");
     
     setIsGeneratingVideo(true);
     setData(null);
@@ -101,18 +102,10 @@ export default function FacelessYouTubePage() {
       const generatedData = await res.json();
       setData(generatedData);
     } catch (error) {
-      alert("Hubo un error al generar el paquete del video.");
+      showToast("Hubo un error al generar el paquete del video.", "error");
     } finally {
       setIsGeneratingVideo(false);
     }
-  };
-
-  const handleCopy = async (text: string, id: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedStates(prev => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setCopiedStates(prev => ({ ...prev, [id]: false }));
-    }, 2000);
   };
 
   const handleCopyFullScript = () => {
