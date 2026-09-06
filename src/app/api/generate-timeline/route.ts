@@ -197,15 +197,24 @@ PRIMERA IMAGEN — ANCLA:
 🎬 FORMATO DE PROMPT DE VIDEO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Toma vertical de 3-6 segundos.
-- De frente, centrado, sentado
-- Movimiento interno: cerebro pulsando, sangre ralentizándose, neblina en pulmones cambiando
-- Movimiento externo: tic en ojo, manos temblando, columna encorvándose
-- Cámara: acercamiento (push-in) lento o sacudida sutil (sin rotación)
-- Fondo morado sólido
+El prompt de video debe ser la VERSIÓN ANIMADA del prompt de imagen correspondiente.
+Debe describir el MOVIMIENTO de la misma escena, personaje y objetos.
 
-Ejemplo:
-"3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting in [escenario]. Exactly two realistic eyeballs visible in skull sockets. Brain pulses red, blood thickens, lungs hazy. Eyes twitch and redden. Hands tremble. Slow camera push-in. Solid purple background."
+REGLAS PARA COHERENCIA:
+- El prompt de video debe empezar con la misma escena que el prompt de imagen
+- El personaje debe ser el mismo (misma postura, mismos objetos)
+- El movimiento debe ser la EVOLUCIÓN de lo que se describe en la narración
+- Si la narración dice "las manos empiezan a temblar", el video muestra las manos temblando
+- Si la narración dice "el cerebro se inflama", el video muestra el cerebro pulsando
+- Fondo morado sólido SIEMPRE
+
+FORMATO:
+"3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting in [misma postura que imagen]. [Movimiento del personaje según narración]. [Cámara: push-in lento o sacudida sutil]. Solid purple background."
+
+Ejemplo coherente:
+Narración: "En el minuto 10, tus manos empiezan a temblar sin control"
+Prompt Imagen: "Front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting on chair. Hands resting on knees with slight tremor. Solid purple background..."
+Prompt Video: "3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting on chair. Hands trembling uncontrollably on knees. Brain pulses red. Slow camera push-in. Solid purple background."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

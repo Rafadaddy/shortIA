@@ -136,7 +136,7 @@ export default function TimelinePage() {
             Líneas Temporales
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos, prompts de imagen y video para YouTube Shorts / TikTok.
+            Genera guiones completos con prompts de imagen y video para YouTube Shorts / TikTok.
           </p>
         </header>
 
@@ -212,7 +212,7 @@ export default function TimelinePage() {
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
             >
               {isGeneratingImages ? <ImageIcon className="w-4 h-4 animate-pulse" /> : <ImageIcon className="w-4 h-4" />}
-              3. Generar Imágenes y Video
+              3. Generar Prompts (Imagen + Video)
             </button>
           </div>
         </div>
