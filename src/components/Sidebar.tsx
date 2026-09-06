@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -29,6 +29,10 @@ export function Sidebar() {
           <Link href="/historietas" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <MessageSquare className="w-5 h-5 text-amber-400" />
             Historietas
+          </Link>
+          <Link href="/conversaciones" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <MessageCircle className="w-5 h-5 text-pink-400" />
+            Conversaciones
           </Link>
           <Link href="/timeline" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <History className="w-5 h-5 text-emerald-400" />
@@ -63,6 +67,10 @@ export function Sidebar() {
         <Link href="/historietas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400">
           <MessageSquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">Cómics</span>
+        </Link>
+        <Link href="/conversaciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400">
+          <MessageCircle className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Chats</span>
         </Link>
         <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400">
           <History className="w-5 h-5" />
