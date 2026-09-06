@@ -105,7 +105,7 @@ export default function TimelinePage() {
         reference_prompt: generated.reference_prompt || "",
         timeline: generated.timeline || [],
       }));
-      showToast("Imágenes y videos generados.", "success");
+      showToast("Prompts generados.", "success");
     } catch (error) {
       showToast("Error al generar imágenes.", "error");
     } finally {
@@ -136,7 +136,7 @@ export default function TimelinePage() {
             Líneas Temporales
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones completos con prompts de imagen y video para YouTube Shorts / TikTok.
+            Genera guiones completos con prompts de escenas para YouTube Shorts / TikTok.
           </p>
         </header>
 
@@ -212,7 +212,7 @@ export default function TimelinePage() {
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
             >
               {isGeneratingImages ? <ImageIcon className="w-4 h-4 animate-pulse" /> : <ImageIcon className="w-4 h-4" />}
-              3. Generar Prompts (Imagen + Video)
+              3. Generar Prompts de Escenas
             </button>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function TimelinePage() {
             >
               {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
             </button>
-            <h3 className="text-xl font-bold text-white mb-6 pr-40">Prompts de Imagen y Video</h3>
+            <h3 className="text-xl font-bold text-white mb-6 pr-40">Prompts de Escenas</h3>
 
             <div className="space-y-4">
               {data.timeline.map((step, idx) => (
@@ -290,7 +290,7 @@ export default function TimelinePage() {
                     {/* Prompt Imagen */}
                     <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-orange-400 uppercase">📷 Imagen</span>
+                        <span className="text-xs font-semibold text-orange-400 uppercase">📷 Prompt Imagen</span>
                         <button
                           onClick={() => handleCopy(step.image_prompt, `img_${idx}`)}
                           className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
@@ -304,7 +304,7 @@ export default function TimelinePage() {
                     {/* Prompt Video */}
                     <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-cyan-400 uppercase">🎬 Video</span>
+                        <span className="text-xs font-semibold text-cyan-400 uppercase">🎬 Prompt Video</span>
                         <button
                           onClick={() => handleCopy(step.video_prompt, `vid_${idx}`)}
                           className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
