@@ -30,15 +30,35 @@ const comicNiches = [
   "La soledad que sientes rodeado de gente que te quiere",
   "Cuando tu mayor enemigo resultó ser tu propio cerebro",
   "El día que decidiste dejar de esperar que las cosas cambiaran solas",
-  "Amistades que duran para siempre… hasta que no duran",
+  "Amistades que duran para siempre... hasta que no duran",
   "Fracasar en algo que amabas y volver a intentarlo de todas formas",
+  "El primer salario y la realidad de lo poco que alcanza",
+  "Cuando tu ex aparece happy con alguien más y tú sigues viendo Netflix solo",
+  "El momento en que te das cuenta que tu mejor amigo ya no te llama",
+  "La presión de cumplir 30 sin tener nada 'resuelto'",
+  "Cuando trabajas tanto que no tienes tiempo para vivir",
+  "El día que entendiste por qué tu papá se sentaba solo a mirar al techo",
+  "Cuando alguien te dice 'estás cambiando' y tú solo estás creciendo",
+  "La ansiedad de ver a tus amigos con hijos y tú sin saber regar una planta",
+  "Cuando tu pareja te dice 'no eres el mismo de antes' y tiene razón",
+  "El orgullo de comprar algo con tu propio esfuerzo por primera vez",
+  "La injusticia de trabajar más que todos y ganar menos que todos",
+  "Cuando te das cuenta de que estás repitiendo los errores de tu ex",
+  "El día que dejaste de buscar la aprobación de tu padre",
+  "La frustración de ser bueno en algo que nadie valora",
+  "Cuando tu mejor amiga se enamora de tu ex y no sabes qué hacer",
+  "El precio de mantener una fachada de 'todo está bien'",
+  "La trampa del 'mañana empiezo' que nunca llega",
+  "Cuando te das cuenta de que ya no tienes nada en común con tus amigos de la infancia",
+  "El momento en que eliges tu felicidad aunque otros no la entiendan",
+  "La soledad de ser el 'fuerte' del grupo nadie pregunta cómo estás"
 ];
 
 export default function HistorietasPage() {
   const [niche, setNiche] = useState(comicNiches[0]);
   const [idea, setIdea] = useState("");
   const [characterDesc, setCharacterDesc] = useState("");
-  const [panelCount, setPanelCount] = useState("4");
+  const [panelCount, setPanelCount] = useState(4);
   const [visualStyle, setVisualStyle] = useState("Estilo CÃ³mic Web / Webtoon");
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ComicData | null>(null);
@@ -54,7 +74,7 @@ export default function HistorietasPage() {
       const res = await fetch("/api/generate-comic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, panels: parseInt(panelCount), style: visualStyle, characterDesc }),
+        body: JSON.stringify({ niche, idea, panels: panelCount, style: visualStyle, characterDesc }),
       });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
@@ -132,22 +152,27 @@ export default function HistorietasPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Cantidad de Viñetas
+                Cantidad de Viñetas: <span className="text-emerald-400 font-bold">{panelCount}</span>
               </label>
-              <select
-                value={panelCount}
-                onChange={(e) => setPanelCount(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
-              >
-                {[...Array(18)].map((_, i) => {
-                  const num = i + 3;
-                  return (
-                    <option key={num} value={num}>
-                      {num} Viñetas {num === 4 ? "(Clásico)" : num > 10 ? "(Tardará más)" : ""}
-                    </option>
-                  );
-                })}
-              </select>
+              <div className="relative pt-1 pb-2">
+                <input
+                  type="range"
+                  min={3}
+                  max={20}
+                  value={panelCount}
+                  onChange={(e) => setPanelCount(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+                <div className="flex justify-between text-xs text-slate-500 mt-1 px-1">
+                  <span>3</span>
+                  <span>10</span>
+                  <span>15</span>
+                  <span>20</span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-500">
+                {panelCount <= 4 ? "Historia rápida" : panelCount <= 10 ? "Historia completa" : "Historia extensa (tardará más)"}
+              </p>
             </div>
           </div>
 

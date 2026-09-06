@@ -52,30 +52,57 @@ Estilo Visual Solicitado: "${requestedStyle}"
 ${charInstruction}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 REGLA FUNDAMENTAL — ARCO NARRATIVO OBLIGATORIO
+🎬 REGLAS DE ORO PARA UNA BUENA HISTORIA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Cada viñeta tiene un ROL NARRATIVO específico que DEBES respetar:
+
+1. CADA VIÑETA DEBE TENER UN DIÁLOGO ESPECÍFICO Y COHERENTE:
+   - NADA de frases genéricas como "la vida es difícil" o "todo pasa por algo"
+   - Los diálogos deben ser como si hablaras con un amigo: naturales, con personalidad, con emoción
+   - Ejemplos de Buenos Diálogos:
+     * "Mamá, ¿tú también finges que estás bien cuando no lo estás?"
+     * "Mi mejor amigo se fue sin decir adiós. Solo un mensaje: 'Ya no puedo más'"
+     * "El día que dejé de buscar aprobación, todos me empezaron a buscar a mí"
+   - Ejemplos de MALOS Diálogos (NUNCA hagas esto):
+     * "La vida es un camino"
+     * "Todo tiene un propósito"
+     * "Debemos ser fuertes"
+
+2. CADA VIÑETA DEBE TENER UNA ACCIÓN VISUAL CLARA:
+   - No pongas personajes estáticos "pensando" o "mirando al vacío"
+   - Cada panel debe mostrar una ESCENA ESPECÍFICA: alguien haciendo algo, un momento concreto, una interacción
+   - Ejemplo: En vez de "Un chico triste sentado", pon "Un chico borrando el contacto de su ex en el teléfono mientras come solo en un restaurante"
+
+3. LA HISTORIA DEBE TENER GIRO EMOCIONAL:
+   - El primer panel engancha con una situación recognizable
+   - Los paneles del medio complican la situación o muestran la evolución
+   - El último panel deja ALGO: una verdad, un giro, una emoción que se queda contigo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎭 ESTRUCTURA NARRATIVA POR VIÑETA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ${narrativeGuide}
 
-❌ ESTÁ PROHIBIDO:
-- Que la historia empiece y se acabe en el panel 1 sin drama
-- Que los paneles del medio sean repetitivos o no aumenten la tensión
-- Que el final no entregue algo: un giro, una emoción, una verdad, un chiste que golpea
-- Usar frases vagas o filosóficas genéricas ("la vida es así", "todo pasa por algo")
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ PROHIBIDO:
+- Diálogos genéricos o filosóficos vacíos
+- Historias que empiezan y terminan igual
+- Personajes sin personalidad ni emoción
+- Viñetas repetitivas sin avance en la trama
 
 ✅ DEBES LOGRAR:
-- Que el lector sienta que conoce a ese personaje o vivió esa situación
-- Que haya una progresión emocional clara: estado inicial → problema/tensión → resolución
-- Que el último panel deje algo: risa, nostalgia, revelación, o una verdad incómoda
+- Que cada diálogo suene a persona real hablando
+- Que las imágenes cuenten una historia por sí solas
+- Progresión emocional clara: algo cambia entre el primer y último panel
+- El último panel debe dejar ALGO en el lector
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Para cada viñeta proporciona:
-1. "panel_number": El número de viñeta (1 al ${panelCount}). ¡IMPORTANTE: DEBEN SER EXACTAMENTE ${panelCount} VIÑETAS!
-2. "scene_role": El rol narrativo de esta viñeta en UNA PALABRA: "INICIO", "DESARROLLO", o "FINAL".
-3. "dialogue": El diálogo o narración EXACTO en ESPAÑOL. CORTO (máximo 15 palabras). Debe ser específico, humano y emotivo — no genérico.
+1. "panel_number": El número de viñeta (1 al ${panelCount}). ¡DEBEN SER EXACTAMENTE ${panelCount} VIÑETAS!
+2. "scene_role": El rol narrativo en UNA PALABRA: "INICIO", "DESARROLLO", o "FINAL".
+3. "dialogue": El diálogo EXACTO en ESPAÑOL. Debe ser ESPECÍFICO, con PERSONALIDAD y EMOCIÓN. Máximo 20 palabras. NADA de frases genéricas.
 4. "image_prompt": EL PROMPT EN INGLÉS PARA DALL-E 3.
-   FORMATO ESTRICTO: "${styleInstruction} [Describe la escena, la acción y los personajes de forma detallada y cinematográfica]. Integrated into the artwork, there is a clear speech bubble or caption box containing bold typography that reads exactly: '[DIALOGUE EN ESPAÑOL]'. Masterpiece, highly detailed. ${aspectRatioFlag}"
+   FORMATO: "${styleInstruction} [Describe la ESCENA ESPECÍFICA: quién, qué hace, dónde, expresión facial, iluminación]. Integrated into the artwork, there is a clear speech bubble or caption box containing bold typography that reads exactly: '[DIALOGUE EN ESPAÑOL]'. Masterpiece, highly detailed. ${aspectRatioFlag}"
 
 IMPORTANTE: El prompt DEBE estar en inglés, pero la frase dentro de las comillas DEBE estar en el ESPAÑOL EXACTO del campo "dialogue".
 
