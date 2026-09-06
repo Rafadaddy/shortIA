@@ -12,125 +12,214 @@ export async function POST(req: NextRequest) {
 
     if (mode === "ideas") {
       prompt = `
-Eres un generador de Shorts virales de líneas temporales hipotéticas.
-El usuario quiere ideas para videos del tipo "¿Qué pasa si..." o "Y si...".
-Debes generar 10 ideas fuertes de videos hipotéticos.
-Las ideas deben ser impulsadas por la curiosidad, visualmente interesantes, capaces de desarrollarse con el tiempo y adecuadas para una progresión en línea temporal.
-Responde ÚNICAMENTE con un JSON válido con la siguiente estructura:
+Eres un estratega de contenido viral en formato corto para YouTube Shorts / TikTok. Genera 10 títulos de temas de video altamente atractivos (con alto potencial de clics) para un canal que se enfoca en:
+
+- Curiosidad extrema
+- "¿Cuánto es demasiado?"
+- Límites humanos
+- Objetos cotidianos, comida, hábitos o sustancias llevadas a extremos absurdos o peligrosos
+
+REGLAS:
+- Títulos cortos, impactantes, despertar curiosidad
+- Usa frases dramáticas como: "¿Cuánto ___ acabaría contigo?", "¿Puede ___ matarte?", "¿Qué pasa si ___?"
+- Haz que el tema parezca peligroso pero educativo
+- Contenido basado en ciencia / animación 3D
+- Cada título en 1 línea
+- Usa 1-2 emojis relevantes
+- Termina con 3-5 hashtags: #interesante #datos #3d #ciencia #comida #naturaleza #animacion #shorts
+
+Ejemplos del tono (NO reutilizar):
+¿Cuánta agua acabaría contigo? 💦
+¿Puede el sol quemar tus ojos? 🔥
+¿Cuántas bebidas energéticas son demasiadas? 😵
+
+Responde SOLO con un JSON válido:
 {
-  "ideas": ["Idea 1", "Idea 2", "Idea 3", "Idea 4", "Idea 5", "Idea 6", "Idea 7", "Idea 8", "Idea 9", "Idea 10"]
+  "ideas": ["Título 1 con #hashtags", "Título 2 con #hashtags", ... (10 ideas)"]
 }
 `;
-    } else {
+    } else if (mode === "script") {
       prompt = `
-Eres un creador de contenido viral especializado en videos del tipo "¿Qué pasaría si...?" o "¿Qué le pasaría a tu cuerpo si...?".
+Eres un guionista profesional de YouTube Shorts, creando videos altamente atractivos, impulsados por la curiosidad, animados en 3D o narrados.
 
-Tu trabajo es generar guiones que sean INFORMATIVOS, ESPECÍFICOS y VISUALMENTE IMPACTANTES. No son historias abstractas; son explicaciones CONCRETAS de qué pasaría en una situación hipotética.
-
-Tema: "${topic}"
+Escribe un guion de 200-250 palabras para el tema: "${topic}"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 CÓMO FUNCIONAN ESTOS VIDEOS
+📝 REGLAS PARA EL GUION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-El video debe explicar qué pasaría REALMENTE en una situación hipotética, paso a paso, como si estuvieras contándole a alguien qué le espera.
+GANCHO:
+Empieza solo con un gancho de una sola frase. Sin frases extra ni comentarios.
+Ejemplos de gancho:
+- "¿Cuánto tiempo puede aguantar tu cuerpo sin dormir?"
+- "¿Cuántos Cheetos Picantes harían falta para acabar contigo?"
+- "¿Qué pasaría si dejaras de parpadear?"
 
-EJEMPLO DE CÓMO FUNCIONA:
-Tema: "¿Qué pasaría si la tierra se detuviera 2 segundos?"
+ETIQUETAS DE PASO:
+Cada paso debe etiquetarse exactamente con la cantidad, unidad o tiempo relevante para el escenario.
+Ejemplos: "Bolsa 1", "Día 3", "Una Taza", "Minuto 5", "Hora 2"
+NO agregues palabras como "Nivel", "Paso", "–", "Nivel 1", "Paso 1"
 
-❌ MAL (genérico y aburrido):
-- "Nuestro esqueleto se siente raro"
-- "Todo se va a la izquierda"
-- "Sería peligroso"
+ESCALADA:
+Cada paso debe aumentar el riesgo y la intensidad.
 
-✅ BUENO (específico y visual):
-- "En el segundo 1, todo se detiene. Pero tu cuerpo no. Sigues girando a 1,670 km/h. Es como si te sacudieran de golpe"
-- "Sentirías una fuerza brutal tirando de ti hacia el este. Tus órganos internos seguirían moviéndose aunque tú estés parado"
-- "Las cosas alrededor tuyo saldrían volando. Autos, personas, árboles. Todo en la misma dirección"
-- "Si sobrevives a esos 2 segundos, el mundo no sería el mismo. Y tú tampoco"
+ESTRUCTURA DE ORACIONES:
+- Usa oraciones largas, fluidas y descriptivas
+- Intercala oraciones dramáticas más cortas
+- Múltiples detalles sensoriales en una sola frase
+- Evita que todas las frases sean muy cortas
+- Ritmo natural e inmersivo
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 FORMATO DE NARRACIÓN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLÍMAX:
+Termina con el límite máximo extremo, fatal o imposible.
 
-CADA paso debe incluir:
+TONO:
+Tiempo presente, urgente, inmersivo. Frases dramáticas ocasionales.
 
-1. QUÉ PASA (acción/consecuencia específica)
-2. CÓMO SE SIENTE (sensación física o emocional)
-3. POR QUÉ OCURRE (explicación breve y clara)
-
-NO uses frases genéricas como:
-- "Sentirías algo raro"
-- "Todo cambiaría"
-- "Sería intenso"
-- "Tu cuerpo reacciona"
-
-SÍ usa frases específicas como:
-- "Sentirías una presión brutal en el pecho"
-- "Tus piernas se doblarían sin control"
-- "El aire entraría tan rápido que tus pulmones no darían abasto"
-- "Verías todo a tu alrededor moverse en cámara lenta"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎭 ESTRUCTURA DEL GUION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-El guion debe tener esta progresión:
-
-INICIO (Primeros pasos): Describe qué pasa en los primeros momentos. Sé específico: qué siente el cuerpo, qué ve, qué pasa alrededor.
-
-DESARROLLO (Medio): La situación se intensifica. Los efectos se vuelven más graves. Complicaciones adicionales.
-
-FINAL (Últimos pasos): El clímax o desenlace. Puede ser la recuperación, la consecuencia final, o el punto más impactante.
-
-IMPORTANTE: NO siempre empieces con "Nuestro esqueleto" o "Imagina que eres un esqueleto". VARÍA los inicios.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎨 PROMPTS VISUALES (IMAGEN)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Para cada paso genera un prompt visual EN INGLÉS que muestre:
-- La ESCENA específica que se está describiendo
-- Las consecuencias VISUALES de lo que pasa
-- El personaje (si apara) experimentando lo que se narra
-
-Formato del prompt de imagen:
-"[Describe la escena específica: qué pasa, cómo se ve, qué elementos hay]. Cinematic lighting, highly detailed, 8k. --ar 9:16"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 PROMPTS DE VIDEO/ANIMACIÓN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Para cada paso genera un prompt de animación EN INGLÉS que describa el MOVIMIENTO de la escena para herramientas como Runway, Veo 3, o Pika.
-
-El prompt de video debe describir:
-- Qué se MUEVE en la escena
-- Cómo se MUEVE (dirección, velocidad, estilo)
-- La cámara (plano fijo, paneo, zoom,etc)
-- Duración aproximada
-
-Formato del prompt de video:
-"Camera: [tipo de plano]. Action: [qué se mueve y cómo]. Subject: [qué personaje/objeto]. Environment: [entorno]. Duration: 5 seconds."
-
-Ejemplo:
-"Camera: Slow dolly forward. Action: A man stumbles backward as invisible force pushes him. Debris flies past. Environment: City street in chaos. Duration: 5 seconds."
+CONTEO: 200-250 palabras.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Responde SOLO con un JSON válido:
 {
-  "title": "Título que genere curiosidad (tipo '¿Qué pasaría si...?')",
+  "title": "Título del video que genere curiosidad",
+  "script": "El gancho inicial\n\nEtiquetaDelPaso 1\nNarración...\n\nEtiquetaDelPaso 2\nNarración...\n\n...(todos los pasos)"
+}
+`;
+    } else if (mode === "images") {
+      prompt = `
+Eres un director de visualización médica y narrador visual para YouTube Shorts.
+
+Genera prompts de imagen e prompts de video que sigan visualmente la línea de tiempo de un guion, mostrando el deterioro físico y mental progresivo de un personaje de referencia único e idéntico.
+
+GUION A VISUALIZAR:
+${characterRef}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 REGLA DE FONDO GLOBAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fondo morado sólido y plano en CADA imagen y video.
+Sin degradados, texturas ni entornos.
+El fondo debe permanecer claramente visible detrás de todos los objetos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧍 SOLO OBJETOS PERMITIDOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Silla, sofá, bañera, mesa, sombra en el piso debajo de los muebles, tazas, latas, envoltorios, controles, libros, pantallas.
+La utilería debe coincidir con el escenario.
+La utilería debe estar físicamente apoyada (con gravedad).
+No se permiten objetos extra.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 PERSONAJE DE REFERENCIA (NO CAMBIAR)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CUERPO Y PIEL:
+- Figura humana hiperrealista 3D CGI
+- Estructura esquelética completa visible A TRAVÉS de piel transparente intacta
+- Capa de piel fina, transparente, similar al vidrio
+- La piel es continua, ligeramente brillante, silicona médica / resina transparente
+- Los huesos son visibles debajo pero NO expuestos
+- Color de hueso natural blanco roto / beige
+- Esto NO es un esqueleto desnudo
+
+CRÁNEO Y OJOS (BLOQUEO DURO):
+- Cráneo cubierto por piel facial transparente
+- Exactamente 2 globos oculares humanos realistas
+- Ubicados SOLO dentro de las cuencas oculares
+- Mirando al frente, visibles a través de la piel
+- Curvatura realista y reflejos sutiles
+- Cuencas de ojos NO pueden estar vacías
+- Sin dientes expuestos
+- Sin otros ojos en ninguna parte del cuerpo
+
+LÍMITES DE ANATOMÍA:
+- NO órganos
+- NO músculos
+- NO venas
+- NO intestinos
+- NO tejido cardíaco
+- Efectos internos SOLO como luz simbólica o neblina
+
+POSICIÓN:
+- De frente en todo momento
+- Perfectamente centrado
+- Sentado según el escenario (bañera, sofá, mesa, etc.)
+- Idéntico en todas las imágenes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ EFECTOS VISUALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INTERNOS (RAYOS X / SUPERPOSICIÓN):
+- Cerebro brillando al rojo vivo o parpadeando
+- Sangre espesándose y fluyendo lentamente (simbólico)
+- Pulmones parcialmente llenos de neblina de fluido translúcido
+- Columna vertebral resaltada en rojo para indicar dolor
+- Corazón como luz pulsante interna (sin forma de órgano)
+
+EXTERNOS:
+- Ojos volviéndose rojo oscuro o temblando
+- Piel transparente secándose y agrietándose como cuero viejo
+- Columna encorvándose hacia adelante (aún de frente)
+- Manos temblando
+- Hombros colapsando hacia adentro
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📐 REGLA DE ESTRUCTURA — UNA ACCIÓN = UN PROMPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cada oración, cláusula o escalada en el guion = un prompt.
+Incluso dentro de la misma escena:
+- Nueva sensación → nuevo prompt
+- Nuevo síntoma → nuevo prompt
+- Nuevo cambio físico → nuevo prompt
+- Nuevo efecto mental → nuevo prompt
+Nunca fusiones acciones.
+Nunca te saltes pasos.
+
+PRIMERA IMAGEN — ANCLA:
+- Representa la primera acción del guion
+- Personaje de piel transparente claramente visible
+- Postura sentada y utilería correctas
+- Fondo morado sólido visible
+- Iluminación que define: Transparencia de piel, visibilidad de huesos, postura
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 FORMATO DE PROMPT DE IMAGEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"Front-facing, centered hyper-realistic 3D CGI human figure with intact transparent skin over skeleton, sitting [postura], natural bone color visible beneath glass-like skin, exactly two visible eyeballs in skull sockets, solid purple background, [utilería del escenario], [efectos internos: brain glow, blood thickening, lung haze], [efectos externos: eye redness, trembling hands, hunched spine], dramatic lighting emphasizing decline. --ar 9:16"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎬 FORMATO DE PROMPT DE VIDEO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Toma vertical de 3-6 segundos.
+- De frente, centrado, sentado
+- Movimiento interno: cerebro pulsando, sangre ralentizándose, neblina en pulmones cambiando
+- Movimiento externo: tic en ojo, manos temblando, columna encorvándose
+- Cámara: acercamiento (push-in) lento o sacudida sutil (sin rotación)
+- Fondo morado sólido
+
+Ejemplo:
+"3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting in [escenario]. Exactly two realistic eyeballs visible in skull sockets. Brain pulses red, blood thickens, lungs hazy. Eyes twitch and redden. Hands tremble. Slow camera push-in. Solid purple background."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Responde SOLO con un JSON válido:
+{
+  "reference_prompt": "Prompt completo para generar el personaje de referencia (una sola imagen que defina al personaje)",
   "timeline": [
     {
-      "step_name": "Nombre del paso (ej: 'Los primeros 3 segundos', 'Minuto 1', 'Hora 1')",
-      "narration": "Narración específica y detallada en español...",
-      "image_prompt": "English image prompt ending in --ar 9:16",
-      "video_prompt": "Camera: [tipo]. Action: [movimiento]. Subject: [sujeto]. Environment: [entorno]. Duration: 5 seconds."
+      "step_name": "Etiqueta del paso del guion",
+      "image_prompt": "Prompt de imagen en inglés con --ar 9:16",
+      "video_prompt": "Prompt de video en inglés, 3-6 segundos"
     }
   ]
 }
-
-Genera EXACTAMENTE ${count} pasos en el timeline.
 `;
     }
 
