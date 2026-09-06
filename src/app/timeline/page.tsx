@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Hourglass, Copy, Check, User } from "lucide-react";
+import { Sparkles, Hourglass, Copy, Check, User, Play } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 
@@ -9,6 +9,7 @@ interface TimelineStep {
   step_name: string;
   narration: string;
   image_prompt: string;
+  video_prompt: string;
 }
 
 interface TimelineData {
@@ -18,7 +19,7 @@ interface TimelineData {
 
 export default function TimelinePage() {
   const [topic, setTopic] = useState("");
-  const [stepCount, setStepCount] = useState("8");
+  const [stepCount, setStepCount] = useState(8);
   const [characterRef, setCharacterRef] = useState("Un esqueleto animado clásico (puedes especificar si lleva playera, traje, o nada)");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingTimeline, setIsGeneratingTimeline] = useState(false);
@@ -68,7 +69,7 @@ export default function TimelinePage() {
       const res = await fetch("/api/generate-timeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "timeline", topic: finalTopic, characterRef, stepCount: parseInt(stepCount) }),
+        body: JSON.stringify({ mode: "timeline", topic: finalTopic, characterRef, stepCount }),
       });
       if (!res.ok) throw new Error("Error fetching timeline");
       const generatedData = await res.json();
@@ -82,7 +83,9 @@ export default function TimelinePage() {
 
   const handleCopyFullScript = () => {
     if (!data) return;
-    const fullText = data.timeline.map(step => `${step.step_name}:\n${step.narration}`).join("\n\n");
+    const fullText = data.timeline.map(step => 
+      `${step.step_name}:\n${step.narration}\n\nPrompt Imagen: ${step.image_prompt}\nPrompt Video: ${step.video_prompt}`
+    ).join("\n\n---\n\n");
     handleCopy(fullText, 'full_script');
   };
 
@@ -96,7 +99,7 @@ export default function TimelinePage() {
             Líneas Temporales &quot;¿Qué pasaría si...?&quot;
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera guiones y prompts consistentes para videos de progresión temporal (Ej: Qué pasaría si no duermes en 7 días).
+            Genera guiones completos con narración, prompts de imagen y prompts de video/animación.
           </p>
         </header>
 
@@ -109,7 +112,7 @@ export default function TimelinePage() {
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. Qu pasara si solo comes comida basura durante 7 das?"
+              placeholder="Ej. ¿Qué pasaría si solo comes comida basura durante 7 días?"
               className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
             />
           </div>
@@ -117,31 +120,35 @@ export default function TimelinePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje Principal (Para consistencia visual)
+                <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje Principal
               </label>
               <input
                 type="text"
                 value={characterRef}
                 onChange={(e) => setCharacterRef(e.target.value)}
-                placeholder="Ej. Un esqueleto animado clásico"
+                placeholder="Ej. Un hombre de 30 años con chaqueta azul"
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
               />
             </div>
             
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Cantidad de Pasos / Escenas
+                Cantidad de Escenas: <span className="text-amber-400 font-bold">{stepCount}</span>
               </label>
-              <select
+              <input
+                type="range"
+                min={4}
+                max={20}
                 value={stepCount}
-                onChange={(e) => setStepCount(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
-              >
-                {[...Array(16)].map((_, i) => {
-                  const num = i + 5;
-                  return <option key={num} value={num}>{num} Pasos</option>;
-                })}
-              </select>
+                onChange={(e) => setStepCount(Number(e.target.value))}
+                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
+              />
+              <div className="flex justify-between text-xs text-slate-500 px-1">
+                <span>4</span>
+                <span>10</span>
+                <span>15</span>
+                <span>20</span>
+              </div>
             </div>
           </div>
 
@@ -189,7 +196,7 @@ export default function TimelinePage() {
               onClick={handleCopyFullScript}
               className="absolute top-6 right-6 flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
             >
-              {copiedStates['full_script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Guion Completo</>}
+              {copiedStates['full_script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
             </button>
             <h2 className="text-2xl font-bold text-white mb-6 pr-48 text-amber-400">
               {data.title}
@@ -202,6 +209,7 @@ export default function TimelinePage() {
                     <span className="bg-amber-500/20 text-amber-400 py-1 px-3 rounded-lg font-bold text-sm border border-amber-500/30">
                       {step.step_name}
                     </span>
+                    <span className="text-xs text-slate-500">Escena {idx + 1} de {data.timeline.length}</span>
                   </div>
                   
                   <div className="mb-4">
@@ -210,21 +218,42 @@ export default function TimelinePage() {
                     </p>
                   </div>
 
-                  <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
-                    <div className="flex items-center justify-between gap-4 mb-2">
-                      <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">
-                        Prompt Visual
-                      </span>
-                      <button
-                        onClick={() => handleCopy(step.image_prompt, `prompt_${idx}`)}
-                        className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
-                      >
-                        {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
-                      </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Prompt de Imagen */}
+                    <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
+                      <div className="flex items-center justify-between gap-4 mb-2">
+                        <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">
+                          📷 Prompt Imagen
+                        </span>
+                        <button
+                          onClick={() => handleCopy(step.image_prompt, `img_${idx}`)}
+                          className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                        >
+                          {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-400 font-mono leading-relaxed">
+                        {step.image_prompt}
+                      </p>
                     </div>
-                    <p className="text-sm text-slate-400 font-mono leading-relaxed">
-                      {step.image_prompt}
-                    </p>
+
+                    {/* Prompt de Video */}
+                    <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
+                      <div className="flex items-center justify-between gap-4 mb-2">
+                        <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                          🎬 Prompt Video/Animación
+                        </span>
+                        <button
+                          onClick={() => handleCopy(step.video_prompt, `vid_${idx}`)}
+                          className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                        >
+                          {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-400 font-mono leading-relaxed">
+                        {step.video_prompt}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}

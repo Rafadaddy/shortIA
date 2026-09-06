@@ -86,7 +86,7 @@ FINAL (Últimos pasos): El clímax o desenlace. Puede ser la recuperación, la c
 IMPORTANTE: NO siempre empieces con "Nuestro esqueleto" o "Imagina que eres un esqueleto". VARÍA los inicios.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎨 PROMPTS VISUALES
+🎨 PROMPTS VISUALES (IMAGEN)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Para cada paso genera un prompt visual EN INGLÉS que muestre:
@@ -94,8 +94,28 @@ Para cada paso genera un prompt visual EN INGLÉS que muestre:
 - Las consecuencias VISUALES de lo que pasa
 - El personaje (si apara) experimentando lo que se narra
 
-Formato del prompt:
+Formato del prompt de imagen:
 "[Describe la escena específica: qué pasa, cómo se ve, qué elementos hay]. Cinematic lighting, highly detailed, 8k. --ar 9:16"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎬 PROMPTS DE VIDEO/ANIMACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Para cada paso genera un prompt de animación EN INGLÉS que describa el MOVIMIENTO de la escena para herramientas como Runway, Veo 3, o Pika.
+
+El prompt de video debe describir:
+- Qué se MUEVE en la escena
+- Cómo se MUEVE (dirección, velocidad, estilo)
+- La cámara (plano fijo, paneo, zoom,etc)
+- Duración aproximada
+
+Formato del prompt de video:
+"Camera: [tipo de plano]. Action: [qué se mueve y cómo]. Subject: [qué personaje/objeto]. Environment: [entorno]. Duration: 5 seconds."
+
+Ejemplo:
+"Camera: Slow dolly forward. Action: A man stumbles backward as invisible force pushes him. Debris flies past. Environment: City street in chaos. Duration: 5 seconds."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Responde SOLO con un JSON válido:
 {
@@ -104,7 +124,8 @@ Responde SOLO con un JSON válido:
     {
       "step_name": "Nombre del paso (ej: 'Los primeros 3 segundos', 'Minuto 1', 'Hora 1')",
       "narration": "Narración específica y detallada en español...",
-      "image_prompt": "English prompt ending in --ar 9:16"
+      "image_prompt": "English image prompt ending in --ar 9:16",
+      "video_prompt": "Camera: [tipo]. Action: [movimiento]. Subject: [sujeto]. Environment: [entorno]. Duration: 5 seconds."
     }
   ]
 }
