@@ -23,39 +23,93 @@ Responde ÚNICAMENTE con un JSON válido con la siguiente estructura:
 `;
     } else {
       prompt = `
-Eres un generador de Shorts virales de líneas temporales hipotéticas.
-Tu trabajo es generar videos cortos del tipo "Qué pasa si..." diseñados para flujos de generación de imágenes/video con IA.
+Eres un creador de contenido viral especializado en videos del tipo "¿Qué pasaría si...?" o "¿Qué le pasaría a tu cuerpo si...?".
+
+Tu trabajo es generar guiones que sean INFORMATIVOS, ESPECÍFICOS y VISUALMENTE IMPACTANTES. No son historias abstractas; son explicaciones CONCRETAS de qué pasaría en una situación hipotética.
 
 Tema: "${topic}"
-Referencia de Personaje Principal: "${characterRef || 'Un esqueleto animado clásico'}"
 
-Debes generar un guion de progresión temporal con EXACTAMENTE ${count} pasos/etapas.
-- El guion debe basarse en una progresión dramática con una estructura narrativa clara: 
-  - Un INICIO (Planteamiento inicial)
-  - Un DESARROLLO (La situación empeora o evoluciona progresivamente)
-  - Un FINAL (El clímax o desenlace definitivo e impactante).
-- Cada paso debe escalar o evolucionar a partir del anterior.
-- Las líneas narrativas deben ser fluidas, atrapantes y en ESPAÑOL.
-- ¡DEBES GENERAR EXACTAMENTE ${count} PASOS!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎬 CÓMO FUNCIONAN ESTOS VIDEOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Para cada paso del guion, debes generar un prompt visual en INGLÉS.
-REGLA CRÍTICA: Debes usar SIEMPRE la misma referencia del personaje principal en los prompts visuales. No cambies su ropa ni apariencia.
-Los prompts visuales deben escribirse como instrucciones cinematográficas fluidas:
-"Place the reference character [descripción] doing [acción] in [entorno]. Cinematic lighting, highly detailed, 8k."
-IMPORTANTE: Obliga a generar las imágenes en formato vertical añadiendo --ar 9:16 al final de CADA prompt visual.
+El video debe explicar qué pasaría REALMENTE en una situación hipotética, paso a paso, como si estuvieras contándole a alguien qué le espera.
 
-Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
+EJEMPLO DE CÓMO FUNCIONA:
+Tema: "¿Qué pasaría si la tierra se detuviera 2 segundos?"
+
+❌ MAL (genérico y aburrido):
+- "Nuestro esqueleto se siente raro"
+- "Todo se va a la izquierda"
+- "Sería peligroso"
+
+✅ BUENO (específico y visual):
+- "En el segundo 1, todo se detiene. Pero tu cuerpo no. Sigues girando a 1,670 km/h. Es como si te sacudieran de golpe"
+- "Sentirías una fuerza brutal tirando de ti hacia el este. Tus órganos internos seguirían moviéndose aunque tú estés parado"
+- "Las cosas alrededor tuyo saldrían volando. Autos, personas, árboles. Todo en la misma dirección"
+- "Si sobrevives a esos 2 segundos, el mundo no sería el mismo. Y tú tampoco"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📝 FORMATO DE NARRACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CADA paso debe incluir:
+
+1. QUÉ PASA (acción/consecuencia específica)
+2. CÓMO SE SIENTE (sensación física o emocional)
+3. POR QUÉ OCURRE (explicación breve y clara)
+
+NO uses frases genéricas como:
+- "Sentirías algo raro"
+- "Todo cambiaría"
+- "Sería intenso"
+- "Tu cuerpo reacciona"
+
+SÍ usa frases específicas como:
+- "Sentirías una presión brutal en el pecho"
+- "Tus piernas se doblarían sin control"
+- "El aire entraría tan rápido que tus pulmones no darían abasto"
+- "Verías todo a tu alrededor moverse en cámara lenta"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎭 ESTRUCTURA DEL GUION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El guion debe tener esta progresión:
+
+INICIO (Primeros pasos): Describe qué pasa en los primeros momentos. Sé específico: qué siente el cuerpo, qué ve, qué pasa alrededor.
+
+DESARROLLO (Medio): La situación se intensifica. Los efectos se vuelven más graves. Complicaciones adicionales.
+
+FINAL (Últimos pasos): El clímax o desenlace. Puede ser la recuperación, la consecuencia final, o el punto más impactante.
+
+IMPORTANTE: NO siempre empieces con "Nuestro esqueleto" o "Imagina que eres un esqueleto". VARÍA los inicios.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 PROMPTS VISUALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Para cada paso genera un prompt visual EN INGLÉS que muestre:
+- La ESCENA específica que se está describiendo
+- Las consecuencias VISUALES de lo que pasa
+- El personaje (si apara) experimentando lo que se narra
+
+Formato del prompt:
+"[Describe la escena específica: qué pasa, cómo se ve, qué elementos hay]. Cinematic lighting, highly detailed, 8k. --ar 9:16"
+
+Responde SOLO con un JSON válido:
 {
-  "title": "Título del video",
+  "title": "Título que genere curiosidad (tipo '¿Qué pasaría si...?')",
   "timeline": [
     {
-      "step_name": "Inicio / Día 1",
-      "narration": "Texto de narración en español...",
-      "image_prompt": "English visual prompt ending in --ar 9:16"
+      "step_name": "Nombre del paso (ej: 'Los primeros 3 segundos', 'Minuto 1', 'Hora 1')",
+      "narration": "Narración específica y detallada en español...",
+      "image_prompt": "English prompt ending in --ar 9:16"
     }
   ]
 }
-Asegúrate de incluir EXACTAMENTE ${count} objetos en el arreglo 'timeline', cubriendo el inicio, desarrollo y final de la historia de progresión.
+
+Genera EXACTAMENTE ${count} pasos en el timeline.
 `;
     }
 
@@ -63,7 +117,7 @@ Asegúrate de incluir EXACTAMENTE ${count} objetos en el arreglo 'timeline', cub
       messages: [{ role: "user", content: prompt }],
       model: "openai/gpt-oss-120b",
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      temperature: 0.85,
     });
 
     const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
