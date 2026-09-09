@@ -13,10 +13,8 @@ export async function chatCompletion(
 
   // PRIORIDAD 1: Usar la API Key local del servidor (process.env) si existe, pero respetando el modelo elegido en la UI.
   if (groqKey) {
-    // Si el usuario seleccionó un modelo de Groq en la UI, usamos ese. Si no, usamos llama-3.3 por defecto.
-    const model = (providerConfig?.providerId === "groq" && providerConfig?.model) 
-      ? providerConfig.model 
-      : "llama-3.3-70b-versatile";
+    // Si el usuario usa su API key local (que es un proxy especial), el ǧnico modelo que funciona es openai/gpt-oss-120b
+    const model = "openai/gpt-oss-120b";
       
     console.log(`[API-Helpers] Usando API key LOCAL del servidor | Modelo: ${model}`);
     return generateChatCompletion(
