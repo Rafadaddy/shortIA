@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Hourglass, Copy, Check, User, Play, FileText, ImageIcon } from "lucide-react";
+import { Sparkles, Hourglass, Copy, Check, User, FileText, ImageIcon, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 
@@ -26,6 +26,8 @@ export default function TimelinePage() {
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [regeneratingIdx, setRegeneratingIdx] = useState<number | null>(null);
+  const [regeneratingType, setRegeneratingType] = useState<"image" | "video" | null>(null);
   const [ideas, setIdeas] = useState<string[]>([]);
   const [data, setData] = useState<TimelineData | null>(null);
   const [currentScript, setCurrentScript] = useState("");
@@ -73,7 +75,7 @@ export default function TimelinePage() {
         setCurrentScript(generated.script);
         setData(prev => prev ? { ...prev, title: generated.title || topic, script: generated.script } : { title: generated.title || topic, script: generated.script, reference_prompt: "", timeline: [] });
       }
-      showToast("Guion generado. Ahora genera las imágenes.", "success");
+      showToast("Guion generado. Ahora genera los prompts.", "success");
     } catch (error) {
       showToast("Error al generar guion.", "error");
     } finally {
@@ -107,9 +109,52 @@ export default function TimelinePage() {
       }));
       showToast("Prompts generados.", "success");
     } catch (error) {
-      showToast("Error al generar imágenes.", "error");
+      showToast("Error al generar prompts.", "error");
     } finally {
       setIsGeneratingImages(false);
+    }
+  };
+
+  const handleRegeneratePrompt = async (idx: number, type: "image" | "video") => {
+    if (!data) return;
+    
+    setRegeneratingIdx(idx);
+    setRegeneratingType(type);
+
+    try {
+      const step = data.timeline[idx];
+      const res = await fetch("/api/generate-timeline", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          mode: "single_prompt", 
+          topic: topic,
+          characterRef: data.script,
+          step_name: step.step_name,
+          narration: step.narration,
+          prompt_type: type,
+          existing_image_prompt: step.image_prompt,
+        }),
+      });
+      if (!res.ok) throw new Error("Error");
+      const generated = await res.json();
+      
+      setData(prev => {
+        if (!prev) return prev;
+        const newTimeline = [...prev.timeline];
+        if (type === "image") {
+          newTimeline[idx] = { ...newTimeline[idx], image_prompt: generated.image_prompt };
+        } else {
+          newTimeline[idx] = { ...newTimeline[idx], video_prompt: generated.video_prompt };
+        }
+        return { ...prev, timeline: newTimeline };
+      });
+      showToast(`Prompt de ${type === "image" ? "imagen" : "video"} regenerado.`, "success");
+    } catch (error) {
+      showToast("Error al regenerar prompt.", "error");
+    } finally {
+      setRegeneratingIdx(null);
+      setRegeneratingType(null);
     }
   };
 
@@ -124,6 +169,10 @@ export default function TimelinePage() {
       text += `\n${s.step_name}:\n${s.video_prompt}\n`;
     });
     handleCopy(text, 'all');
+  };
+
+  const isRegenerating = (idx: number, type: "image" | "video") => {
+    return regeneratingIdx === idx && regeneratingType === type;
   };
 
   return (
@@ -156,7 +205,7 @@ export default function TimelinePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje (Descripción para consistencia)
+                <User className="w-4 h-4 text-amber-400" /> Referencia del Personaje
               </label>
               <input
                 type="text"
@@ -188,7 +237,6 @@ export default function TimelinePage() {
             </div>
           </div>
 
-          {/* Botones de acción - Paso 1 y 2 */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleGenerateIdeas}
@@ -212,7 +260,7 @@ export default function TimelinePage() {
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
             >
               {isGeneratingImages ? <ImageIcon className="w-4 h-4 animate-pulse" /> : <ImageIcon className="w-4 h-4" />}
-              3. Generar Prompts de Escenas
+              3. Generar Prompts
             </button>
           </div>
         </div>
@@ -240,32 +288,44 @@ export default function TimelinePage() {
           <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 animate-in slide-in-from-bottom-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-amber-400">{data.title}</h2>
-              <button
-                onClick={() => handleCopy(data!.script, 'script')}
-                className="flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-              >
-                {copiedStates['script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Guion</>}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleGenerateScript()}
+                  className="flex items-center gap-2 bg-slate-700 text-slate-300 border border-slate-600 hover:bg-slate-600 py-2 px-3 rounded-xl text-sm transition-colors"
+                >
+                  <RefreshCw className="w-4 h-4" /> Regenerar Guion
+                </button>
+                <button
+                  onClick={() => handleCopy(data!.script, 'script')}
+                  className="flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-3 rounded-xl text-sm font-semibold transition-colors"
+                >
+                  {copiedStates['script'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar</>}
+                </button>
+              </div>
             </div>
             <div className="bg-slate-950/60 p-6 rounded-2xl border border-slate-800">
               <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{data.script}</p>
             </div>
             {data.reference_prompt && (
               <div className="mt-4 bg-slate-950/60 p-4 rounded-2xl border border-purple-500/30">
-                <span className="text-xs font-bold text-purple-400 uppercase">Prompt de Personaje de Referencia</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-purple-400 uppercase">Prompt de Personaje de Referencia</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCopy(data!.reference_prompt, 'ref')}
+                      className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-3 rounded-lg transition-colors"
+                    >
+                      {copiedStates['ref'] ? <Check className="w-3 h-3 inline" /> : <Copy className="w-3 h-3 inline" />} Copiar
+                    </button>
+                  </div>
+                </div>
                 <p className="text-xs text-slate-400 font-mono mt-2">{data.reference_prompt}</p>
-                <button
-                  onClick={() => handleCopy(data!.reference_prompt, 'ref')}
-                  className="mt-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-3 rounded-lg transition-colors"
-                >
-                  {copiedStates['ref'] ? <Check className="w-3 h-3 inline" /> : <Copy className="w-3 h-3 inline" />} Copiar
-                </button>
               </div>
             )}
           </div>
         )}
 
-        {/* Prompts de Imagen y Video */}
+        {/* Prompts de Escenas */}
         {data?.timeline && data.timeline.length > 0 && (
           <div className="bg-slate-900/40 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in slide-in-from-bottom-4 relative">
             <button
@@ -291,12 +351,22 @@ export default function TimelinePage() {
                     <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-orange-400 uppercase">📷 Prompt Imagen</span>
-                        <button
-                          onClick={() => handleCopy(step.image_prompt, `img_${idx}`)}
-                          className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
-                        >
-                          {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </button>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleRegeneratePrompt(idx, "image")}
+                            disabled={isRegenerating(idx, "image")}
+                            className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                            title="Regenerar prompt"
+                          >
+                            <RefreshCw className={`w-3 h-3 ${isRegenerating(idx, "image") ? "animate-spin" : ""}`} />
+                          </button>
+                          <button
+                            onClick={() => handleCopy(step.image_prompt, `img_${idx}`)}
+                            className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                          >
+                            {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        </div>
                       </div>
                       <p className="text-xs text-slate-400 font-mono leading-relaxed">{step.image_prompt}</p>
                     </div>
@@ -305,12 +375,22 @@ export default function TimelinePage() {
                     <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-cyan-400 uppercase">🎬 Prompt Video</span>
-                        <button
-                          onClick={() => handleCopy(step.video_prompt, `vid_${idx}`)}
-                          className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
-                        >
-                          {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </button>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleRegeneratePrompt(idx, "video")}
+                            disabled={isRegenerating(idx, "video")}
+                            className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                            title="Regenerar prompt"
+                          >
+                            <RefreshCw className={`w-3 h-3 ${isRegenerating(idx, "video") ? "animate-spin" : ""}`} />
+                          </button>
+                          <button
+                            onClick={() => handleCopy(step.video_prompt, `vid_${idx}`)}
+                            className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                          >
+                            {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        </div>
                       </div>
                       <p className="text-xs text-slate-400 font-mono leading-relaxed">{step.video_prompt}</p>
                     </div>

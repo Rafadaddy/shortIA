@@ -38,8 +38,7 @@ Responde SOLO con un JSON válido:
   "ideas": ["Título 1 con #hashtags", "Título 2 con #hashtags", ... (10 ideas)"]
 }
 `;
-    } else if (mode === "script") {
-      prompt = `
+    } else if (mode === "script") {      prompt = `
 Eres un guionista profesional de YouTube Shorts, creando videos altamente atractivos, impulsados por la curiosidad, animados en 3D o narrados.
 
 Escribe un guion de 200-250 palabras para el tema: "${topic}"
@@ -230,6 +229,64 @@ Responde SOLO con un JSON válido:
   ]
 }
 `;
+    } else if (mode === "single_prompt") {
+      const { step_name, narration, prompt_type, existing_image_prompt } = await req.json();
+      
+      if (prompt_type === "image") {
+        prompt = `
+Eres un director de visualización médica. Regenera SOLO el prompt de imagen para esta escena.
+
+CONTEXTO DEL PERSONAJE:
+${characterRef}
+
+ESCENA:
+Paso: ${step_name}
+Narración: ${narration}
+
+REGLAS:
+- Fondo morado sólido
+- Personaje de piel transparente con esqueleto visible
+- Exactamente 2 ojos en las cuencas
+- Sentado, de frente, centrado
+- Mostrar los efectos físicos que describe la narración
+- NO incluir el prompt de video, SOLO imagen
+- Formato: "Front-facing, centered hyper-realistic 3D CGI human figure with intact transparent skin over skeleton, sitting [postura], [efectos según narración], solid purple background, dramatic lighting. --ar 9:16"
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El prompt de imagen en inglés"
+}
+`;
+      } else {
+        prompt = `
+Eres un director de visualización médica. Regenera SOLO el prompt de video para esta escena.
+
+CONTEXTO DEL PERSONAJE:
+${characterRef}
+
+ESCENA:
+Paso: ${step_name}
+Narración: ${narration}
+Prompt de imagen actual: ${existing_image_prompt}
+
+REGLAS:
+- El video debe ser la VERSIÓN ANIMADA del prompt de imagen
+- Misma escena, mismo personaje, misma postura
+- El movimiento debe ser la EVOLUCIÓN de lo que dice la narración
+- Cámara: push-in lento o sacudida sutil
+- Fondo morado sólido SIEMPRE
+- 3-6 segundos de duración
+- NO incluir prompt de imagen, SOLO video
+
+Formato:
+"3-6 sec vertical: [misma escena que imagen]. [Movimiento según narración]. Slow camera push-in. Solid purple background."
+
+Responde SOLO con un JSON válido:
+{
+  "video_prompt": "El prompt de video en inglés"
+}
+`;
+      }
     }
 
     const chatCompletion = await groq.chat.completions.create({
