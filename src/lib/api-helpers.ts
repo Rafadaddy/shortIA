@@ -16,7 +16,7 @@ export async function chatCompletion(
     if (groqKey) {
       console.log("[API-Helpers] Using fallback Groq from .env.local");
       return generateChatCompletion(
-        { providerId: "groq", apiKey: groqKey, model: "llama-3.3-70b-versatile" },
+        { providerId: "groq", apiKey: groqKey, model: "llama-3.1-8b-instant" },
         [{ role: "user", content: prompt }],
         { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
       );
