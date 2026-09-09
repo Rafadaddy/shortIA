@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Sparkles, Image as ImageIcon, Copy, Check, Search, MessageCircle, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 interface ComicPanel {
   panel_number: number;

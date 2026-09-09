@@ -5,7 +5,7 @@ import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon 
 import { topicCategories } from "./topics";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 export const allTopicsList = topicCategories.flatMap((cat, catIdx) =>
   cat.topics.map((t, topicIdx) => {

@@ -11,20 +11,7 @@ export async function chatCompletion(
   console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS" : "NOT FOUND");
   console.log("[API-Helpers] _provider from request:", providerConfig ? `${providerConfig.providerId} / ${providerConfig.model}` : "NULL");
 
-  // PRIORITY: Use env var from server first (more secure, always works)
-  // Only use client provider config if no env var exists
-  if (groqKey) {
-    // Use mixtral which is guaranteed to exist on Groq
-    const model = "mixtral-8x7b-32768";
-    console.log(`[API-Helpers] Using server Groq key | Model: ${model}`);
-    return generateChatCompletion(
-      { providerId: "groq", apiKey: groqKey, model },
-      [{ role: "user", content: prompt }],
-      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
-    );
-  }
-
-  // Fallback: use client provider config
+  // PRIORITY 1: Use client provider config if fully configured
   if (providerConfig && providerConfig.apiKey) {
     console.log(`[API-Helpers] Using client provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
     try {
@@ -38,6 +25,18 @@ export async function chatCompletion(
       console.error(`[API-Helpers] Error from ${providerConfig.providerId}:`, errMsg);
       throw new Error(errMsg);
     }
+  }
+
+  // PRIORITY 2: Fallback to server env var if no client key is provided
+  if (groqKey) {
+    // If the user selected a groq model but provided no key, try to use their selected model. Otherwise default to a stable model.
+    const model = (providerConfig?.providerId === "groq" && providerConfig?.model) ? providerConfig.model : "llama-3.3-70b-versatile";
+    console.log(`[API-Helpers] Using server Groq key | Model: ${model}`);
+    return generateChatCompletion(
+      { providerId: "groq", apiKey: groqKey, model },
+      [{ role: "user", content: prompt }],
+      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+    );
   }
 
   throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");

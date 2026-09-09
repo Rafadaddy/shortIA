@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, Video, Copy, Check, Flame, RefreshCw, Play, Quote } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 interface Scene {
   scene_number: number;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, Heart, Copy, Check, MessageSquare, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 interface ConversationPanel {
   panel_number: number;

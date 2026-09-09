@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, Hourglass, Copy, Check, User, FileText, ImageIcon, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 interface TimelineStep {
   step_name: string;

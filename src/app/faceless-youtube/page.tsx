@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+
 
 interface FacelessIdea {
   title: string;
