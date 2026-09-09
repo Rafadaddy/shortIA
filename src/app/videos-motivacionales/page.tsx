@@ -1,4 +1,5 @@
 "use client";
+import { aiFetch } from "@/lib/ai-fetch";
 
 import { useState } from "react";
 import { Sparkles, Video, Copy, Check, Flame, RefreshCw, Play, Quote } from "lucide-react";

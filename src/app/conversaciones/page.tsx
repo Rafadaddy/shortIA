@@ -1,4 +1,5 @@
 "use client";
+import { aiFetch } from "@/lib/ai-fetch";
 
 import { useState } from "react";
 import { Sparkles, Heart, Copy, Check, MessageSquare, RefreshCw } from "lucide-react";

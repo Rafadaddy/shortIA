@@ -1,4 +1,5 @@
 "use client";
+import { aiFetch } from "@/lib/ai-fetch";
 
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon } from "lucide-react";
