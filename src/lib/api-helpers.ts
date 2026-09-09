@@ -7,16 +7,22 @@ export async function chatCompletion(
 ): Promise<string> {
   const providerConfig = requestBody._provider as ProviderConfig | undefined;
 
-  if (!providerConfig) {
+  // If no provider config from client, fall back to env vars (legacy mode)
+  if (!providerConfig || !providerConfig.apiKey) {
+    const groqKey = process.env.GROQ_API_KEY;
+    if (groqKey) {
+      console.log("[AI] Using fallback Groq from .env.local");
+      return generateChatCompletion(
+        { providerId: "groq", apiKey: groqKey, model: "llama-3.3-70b-versatile" },
+        [{ role: "user", content: prompt }],
+        { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+      );
+    }
     throw new Error("No hay proveedor de IA configurado. Abre Configuracion y agrega una API key.");
   }
 
   if (!providerConfig.apiKey) {
     throw new Error(`Sin API key para ${providerConfig.providerId}. Abre Configuracion y agrega tu key.`);
-  }
-
-  if (!providerConfig.providerId) {
-    throw new Error("Configuracion de proveedor invalida. Abre Configuracion y selecciona un proveedor.");
   }
 
   console.log(`[AI] Provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
