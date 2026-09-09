@@ -11,9 +11,24 @@ export async function chatCompletion(
   console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS" : "NOT FOUND");
   console.log("[API-Helpers] _provider from request:", providerConfig ? `${providerConfig.providerId} / ${providerConfig.model}` : "NULL");
 
-  // PRIORITY 1: Use client provider config if fully configured
+  // PRIORIDAD 1: Usar la API Key local del servidor (process.env) si existe, pero respetando el modelo elegido en la UI.
+  if (groqKey) {
+    // Si el usuario seleccionó un modelo de Groq en la UI, usamos ese. Si no, usamos llama-3.3 por defecto.
+    const model = (providerConfig?.providerId === "groq" && providerConfig?.model) 
+      ? providerConfig.model 
+      : "llama-3.3-70b-versatile";
+      
+    console.log(`[API-Helpers] Usando API key LOCAL del servidor | Modelo: ${model}`);
+    return generateChatCompletion(
+      { providerId: "groq", apiKey: groqKey, model },
+      [{ role: "user", content: prompt }],
+      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+    );
+  }
+
+  // PRIORIDAD 2: Usar la API Key y configuración enviada desde el cliente (UI)
   if (providerConfig && providerConfig.apiKey) {
-    console.log(`[API-Helpers] Using client provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
+    console.log(`[API-Helpers] Usando configuración del cliente: ${providerConfig.providerId} | Modelo: ${providerConfig.model}`);
     try {
       return await generateChatCompletion(
         providerConfig,
@@ -22,21 +37,9 @@ export async function chatCompletion(
       );
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : String(error);
-      console.error(`[API-Helpers] Error from ${providerConfig.providerId}:`, errMsg);
+      console.error(`[API-Helpers] Error desde ${providerConfig.providerId}:`, errMsg);
       throw new Error(errMsg);
     }
-  }
-
-  // PRIORITY 2: Fallback to server env var if no client key is provided
-  if (groqKey) {
-    // If the user selected a groq model but provided no key, try to use their selected model. Otherwise default to a stable model.
-    const model = (providerConfig?.providerId === "groq" && providerConfig?.model) ? providerConfig.model : "llama-3.3-70b-versatile";
-    console.log(`[API-Helpers] Using server Groq key | Model: ${model}`);
-    return generateChatCompletion(
-      { providerId: "groq", apiKey: groqKey, model },
-      [{ role: "user", content: prompt }],
-      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
-    );
   }
 
   throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
