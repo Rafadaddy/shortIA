@@ -25,7 +25,7 @@ const defaultProviders: AIProvider[] = [
     name: "Groq",
     icon: "⚡",
     color: "text-orange-400",
-    models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it"],
+    models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768", "gemma2-9b-it", "openai/gpt-oss-120b", "openai/gpt-4o-mini"],
     apiKeyUrl: "https://console.groq.com/keys",
     enabled: true,
     apiKey: "",
