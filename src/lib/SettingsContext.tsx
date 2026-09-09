@@ -122,6 +122,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     providers: defaultProviders,
     activeProviderId: "groq",
   });
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("ai-studio-settings");
@@ -138,11 +139,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         });
       } catch {}
     }
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("ai-studio-settings", JSON.stringify(settings));
-  }, [settings]);
+    if (loaded) {
+      localStorage.setItem("ai-studio-settings", JSON.stringify(settings));
+    }
+  }, [settings, loaded]);
 
   const updateProvider = (id: string, updates: Partial<AIProvider>) => {
     setSettings((prev) => {
