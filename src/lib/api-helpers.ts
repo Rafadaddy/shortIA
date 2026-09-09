@@ -14,8 +14,8 @@ export async function chatCompletion(
   // PRIORITY: Use env var from server first (more secure, always works)
   // Only use client provider config if no env var exists
   if (groqKey) {
-    // Always use a known-working model when using server key
-    const model = "llama-3.1-8b-instant";
+    // Use mixtral which is guaranteed to exist on Groq
+    const model = "mixtral-8x7b-32768";
     console.log(`[API-Helpers] Using server Groq key | Model: ${model}`);
     return generateChatCompletion(
       { providerId: "groq", apiKey: groqKey, model },
