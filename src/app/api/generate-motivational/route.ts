@@ -175,8 +175,9 @@ Responde SOLO con un JSON válido:
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error generating motivational video:", error);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "Error desconocido";
+    console.error("Error generating motivational video:", errMsg);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }

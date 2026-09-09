@@ -122,8 +122,9 @@ Asegúrate de incluir EXACTAMENTE ${count} escenas en el arreglo 'scenes'. Las n
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error generating faceless youtube:", error);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "Error desconocido";
+    console.error("Error generating faceless youtube:", errMsg);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }

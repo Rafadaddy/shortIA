@@ -7,13 +7,29 @@ export async function chatCompletion(
 ): Promise<string> {
   const providerConfig = requestBody._provider as ProviderConfig | undefined;
 
-  if (!providerConfig || !providerConfig.apiKey) {
-    throw new Error("No AI provider configured. Go to Settings to add an API key.");
+  if (!providerConfig) {
+    throw new Error("No hay proveedor de IA configurado. Abre Configuracion y agrega una API key.");
   }
 
-  return generateChatCompletion(
-    providerConfig,
-    [{ role: "user", content: prompt }],
-    { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
-  );
+  if (!providerConfig.apiKey) {
+    throw new Error(`Sin API key para ${providerConfig.providerId}. Abre Configuracion y agrega tu key.`);
+  }
+
+  if (!providerConfig.providerId) {
+    throw new Error("Configuracion de proveedor invalida. Abre Configuracion y selecciona un proveedor.");
+  }
+
+  console.log(`[AI] Provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
+
+  try {
+    return await generateChatCompletion(
+      providerConfig,
+      [{ role: "user", content: prompt }],
+      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+    );
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error(`[AI] Error from ${providerConfig.providerId}:`, errMsg);
+    throw new Error(errMsg);
+  }
 }

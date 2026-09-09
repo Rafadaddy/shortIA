@@ -106,8 +106,9 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error generating illustration:", error);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "Error desconocido";
+    console.error("Error generating illustration:", errMsg);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }

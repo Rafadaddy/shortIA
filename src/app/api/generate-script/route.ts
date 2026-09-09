@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
-
-// Inicializa el cliente de Groq (asegúrate de poner GROQ_API_KEY en .env.local)
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import { chatCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { mode, ideaText, urlText, duration, voice, theme, style, format } = body;
+    const requestBody = await req.json();
+    const { mode, ideaText, urlText, duration, voice, theme, style, format } = requestBody;
 
     const requestedFormat = format || "Vertical (9:16)";
     let aspectRatioFlag = "--ar 9:16";
@@ -73,26 +70,15 @@ IMPORTANTE: Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con la s
 }
 `;
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      model: "openai/gpt-oss-120b", // Modelo más estable actual
-      response_format: { type: "json_object" }, // Obligamos a Groq a devolver JSON
-      temperature: 0.7,
-    });
-
-    const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.7 });
     
     // Parseamos el JSON para enviarlo al Frontend
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Error generating script with Groq:", error);
-    return NextResponse.json({ error: "Error interno al generar el guión" }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "Error desconocido";
+    console.error("Error generating script:", errMsg);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }
