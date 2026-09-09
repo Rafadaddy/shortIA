@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, panels, style, theme } = await req.json();
+    const { niche, idea, panels, style, theme, mode, panel_number, dialogue, speaker, existing_prompt, man_appearance, woman_appearance } = await req.json();
 
     const panelCount = panels || 8;
     const requestedStyle = style || "Estilo Cómic Web / Webtoon";
@@ -40,6 +40,40 @@ export async function POST(req: NextRequest) {
     };
 
     const themeInstruction = themeInstructions[requestedTheme] || themeInstructions.amor;
+
+    if (mode === "single_prompt") {
+      const characterAppearance = speaker === "EL HOMBRE" ? man_appearance : woman_appearance;
+      const prompt = `
+Eres un director de arte experto en crear cómics de conversación virales para redes sociales.
+Regenera SOLO el prompt de imagen para la viñeta ${panel_number} de una conversación.
+
+Estilo Visual: "${requestedStyle}"
+El personaje que habla (${speaker}): ${characterAppearance}
+Diálogo: "${dialogue}"
+Prompt anterior (NO repetir): "${existing_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Mantener el diálogo "${dialogue}" en español dentro del prompt
+- Mantener el estilo visual solicitado
+- El prompt debe estar en inglés
+- El personaje que habla debe estar en primer plano con expresión facial que refleje su emoción
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "openai/gpt-oss-120b",
+        response_format: { type: "json_object" },
+        temperature: 0.9,
+      });
+      const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+      const data = JSON.parse(jsonText);
+      return NextResponse.json(data);
+    }
 
     const prompt = `
 Eres un guionista de historietas de CONVERSACIÓN entre dos personajes. Tu especialidad son las historias que se desarrollan a través del DIÁLOGO entre un HOMBRE y una MUJER.

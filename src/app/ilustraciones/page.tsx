@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quote } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quote, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 
@@ -37,6 +37,7 @@ export default function IlustracionesPage() {
   
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
+  const [regenerating, setRegenerating] = useState(false);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -56,6 +57,34 @@ export default function IlustracionesPage() {
       showToast("Hubo un error al generar el prompt de ilustración.", "error");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleRegenerateImagePrompt = async () => {
+    if (!data || regenerating) return;
+    setRegenerating(true);
+    try {
+      const res = await fetch("/api/generate-illustration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "single_prompt",
+          niche,
+          style: visualStyle,
+          format: imageFormat,
+          textSurface,
+          suggested_phrase: data.suggested_phrase,
+          existing_prompt: data.image_prompt,
+        }),
+      });
+      if (!res.ok) throw new Error("Error al regenerar");
+      const newData = await res.json();
+      setData({ ...data, image_prompt: newData.image_prompt });
+    } catch (error) {
+      console.error(error);
+      showToast("Error al regenerar el prompt.", "error");
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -196,12 +225,25 @@ export default function IlustracionesPage() {
                   <span className="text-sm font-semibold text-pink-400 uppercase tracking-wider flex items-center gap-2">
                     <ImageIcon className="w-4 h-4" /> Prompt para DALL-E 3 / Midjourney v6
                   </span>
-                  <button
-                    onClick={() => handleCopy(data.image_prompt, 'prompt')}
-                    className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
-                  >
-                    {copiedStates['prompt'] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleRegenerateImagePrompt}
+                      disabled={regenerating}
+                      className="flex items-center justify-center gap-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 py-1.5 px-2.5 rounded-lg text-xs font-semibold transition-colors"
+                    >
+                      {regenerating ? (
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleCopy(data.image_prompt, 'prompt')}
+                      className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
+                    >
+                      {copiedStates['prompt'] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
+                    </button>
+                  </div>
                 </div>
                 <p className="text-sm text-slate-300 font-mono leading-relaxed bg-slate-950/50 p-4 rounded-lg">
                   {data.image_prompt}

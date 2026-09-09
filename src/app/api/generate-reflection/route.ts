@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, style, format, tone } = await req.json();
+    const { topic, style, format, tone, mode, existing_image_prompt, reflection_text } = await req.json();
 
     const requestedTone = tone || "Libre / Equilibrado";
     const requestedStyle = style || "Fotografía Realista";
@@ -15,7 +15,32 @@ export async function POST(req: NextRequest) {
     if (requestedFormat.includes("16:9")) aspectRatioFlag = "--ar 16:9";
     if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
-    const prompt = `
+    let prompt = "";
+
+    if (mode === "single_prompt") {
+      prompt = `
+Eres un experto en prompts visuales para IA generativa. Regenera el prompt de imagen para una reflexión.
+
+REFLEXIÓN:
+${reflection_text}
+
+ESTILO VISUAL SOLICITADO: ${requestedStyle}
+FORMATO: ${requestedFormat}
+
+REGLAS:
+- El prompt debe capturar la EMOCIÓN de la reflexión
+- Incluir una escena o sujeto solitario relacionado al tema
+- La tipografía debe mostrar la frase gancho en español
+- Ser creativo y no repetir el prompt anterior
+- Mantener el estilo visual y formato solicitados
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+    } else {
+      prompt = `
 <system_instructions>
 <role>
 Eres "MENTOR DIGITAL", un escritor experto en microcontenido emocional para redes sociales. Tu especialidad es escribir reflexiones que hagan que la gente diga "esto me está hablando a mí". No eres un coach motivacional genérico; eres alguien que ha vivido lo que escribe.
@@ -100,6 +125,7 @@ Responde SOLO con un JSON válido:
   "image_prompt": "El prompt visual en inglés..."
 }
 `;
+    }
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],

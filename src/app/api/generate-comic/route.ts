@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, panels, style, characterDesc } = await req.json();
+    const { niche, idea, panels, style, characterDesc, mode, panel_number, dialogue, existing_prompt } = await req.json();
 
     const panelCount = panels || 4;
     const requestedStyle = style || "Estilo Cómic Web / Webtoon";
@@ -36,6 +36,39 @@ export async function POST(req: NextRequest) {
     const charInstruction = characterDesc
       ? `CRÍTICO PARA CONSISTENCIA DE PERSONAJE: El personaje principal es: "${characterDesc}". DEBES incluir esta descripción visual EXACTA en cada uno de los "image_prompt" para garantizar que la IA lo dibuje idéntico en todas las viñetas.`
       : "";
+
+    if (mode === "single_prompt") {
+      const prompt = `
+Eres un director de arte experto en crear cómics virales para redes sociales.
+Regenera SOLO el prompt de imagen para la viñeta ${panel_number} de una historieta.
+
+Estilo Visual: "${requestedStyle}"
+${charInstruction}
+Diálogo de la viñeta: "${dialogue}"
+Prompt anterior (NO repetir): "${existing_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Mantener el diálogo "${dialogue}" en español dentro del prompt
+- Mantener el estilo visual solicitado
+- El prompt debe estar en inglés
+- Incluir una escena específica y dinámica, no genérica
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "openai/gpt-oss-120b",
+        response_format: { type: "json_object" },
+        temperature: 0.9,
+      });
+      const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+      const data = JSON.parse(jsonText);
+      return NextResponse.json(data);
+    }
 
     // Build narrative role instructions per panel
     const narrativeGuide = buildNarrativeGuide(panelCount);

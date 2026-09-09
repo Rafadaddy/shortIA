@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -42,6 +42,10 @@ export function Sidebar() {
             <PlaySquare className="w-5 h-5 text-cyan-400" />
             Faceless YouTube
           </Link>
+          <Link href="/videos-motivacionales" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Flame className="w-5 h-5 text-amber-400" />
+            Videos Motivacionales
+          </Link>
         </nav>
         
         <div className="p-4 border-t border-slate-800">
@@ -79,6 +83,10 @@ export function Sidebar() {
         <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400">
           <PlaySquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">YouTube</span>
+        </Link>
+        <Link href="/videos-motivacionales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400">
+          <Flame className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Motiva</span>
         </Link>
       </nav>
     </>

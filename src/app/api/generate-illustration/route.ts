@@ -5,7 +5,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, format, style, textSurface } = await req.json();
+    const { niche, idea, format, style, textSurface, mode, existing_prompt, suggested_phrase } = await req.json();
 
     const requestedFormat = format || "Vertical (9:16)";
     const requestedStyle = style || "Cinemático Oscuro (Motivación)";
@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
       styleInstruction = "A cozy, cute, hand-drawn aesthetic illustration style. Watercolor textures, soft pastel colors, emotional and tender. The typography should look like beautiful hand-written calligraphy or cute bubble letters integrated playfully into the environment.";
     } else if (requestedStyle.includes("Minimalista Elegante")) {
       styleInstruction = "A clean, minimalist, high-end editorial style. Lots of negative space, neutral colors (black, white, beige). The typography must be sleek, modern serif or sans-serif, elegant and sophisticated.";
+    } else if (requestedStyle.includes("3D Pixar")) {
+      styleInstruction = "A highly detailed, hyper-realistic 3D Pixar/Disney style character design. Beautiful soft lighting, vibrant colors, emotional expression, expressive eyes. The typography should be bold, playful, and integrated into the scene.";
     } else if (requestedStyle.includes("Animación 2D")) {
       styleInstruction = "A classic 2D animated cartoon style. Flat colors, expressive character designs, traditional western animation aesthetics. The typography should match the playful cartoon style.";
     } else if (requestedStyle.includes("Lápiz")) {
@@ -48,7 +50,31 @@ export async function POST(req: NextRequest) {
       textSurfaceInstruction = "formed by clouds or glowing floating letters in the sky";
     }
 
-    const prompt = `
+    let prompt = "";
+
+    if (mode === "single_prompt") {
+      prompt = `
+Eres un director de arte experto en crear contenido visual viral para redes sociales.
+Regenera SOLO el prompt de imagen para esta ilustración.
+
+Nicho: "${niche}"
+Estilo: "${requestedStyle}"
+Frase original: "${suggested_phrase}"
+Prompt anterior (NO repetir): "${existing_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Mantener la frase "${suggested_phrase}" en español dentro del prompt
+- Mantener el estilo visual y formato solicitados
+- El prompt debe estar en inglés
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+    } else {
+      prompt = `
 Eres un director de arte experto en crear contenido visual viral para redes sociales.
 Tu especialidad es generar imágenes impactantes que INCLUYEN TEXTO DIRECTAMENTE EN LA COMPOSICIÓN.
 
@@ -75,6 +101,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
   "caption": "..."
 }
 `;
+    }
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],

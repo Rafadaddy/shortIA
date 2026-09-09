@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Image as ImageIcon, Copy, Check, Search, MessageCircle } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Copy, Check, Search, MessageCircle, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 
@@ -65,6 +65,7 @@ export default function HistorietasPage() {
   
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
+  const [regeneratingPanel, setRegeneratingPanel] = useState<number | null>(null);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -97,6 +98,36 @@ export default function HistorietasPage() {
     if (!data) return;
     const allText = data.panels.map(p => `Viñeta ${p.panel_number}:\nDiálogo: "${p.dialogue}"\nPrompt: ${p.image_prompt}\n`).join("\n");
     handleCopy(allText, 'all');
+  };
+
+  const handleRegeneratePanel = async (panelIndex: number) => {
+    if (!data || regeneratingPanel !== null) return;
+    const panel = data.panels[panelIndex];
+    setRegeneratingPanel(panelIndex);
+    try {
+      const res = await fetch("/api/generate-comic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "single_prompt",
+          style: visualStyle,
+          characterDesc,
+          panel_number: panel.panel_number,
+          dialogue: panel.dialogue,
+          existing_prompt: panel.image_prompt,
+        }),
+      });
+      if (!res.ok) throw new Error("Error al regenerar");
+      const newData = await res.json();
+      const newPanels = [...data.panels];
+      newPanels[panelIndex] = { ...newPanels[panelIndex], image_prompt: newData.image_prompt };
+      setData({ ...data, panels: newPanels });
+    } catch (error) {
+      console.error(error);
+      showToast("Error al regenerar el prompt.", "error");
+    } finally {
+      setRegeneratingPanel(null);
+    }
   };
 
   return (
@@ -269,12 +300,25 @@ export default function HistorietasPage() {
                       <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800/50">
                         <div className="flex items-center justify-between gap-4 mb-2">
                           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Prompt de Generación (DALL-E 3)</span>
-                          <button
-                            onClick={() => handleCopy(panel.image_prompt, `prompt_${idx}`)}
-                            className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
-                          >
-                            {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => handleRegeneratePanel(idx)}
+                              disabled={regeneratingPanel !== null}
+                              className="flex items-center justify-center bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                            >
+                              {regeneratingPanel === idx ? (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <RefreshCw className="w-3 h-3" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleCopy(panel.image_prompt, `prompt_${idx}`)}
+                              className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1 px-2 rounded-lg transition-colors"
+                            >
+                              {copiedStates[`prompt_${idx}`] ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar Prompt</>}
+                            </button>
+                          </div>
                         </div>
                         <p className="text-sm text-slate-400 font-mono leading-relaxed">{panel.image_prompt}</p>
                       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2 } from "lucide-react";
+import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 
@@ -60,6 +60,8 @@ export default function FacelessYouTubePage() {
   const [data, setData] = useState<FacelessData | null>(null);
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
+  const [regeneratingScene, setRegeneratingScene] = useState<number | null>(null);
+  const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
 
   const handleGenerateIdeas = async () => {
     setIsGeneratingIdeas(true);
@@ -123,6 +125,42 @@ export default function FacelessYouTubePage() {
     });
     
     handleCopy(fullText, 'full_script');
+  };
+
+  const handleRegenerateScenePrompt = async (sceneIndex: number, promptType: "image" | "animation") => {
+    if (!data || regeneratingScene !== null) return;
+    const scene = data.scenes[sceneIndex];
+    setRegeneratingScene(sceneIndex);
+    setRegeneratingType(promptType);
+    try {
+      const res = await fetch("/api/generate-faceless", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "single_prompt",
+          prompt_type: promptType,
+          scene_number: scene.scene_number,
+          narration: scene.narration,
+          visual_concept: scene.visual_concept,
+          existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
+        }),
+      });
+      if (!res.ok) throw new Error("Error al regenerar");
+      const newData = await res.json();
+      const newScenes = [...data.scenes];
+      if (promptType === "image") {
+        newScenes[sceneIndex] = { ...newScenes[sceneIndex], image_prompt: newData.image_prompt };
+      } else {
+        newScenes[sceneIndex] = { ...newScenes[sceneIndex], animation_prompt: newData.animation_prompt };
+      }
+      setData({ ...data, scenes: newScenes });
+    } catch (error) {
+      console.error(error);
+      showToast("Error al regenerar el prompt.", "error");
+    } finally {
+      setRegeneratingScene(null);
+      setRegeneratingType(null);
+    }
   };
 
   return (
@@ -327,19 +365,49 @@ export default function FacelessYouTubePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 relative">
-                        <span className="text-xs font-semibold text-pink-400 uppercase block mb-2">Prompt de Imagen</span>
-                        <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300">
-                          {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
-                        </button>
-                        <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">{scene.image_prompt}</p>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-pink-400 uppercase">Prompt de Imagen</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleRegenerateScenePrompt(idx, "image")}
+                              disabled={regeneratingScene !== null}
+                              className="text-xs bg-slate-700/50 p-1.5 rounded-md hover:bg-slate-600/50 text-pink-300"
+                            >
+                              {regeneratingScene === idx && regeneratingType === "image" ? (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <RefreshCw className="w-3 h-3" />
+                              )}
+                            </button>
+                            <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300">
+                              {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.image_prompt}</p>
                       </div>
                       
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4 relative">
-                        <span className="text-xs font-semibold text-emerald-400 uppercase block mb-2">Prompt de Animación (Veo 3/Runway)</span>
-                        <button onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)} className="absolute top-2 right-2 text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
-                          {copiedStates[`anim_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
-                        </button>
-                        <p className="text-xs text-slate-400 font-mono leading-relaxed pr-6">{scene.animation_prompt}</p>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-emerald-400 uppercase">Prompt de Animación (Veo 3/Runway)</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleRegenerateScenePrompt(idx, "animation")}
+                              disabled={regeneratingScene !== null}
+                              className="text-xs bg-slate-700/50 p-1.5 rounded-md hover:bg-slate-600/50 text-emerald-300"
+                            >
+                              {regeneratingScene === idx && regeneratingType === "animation" ? (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <RefreshCw className="w-3 h-3" />
+                              )}
+                            </button>
+                            <button onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
+                              {copiedStates[`anim_${idx}`] ? <Check className="w-3 h-3"/> : <Copy className="w-3 h-3"/>}
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.animation_prompt}</p>
                       </div>
                     </div>
                   </div>

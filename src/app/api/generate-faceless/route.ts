@@ -5,14 +5,58 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { mode, topic, bodyColor, shortsColor, sceneCount } = await req.json();
+    const { mode, topic, bodyColor, shortsColor, sceneCount, scene_number, narration, visual_concept, existing_image_prompt, prompt_type } = await req.json();
 
     const count = sceneCount || 8;
     let prompt = "";
 
     const characterBase = `Stylized muscular humanoid character with smooth ${bodyColor || 'yellow'} skin, simple oval head with no facial features except two white oval eyes. Clean line art, thick black outlines, flat solid colors. Very defined but simplified musculature on chest, arms, and abs. Wearing short ${shortsColor || 'black'} athletic shorts. Body proportions heroic and slightly exaggerated. Minimalist digital illustration style, no gradients, no detailed shading, only subtle contour lines. Soft pastel background. Modern, comic-like, simple, clean aesthetic.`;
 
-    if (mode === "ideas") {
+    if (mode === "single_prompt") {
+      if (prompt_type === "image") {
+        prompt = `
+Eres un director de arte experto en animación para YouTube.
+Regenera SOLO el prompt de imagen para la escena ${scene_number} de un video faceless.
+
+Personaje Base: ${characterBase}
+Narración: "${narration}"
+Concepto visual: "${visual_concept}"
+Prompt anterior (NO repetir): "${existing_image_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Mantener la descripción del personaje base
+- Mantener la narración y concepto visual
+- El prompt debe estar en inglés
+- Incluir pose, cámara, entorno e iluminación
+
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+      } else {
+        prompt = `
+Eres un director de arte experto en animación para YouTube.
+Regenera SOLO el prompt de animación/video para la escena ${scene_number} de un video faceless.
+
+Narración: "${narration}"
+Concepto visual: "${visual_concept}"
+Prompt anterior (NO repetir): "${existing_image_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Describir el movimiento y la cámara
+- Duración: 5 segundos
+- El prompt debe estar en inglés
+
+Responde SOLO con un JSON válido:
+{
+  "animation_prompt": "El nuevo prompt de animación en inglés..."
+}
+`;
+      }
+    } else if (mode === "ideas") {
       prompt = `
 Eres un creador experto de contenido para YouTube.
 Genera 5 ideas de video altamente atractivas y muy clicables para un canal de YouTube faceless con animación (Público objetivo: jóvenes/adultos interesados en historias, reflexiones o fitness).

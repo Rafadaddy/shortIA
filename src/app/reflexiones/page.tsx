@@ -35,7 +35,8 @@ export default function ReflexionesPage() {
   
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
-  
+  const [regenerating, setRegenerating] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -82,6 +83,33 @@ export default function ReflexionesPage() {
     if (!data) return;
     const textToCopy = `*${data.title || 'Reflexión'}*\n\n${data.reflection_text}`;
     handleCopy(textToCopy, 'all_text');
+  };
+
+  const handleRegenerateImagePrompt = async () => {
+    if (!data || regenerating) return;
+    setRegenerating(true);
+    try {
+      const res = await fetch("/api/generate-reflection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "single_prompt",
+          topic,
+          style: visualStyle,
+          format: imageFormat,
+          tone,
+          reflection_text: data.reflection_text,
+        }),
+      });
+      if (!res.ok) throw new Error("Error al regenerar");
+      const newData = await res.json();
+      setData({ ...data, image_prompt: newData.image_prompt });
+    } catch (error) {
+      console.error(error);
+      showToast("Error al regenerar el prompt.", "error");
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   return (
@@ -266,12 +294,25 @@ export default function ReflexionesPage() {
                     <span className="font-semibold text-indigo-400 flex items-center gap-2">
                       <ImageIcon className="w-5 h-5" /> Prompt para Midjourney / DALL-E
                     </span>
-                    <button
-                      onClick={() => handleCopy(data.image_prompt, 'image_prompt')}
-                      className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-                    >
-                      {copiedStates['image_prompt'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Prompt Visual</>}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleRegenerateImagePrompt}
+                        disabled={regenerating}
+                        className="flex items-center justify-center gap-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 py-2 px-3 rounded-xl text-sm font-semibold transition-colors"
+                      >
+                        {regenerating ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="w-4 h-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleCopy(data.image_prompt, 'image_prompt')}
+                        className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+                      >
+                        {copiedStates['image_prompt'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Prompt Visual</>}
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm md:text-base text-slate-400 font-mono leading-relaxed p-3 bg-slate-900 rounded-xl border border-slate-800/50">
                     {data.image_prompt}
