@@ -6,26 +6,25 @@ export async function chatCompletion(
   options?: { temperature?: number; jsonMode?: boolean }
 ): Promise<string> {
   const providerConfig = requestBody._provider as ProviderConfig | undefined;
+  const groqKey = process.env.GROQ_API_KEY;
+
+  console.log("[API-Helpers] _provider from request:", providerConfig ? "EXISTS" : "NULL/UNDEFINED");
+  console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS (" + groqKey.substring(0, 8) + "...)" : "NOT FOUND");
 
   // If no provider config from client, fall back to env vars (legacy mode)
   if (!providerConfig || !providerConfig.apiKey) {
-    const groqKey = process.env.GROQ_API_KEY;
     if (groqKey) {
-      console.log("[AI] Using fallback Groq from .env.local");
+      console.log("[API-Helpers] Using fallback Groq from .env.local");
       return generateChatCompletion(
         { providerId: "groq", apiKey: groqKey, model: "llama-3.3-70b-versatile" },
         [{ role: "user", content: prompt }],
         { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
       );
     }
-    throw new Error("No hay proveedor de IA configurado. Abre Configuracion y agrega una API key.");
+    throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key de Groq.");
   }
 
-  if (!providerConfig.apiKey) {
-    throw new Error(`Sin API key para ${providerConfig.providerId}. Abre Configuracion y agrega tu key.`);
-  }
-
-  console.log(`[AI] Provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
+  console.log(`[API-Helpers] Using provider: ${providerConfig.providerId} | Model: ${providerConfig.model}`);
 
   try {
     return await generateChatCompletion(
@@ -35,7 +34,7 @@ export async function chatCompletion(
     );
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : String(error);
-    console.error(`[AI] Error from ${providerConfig.providerId}:`, errMsg);
+    console.error(`[API-Helpers] Error from ${providerConfig.providerId}:`, errMsg);
     throw new Error(errMsg);
   }
 }
