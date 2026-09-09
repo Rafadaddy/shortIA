@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import { chatCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
-    const { mode, niche, idea, tone, duration, style, sceneCount, prompt_type, scene_number, narration, existing_prompt } = await req.json();
+    const requestBody = await req.json();
+    const { mode, niche, idea, tone, duration, style, sceneCount, prompt_type, scene_number, narration, existing_prompt } = requestBody;
 
     let prompt = "";
     const requestedDuration = duration || "40 segundos";
@@ -172,14 +171,7 @@ Responde SOLO con un JSON válido:
 `;
     }
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "openai/gpt-oss-120b",
-      response_format: { type: "json_object" },
-      temperature: mode === "single_prompt" ? 0.9 : 0.85,
-    });
-
-    const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode === "single_prompt" ? 0.9 : 0.85 });
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);

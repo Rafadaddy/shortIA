@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, Video, Copy, Check, Flame, RefreshCw, Play, Quote } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface Scene {
   scene_number: number;
@@ -90,16 +91,12 @@ export default function VideosMotivacionalesPage() {
     if (overrideIdea) setIdea(overrideIdea);
 
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          niche,
-          idea: finalIdea,
-          tone,
-          style: visualStyle,
-          sceneCount,
-        }),
+      const res = await aiFetch("/api/generate-motivational", {
+        niche,
+        idea: finalIdea,
+        tone,
+        style: visualStyle,
+        sceneCount,
       });
       if (!res.ok) throw new Error("Error al generar");
       const generatedData = await res.json();
@@ -118,11 +115,7 @@ export default function VideosMotivacionalesPage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "ideas", niche }),
-      });
+      const res = await aiFetch("/api/generate-motivational", { mode: "ideas", niche });
       if (!res.ok) throw new Error("Error al generar ideas");
       const generated = await res.json();
       if (generated.ideas) {
@@ -141,18 +134,14 @@ export default function VideosMotivacionalesPage() {
     setRegeneratingScene(sceneIndex);
     setRegeneratingType(promptType);
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          prompt_type: promptType,
-          niche,
-          style: visualStyle,
-          scene_number: scene.scene_number,
-          narration: scene.narration,
-          existing_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
-        }),
+      const res = await aiFetch("/api/generate-motivational", {
+        mode: "single_prompt",
+        prompt_type: promptType,
+        niche,
+        style: visualStyle,
+        scene_number: scene.scene_number,
+        narration: scene.narration,
+        existing_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();

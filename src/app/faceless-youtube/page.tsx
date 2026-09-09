@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, PlaySquare, Copy, Check, Palette, Image as ImageIcon, Play, Loader2, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface FacelessIdea {
   title: string;
@@ -69,11 +70,7 @@ export default function FacelessYouTubePage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-faceless", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "ideas" }),
-      });
+      const res = await aiFetch("/api/generate-faceless", { mode: "ideas" });
       if (!res.ok) throw new Error("Error fetching ideas");
       const generated = await res.json();
       if (generated.ideas) {
@@ -95,11 +92,7 @@ export default function FacelessYouTubePage() {
     if (selectedTopic) setTopic(selectedTopic);
 
     try {
-      const res = await fetch("/api/generate-faceless", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "full", topic: finalTopic, bodyColor, shortsColor, sceneCount: parseInt(sceneCount) }),
-      });
+      const res = await aiFetch("/api/generate-faceless", { mode: "full", topic: finalTopic, bodyColor, shortsColor, sceneCount: parseInt(sceneCount) });
       if (!res.ok) throw new Error("Error fetching video data");
       const generatedData = await res.json();
       setData(generatedData);
@@ -133,17 +126,13 @@ export default function FacelessYouTubePage() {
     setRegeneratingScene(sceneIndex);
     setRegeneratingType(promptType);
     try {
-      const res = await fetch("/api/generate-faceless", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          prompt_type: promptType,
-          scene_number: scene.scene_number,
-          narration: scene.narration,
-          visual_concept: scene.visual_concept,
-          existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
-        }),
+      const res = await aiFetch("/api/generate-faceless", {
+        mode: "single_prompt",
+        prompt_type: promptType,
+        scene_number: scene.scene_number,
+        narration: scene.narration,
+        visual_concept: scene.visual_concept,
+        existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();

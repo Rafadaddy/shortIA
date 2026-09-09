@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Sparkles, Image as ImageIcon, Copy, Check, Search, Quote, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface IllustrationData {
   title: string;
@@ -44,11 +45,7 @@ export default function IlustracionesPage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-illustration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, format: imageFormat, style: visualStyle, textSurface }),
-      });
+      const res = await aiFetch("/api/generate-illustration", { niche, idea, format: imageFormat, style: visualStyle, textSurface });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
       setData(generatedData);
@@ -64,18 +61,14 @@ export default function IlustracionesPage() {
     if (!data || regenerating) return;
     setRegenerating(true);
     try {
-      const res = await fetch("/api/generate-illustration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          niche,
-          style: visualStyle,
-          format: imageFormat,
-          textSurface,
-          suggested_phrase: data.suggested_phrase,
-          existing_prompt: data.image_prompt,
-        }),
+      const res = await aiFetch("/api/generate-illustration", {
+        mode: "single_prompt",
+        niche,
+        style: visualStyle,
+        format: imageFormat,
+        textSurface,
+        suggested_phrase: data.suggested_phrase,
+        existing_prompt: data.image_prompt,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();

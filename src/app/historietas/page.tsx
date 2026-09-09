@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Sparkles, Image as ImageIcon, Copy, Check, Search, MessageCircle, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface ComicPanel {
   panel_number: number;
@@ -72,11 +73,7 @@ export default function HistorietasPage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-comic", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, panels: panelCount, style: visualStyle, characterDesc }),
-      });
+      const res = await aiFetch("/api/generate-comic", { niche, idea, panels: panelCount, style: visualStyle, characterDesc });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
       setData(generatedData);
@@ -105,17 +102,13 @@ export default function HistorietasPage() {
     const panel = data.panels[panelIndex];
     setRegeneratingPanel(panelIndex);
     try {
-      const res = await fetch("/api/generate-comic", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          style: visualStyle,
-          characterDesc,
-          panel_number: panel.panel_number,
-          dialogue: panel.dialogue,
-          existing_prompt: panel.image_prompt,
-        }),
+      const res = await aiFetch("/api/generate-comic", {
+        mode: "single_prompt",
+        style: visualStyle,
+        characterDesc,
+        panel_number: panel.panel_number,
+        dialogue: panel.dialogue,
+        existing_prompt: panel.image_prompt,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();

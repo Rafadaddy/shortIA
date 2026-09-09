@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, Heart, Copy, Check, MessageSquare, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface ConversationPanel {
   panel_number: number;
@@ -84,11 +85,7 @@ export default function ConversacionesPage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-conversation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche, idea, panels: panelCount, style: visualStyle, theme }),
-      });
+      const res = await aiFetch("/api/generate-conversation", { niche, idea, panels: panelCount, style: visualStyle, theme });
       if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
       setData(generatedData);
@@ -121,19 +118,15 @@ export default function ConversacionesPage() {
     const panel = data.panels[panelIndex];
     setRegeneratingPanel(panelIndex);
     try {
-      const res = await fetch("/api/generate-conversation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          style: visualStyle,
-          panel_number: panel.panel_number,
-          dialogue: panel.dialogue,
-          speaker: panel.speaker,
-          existing_prompt: panel.image_prompt,
-          man_appearance: data.man_appearance,
-          woman_appearance: data.woman_appearance,
-        }),
+      const res = await aiFetch("/api/generate-conversation", {
+        mode: "single_prompt",
+        style: visualStyle,
+        panel_number: panel.panel_number,
+        dialogue: panel.dialogue,
+        speaker: panel.speaker,
+        existing_prompt: panel.image_prompt,
+        man_appearance: data.man_appearance,
+        woman_appearance: data.woman_appearance,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();

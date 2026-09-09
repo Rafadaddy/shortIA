@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import { chatCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
-    const { niche, idea, format, style, textSurface, mode, existing_prompt, suggested_phrase } = await req.json();
+    const requestBody = await req.json();
+    const { niche, idea, format, style, textSurface, mode, existing_prompt, suggested_phrase } = requestBody;
 
     const requestedFormat = format || "Vertical (9:16)";
     const requestedStyle = style || "Cinemático Oscuro (Motivación)";
@@ -103,14 +102,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 `;
     }
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "openai/gpt-oss-120b",
-      response_format: { type: "json_object" },
-      temperature: 0.8,
-    });
-
-    const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.8 });
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);

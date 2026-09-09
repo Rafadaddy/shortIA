@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, Hourglass, Copy, Check, User, FileText, ImageIcon, RefreshCw } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface TimelineStep {
   step_name: string;
@@ -40,11 +41,7 @@ export default function TimelinePage() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-timeline", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "ideas" }),
-      });
+      const res = await aiFetch("/api/generate-timeline", { mode: "ideas" });
       if (!res.ok) throw new Error("Error");
       const generated = await res.json();
       if (generated.ideas) setIdeas(generated.ideas);
@@ -64,11 +61,7 @@ export default function TimelinePage() {
     if (selectedTopic) setTopic(selectedTopic);
 
     try {
-      const res = await fetch("/api/generate-timeline", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "script", topic: finalTopic }),
-      });
+      const res = await aiFetch("/api/generate-timeline", { mode: "script", topic: finalTopic });
       if (!res.ok) throw new Error("Error");
       const generated = await res.json();
       if (generated.script) {
@@ -89,15 +82,11 @@ export default function TimelinePage() {
     setIsGeneratingImages(true);
 
     try {
-      const res = await fetch("/api/generate-timeline", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          mode: "images", 
-          topic: topic,
-          characterRef: currentScript || data?.script || "",
-          stepCount 
-        }),
+      const res = await aiFetch("/api/generate-timeline", { 
+        mode: "images", 
+        topic: topic,
+        characterRef: currentScript || data?.script || "",
+        stepCount 
       });
       if (!res.ok) throw new Error("Error");
       const generated = await res.json();
@@ -123,18 +112,14 @@ export default function TimelinePage() {
 
     try {
       const step = data.timeline[idx];
-      const res = await fetch("/api/generate-timeline", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          mode: "single_prompt", 
-          topic: topic,
-          characterRef: data.script,
-          step_name: step.step_name,
-          narration: step.narration,
-          prompt_type: type,
-          existing_image_prompt: step.image_prompt,
-        }),
+      const res = await aiFetch("/api/generate-timeline", { 
+        mode: "single_prompt", 
+        topic: topic,
+        characterRef: data.script,
+        step_name: step.step_name,
+        narration: step.narration,
+        prompt_type: type,
+        existing_image_prompt: step.image_prompt,
       });
       if (!res.ok) throw new Error("Error");
       const generated = await res.json();

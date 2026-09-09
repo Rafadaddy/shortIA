@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Groq from "groq-sdk";
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+import { chatCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
-    const { mode, topic, bodyColor, shortsColor, sceneCount, scene_number, narration, visual_concept, existing_image_prompt, prompt_type } = await req.json();
+    const requestBody = await req.json();
+    const { mode, topic, bodyColor, shortsColor, sceneCount, scene_number, narration, visual_concept, existing_image_prompt, prompt_type } = requestBody;
 
     const count = sceneCount || 8;
     let prompt = "";
@@ -119,14 +118,7 @@ Asegúrate de incluir EXACTAMENTE ${count} escenas en el arreglo 'scenes'. Las n
 `;
     }
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "openai/gpt-oss-120b",
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
-
-    const jsonText = chatCompletion.choices[0]?.message?.content || "{}";
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.7 });
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);

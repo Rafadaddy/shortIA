@@ -5,6 +5,7 @@ import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon 
 import { topicCategories } from "./topics";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { aiFetch } from "@/lib/ai-fetch";
 
 export const allTopicsList = topicCategories.flatMap((cat, catIdx) =>
   cat.topics.map((t, topicIdx) => {
@@ -52,11 +53,7 @@ export default function ReflexionesPage() {
   }, []);
 
   const fetchReflectionData = async (currentTopic: string) => {
-    const res = await fetch("/api/generate-reflection", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: currentTopic, style: visualStyle, format: imageFormat }),
-    });
+    const res = await aiFetch("/api/generate-reflection", { topic: currentTopic, style: visualStyle, format: imageFormat });
     if (!res.ok) throw new Error("Error en la solicitud");
     return await res.json();
   };
@@ -89,17 +86,13 @@ export default function ReflexionesPage() {
     if (!data || regenerating) return;
     setRegenerating(true);
     try {
-      const res = await fetch("/api/generate-reflection", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "single_prompt",
-          topic,
-          style: visualStyle,
-          format: imageFormat,
-          tone,
-          reflection_text: data.reflection_text,
-        }),
+      const res = await aiFetch("/api/generate-reflection", {
+        mode: "single_prompt",
+        topic,
+        style: visualStyle,
+        format: imageFormat,
+        tone,
+        reflection_text: data.reflection_text,
       });
       if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();
