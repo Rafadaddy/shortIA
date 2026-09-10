@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatCompletion, generateImageWithGemini } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -104,6 +104,22 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 
     const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.8 });
     const data = JSON.parse(jsonText);
+
+    // Si tenemos una key de Gemini (ya sea en env o en el cliente), intentamos generar la imagen real
+    // Esto evita que solo te devuelva texto y te da la imagen final.
+    const geminiKey = process.env.GEMINI_API_KEY || (requestBody._provider?.providerId === "google" ? requestBody._provider.apiKey : null);
+    
+    if (geminiKey && data.image_prompt) {
+      try {
+        console.log("[Ilustraciones] Generando imagen con Gemini Imagen 3...");
+        // Usamos aspectRatioFlag (ej: "--ar 9:16") para enviarle el formato a Gemini
+        const base64Image = await generateImageWithGemini(data.image_prompt, geminiKey, aspectRatioFlag);
+        data.generated_image_base64 = base64Image;
+        console.log("[Ilustraciones] ¡Imagen generada con éxito!");
+      } catch (e) {
+        console.error("[Ilustraciones] Error al generar la imagen con Gemini:", e);
+      }
+    }
 
     return NextResponse.json(data);
   } catch (error: unknown) {

@@ -12,6 +12,7 @@ interface IllustrationData {
   suggested_phrase: string;
   image_prompt: string;
   caption: string;
+  generated_image_base64?: string;
 }
 
 const illustrationNiches = [
@@ -245,6 +246,22 @@ export default function IlustracionesPage() {
                 <p className="text-xs text-slate-500 mt-3 flex items-center gap-2">
                   <Sparkles className="w-3 h-3" /> Tip: Pega este texto en DALL-E 3 o Midjourney v6 para generar la imagen con el texto integrado.
                 </p>
+
+                {/* Imagen generada por Gemini */}
+                {data.generated_image_base64 && (
+                  <div className="mt-6 border-t border-slate-700/50 pt-6">
+                    <h4 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" /> Imagen Generada con Imagen 3 (Gemini)
+                    </h4>
+                    <div className="relative rounded-xl overflow-hidden border border-slate-700/50 bg-slate-950 flex justify-center">
+                      <img 
+                        src={`data:image/jpeg;base64,${data.generated_image_base64}`} 
+                        alt="Ilustración generada" 
+                        className="w-full h-auto max-h-[600px] object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Nueva Caja: Caption para redes sociales */}
