@@ -42,6 +42,10 @@ export function Sidebar() {
             <PlaySquare className="w-5 h-5 text-cyan-400" />
             Faceless YouTube
           </Link>
+          <Link href="/stickman" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <PlaySquare className="w-5 h-5 text-emerald-400" />
+            Stickman YouTube
+          </Link>
           <Link href="/videos-motivacionales" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <Flame className="w-5 h-5 text-amber-400" />
             Videos Motivacionales
