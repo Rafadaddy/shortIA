@@ -88,9 +88,20 @@ export default function StickmanVideoPage() {
 
   const copyAllVoiceovers = () => {
     if (!data) return;
-    const allText = data.scenes.map(s => `Escena ${s.scene_number}: ${s.voiceover}`).join("\n\n");
-    handleCopy(allText, "all-voiceovers");
-    showToast("Todo el guion copiado", "success");
+    
+    let allText = `TÍTULO: ${data.title}\n\n`;
+    allText += `=== PROMPT BASE DEL PERSONAJE ===\n${data.base_prompt}\n\n`;
+    allText += `=== GUION Y ESCENAS ===\n\n`;
+    
+    data.scenes.forEach(s => {
+      allText += `[ ESCENA ${s.scene_number} ]\n`;
+      allText += `VOICEOVER: ${s.voiceover}\n`;
+      allText += `IMAGE PROMPT: ${s.image_prompt}\n`;
+      allText += `ANIMATION PROMPT: ${s.animation_prompt}\n\n`;
+    });
+    
+    handleCopy(allText.trim(), "all-voiceovers");
+    showToast("Guion completo copiado", "success");
   };
 
   return (
