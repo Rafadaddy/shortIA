@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -54,6 +54,10 @@ export function Sidebar() {
             <Palette className="w-5 h-5 text-purple-400" />
             Catálogo Estilos
           </Link>
+          <Link href="/configuracion" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Settings className="w-5 h-5 text-slate-400" />
+            Configuración
+          </Link>
 
         </nav>
         
@@ -82,6 +86,10 @@ export function Sidebar() {
         <Link href="/catalogo-estilos" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-purple-400 active:text-purple-400 min-w-16">
           <Palette className="w-5 h-5" />
           <span className="text-[10px] font-medium">Estilos</span>
+        </Link>
+        <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-16">
+          <Settings className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Ajustes</span>
         </Link>
       </nav>
     </>
