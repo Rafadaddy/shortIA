@@ -70,28 +70,44 @@ export function Sidebar() {
       </aside>
 
       {/* 📱 Mobile Bottom Navigation (Oculto en Desktop) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex items-center justify-around p-2 z-50 pb-safe overflow-x-auto">
-        <Link href="/reflexiones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-indigo-400 active:text-indigo-400 min-w-16">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex items-center justify-start p-2 z-50 pb-safe overflow-x-auto gap-2">
+        <Link href="/reflexiones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-indigo-400 active:text-indigo-400 min-w-[4rem] flex-shrink-0">
           <BookOpen className="w-5 h-5" />
           <span className="text-[10px] font-medium">Textos</span>
         </Link>
-        <Link href="/ilustraciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-16">
+        <Link href="/ilustraciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <ImageIcon className="w-5 h-5" />
           <span className="text-[10px] font-medium">Imágenes</span>
         </Link>
-        <Link href="/historietas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-16">
+        <Link href="/historietas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
           <MessageSquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">Cómics</span>
         </Link>
-        <Link href="/conversaciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-16">
+        <Link href="/conversaciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <MessageCircle className="w-5 h-5" />
           <span className="text-[10px] font-medium">Chats</span>
         </Link>
-        <Link href="/catalogo-estilos" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-purple-400 active:text-purple-400 min-w-16">
+        <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
+          <History className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Líneas</span>
+        </Link>
+        <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 min-w-[4rem] flex-shrink-0">
+          <PlaySquare className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Faceless</span>
+        </Link>
+        <Link href="/stickman" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
+          <PlaySquare className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Stickman</span>
+        </Link>
+        <Link href="/videos-motivacionales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
+          <Flame className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Motivación</span>
+        </Link>
+        <Link href="/catalogo-estilos" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-purple-400 active:text-purple-400 min-w-[4rem] flex-shrink-0">
           <Palette className="w-5 h-5" />
           <span className="text-[10px] font-medium">Estilos</span>
         </Link>
-        <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-16">
+        <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-[4rem] flex-shrink-0">
           <Settings className="w-5 h-5" />
           <span className="text-[10px] font-medium">Ajustes</span>
         </Link>
