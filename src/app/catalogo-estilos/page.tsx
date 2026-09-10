@@ -52,11 +52,15 @@ export default function CatalogoEstilosPage() {
             key={style.id}
             className="group flex flex-col bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all duration-300"
           >
-            {/* Image Placeholder Area */}
-            <div className="aspect-square relative bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-6 text-center border-b border-slate-800/50 group-hover:from-slate-800 group-hover:to-indigo-950/20 transition-colors">
-              <ImageIcon className="w-12 h-12 text-slate-700 mb-3 group-hover:text-indigo-400/50 transition-colors" />
-              <p className="text-xs text-slate-500">Espacio para ejemplo de</p>
-              <p className="text-sm font-medium text-slate-400">{style.label}</p>
+            {/* Image Area via Pollinations.ai */}
+            <div className="aspect-square relative bg-slate-900 flex flex-col items-center justify-center border-b border-slate-800/50 overflow-hidden">
+              <img
+                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(style.prompt)}?width=400&height=400&nologo=true`}
+                alt={`Ejemplo de ${style.label}`}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent opacity-60"></div>
             </div>
 
             {/* Content Area */}
