@@ -8,13 +8,6 @@ import { useToast } from "@/components/Toast";
 
 export default function CatalogoEstilosPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const { copiedStates, handleCopy: copyToClipboard } = useCopyToClipboard();
-  const { showToast } = useToast();
-
-  const handleCopy = (text: string, id: string) => {
-    copyToClipboard(text, id);
-    showToast("Prompt copiado al portapapeles", "success");
-  };
 
   const filteredStyles = imageStyles.filter((style) =>
     style.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,46 +41,7 @@ export default function CatalogoEstilosPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredStyles.map((style) => (
-          <div
-            key={style.id}
-            className="group flex flex-col bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all duration-300"
-          >
-            {/* Image Area via Pollinations.ai */}
-            <div className="aspect-square relative bg-slate-900 flex flex-col items-center justify-center border-b border-slate-800/50 overflow-hidden">
-              <img
-                src={`https://image.pollinations.ai/prompt/${encodeURIComponent(style.prompt)}?width=400&height=400&nologo=true`}
-                alt={`Ejemplo de ${style.label}`}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent opacity-60"></div>
-            </div>
-
-            {/* Content Area */}
-            <div className="p-5 flex flex-col flex-1">
-              <h3 className="text-lg font-bold text-slate-200 mb-2">{style.label}</h3>
-              <p className="text-sm text-slate-400 line-clamp-3 mb-4 flex-1">
-                {style.prompt}
-              </p>
-              
-              <button
-                onClick={() => handleCopy(style.prompt, style.id)}
-                className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 hover:border-slate-600 text-sm font-medium"
-              >
-                {copiedStates[style.id] ? (
-                  <>
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span className="text-green-400">¡Copiado!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span>Copiar Prompt Base</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+          <HoverImageCard key={style.id} style={style} />
         ))}
 
         {filteredStyles.length === 0 && (
@@ -97,6 +51,64 @@ export default function CatalogoEstilosPage() {
             <p className="text-slate-500">Prueba buscando con otras palabras clave.</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Subcomponente para manejar el Hover y evitar el Rate-Limit de Pollinations
+function HoverImageCard({ style }: { style: any }) {
+  const { copiedStates, handleCopy: copyToClipboard } = useCopyToClipboard();
+  const { showToast } = useToast();
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const handleCopy = (text: string, id: string) => {
+    copyToClipboard(text, id);
+    showToast("Prompt copiado al portapapeles", "success");
+  };
+
+  return (
+    <div
+      className="group flex flex-col bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all duration-300 cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+    >
+      {/* Image Area via Pollinations.ai (Carga on Hover) */}
+      <div className="aspect-square relative bg-slate-900 flex flex-col items-center justify-center border-b border-slate-800/50 overflow-hidden">
+        {isHovered && !imageFailed ? (
+          <>
+            <img
+              src={`https://image.pollinations.ai/prompt/${encodeURIComponent(style.prompt)}?width=400&height=400&nologo=true&seed=${style.id.length * 42}`}
+              alt={`Ejemplo de ${style.label}`}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              onError={() => setImageFailed(true)}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent opacity-60 pointer-events-none"></div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-center p-6 opacity-60 group-hover:opacity-100 transition-opacity">
+            <ImageIcon className="w-12 h-12 text-slate-600 mb-3" />
+            <p className="text-xs text-slate-400 font-medium">{imageFailed ? "No se pudo cargar la previsualización" : "Pasa el mouse para ver el ejemplo"}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Content Area */}
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="text-lg font-bold text-slate-200 mb-2">{style.label}</h3>
+        <p className="text-xs text-slate-400 mb-4 line-clamp-3 leading-relaxed flex-1">
+          {style.prompt}
+        </p>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleCopy(style.prompt, style.id); }}
+          className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl text-sm font-semibold transition-colors border border-slate-700/50 hover:border-slate-600/50"
+        >
+          {copiedStates[style.id] ? (
+            <><Check className="w-4 h-4 text-emerald-400" /> Copiado</>
+          ) : (
+            <><Copy className="w-4 h-4" /> Copiar Prompt Base</>
+          )}
+        </button>
       </div>
     </div>
   );
