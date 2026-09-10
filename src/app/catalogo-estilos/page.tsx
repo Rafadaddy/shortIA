@@ -8,12 +8,12 @@ import { useToast } from "@/components/Toast";
 
 export default function CatalogoEstilosPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
-  const { addToast } = useToast();
+  const { copiedStates, handleCopy: copyToClipboard } = useCopyToClipboard();
+  const { showToast } = useToast();
 
   const handleCopy = (text: string, id: string) => {
     copyToClipboard(text, id);
-    addToast("Prompt copiado al portapapeles", "success");
+    showToast("Prompt copiado al portapapeles", "success");
   };
 
   const filteredStyles = imageStyles.filter((style) =>
@@ -70,7 +70,7 @@ export default function CatalogoEstilosPage() {
                 onClick={() => handleCopy(style.prompt, style.id)}
                 className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 hover:border-slate-600 text-sm font-medium"
               >
-                {isCopied(style.id) ? (
+                {copiedStates[style.id] ? (
                   <>
                     <Check className="w-4 h-4 text-green-400" />
                     <span className="text-green-400">¡Copiado!</span>
