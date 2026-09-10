@@ -69,23 +69,25 @@ For each scene, provide short animation instructions.
 Rules: Only animate arms, head, facial expression, or props. Body position remains mostly static. Movements should be slow, natural, and minimal. Mention emotion if relevant.
 
 PART 3: Voiceover Script
-For each scene: Write short, engaging narration in simple English (1–2 sentences per scene). Clearly describe what the stickman is doing, thinking, or feeling, and the purpose of the scene. Include tone or emotion.
+For each scene: Write short, engaging narration in SPANISH (Español) (1–2 sentences per scene). Clearly describe what the stickman is doing, thinking, or feeling, and the purpose of the scene. Include tone or emotion.
 
 GLOBAL RULES
 - Same stickman character throughout the entire video
 - Only pose, expression, or props change
 - Output must fit a ~59-second video
+- CRITICAL: The 'title' and 'voiceover' MUST be written in fluent SPANISH.
+- CRITICAL: The 'base_prompt', 'image_prompt', and 'animation_prompt' MUST be written in ENGLISH.
 
 Respond ONLY with a valid JSON object matching this structure:
 {
-  "title": "Title of the video",
-  "base_prompt": "The Stickman Base Design Prompt...",
+  "title": "Título del video en español",
+  "base_prompt": "The Stickman Base Design Prompt in English...",
   "scenes": [
     {
       "scene_number": 1,
-      "voiceover": "...",
-      "image_prompt": "...",
-      "animation_prompt": "..."
+      "voiceover": "Narración en español...",
+      "image_prompt": "Image prompt in English...",
+      "animation_prompt": "Animation prompt in English..."
     }
   ]
 }
