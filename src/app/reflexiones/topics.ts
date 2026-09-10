@@ -1,7 +1,36 @@
 export interface TopicCategory {
   category: string;
   icon: string;
-  topics: string[];
+  topics: string[,
+  {
+    category: "Heridas Profundas y Cicatrices",
+    icon: "🩹",
+    topics: [
+      "El dolor físico que se siente cuando te rompen el corazón",
+      "Por qué es tan difícil perdonar a quien nunca te pidió perdón",
+      "La culpa de sobrevivir cuando sientes que lo has perdido todo",
+      "El agotamiento de ser fuerte durante demasiado tiempo",
+      "Cuando el trauma se disfraza de perfeccionismo extremo",
+      "La soledad de llorar en silencio para no preocupar a nadie",
+      "Por qué nos apegamos a nuestro dolor cuando es lo único que nos queda",
+      "El terror de volver a confiar después de una traición absoluta",
+      "Cómo se siente realmente perder el sentido de tu propia vida"
+    ]
+  },
+  {
+    category: "Crisis Existencial y Vacío",
+    icon: "🌪️",
+    topics: [
+      "Ese momento en la madrugada donde cuestionas cada decisión de tu vida",
+      "El pánico silencioso de sentir que se te está acabando el tiempo",
+      "La sensación de estar observando tu vida desde afuera, sin sentir nada",
+      "Por qué llegar a tu meta a veces te hace sentir más vacío que antes",
+      "El duelo de despedirte de los sueños que sabes que ya no cumplirás",
+      "Sentirse un extraño dentro de tu propia familia",
+      "El miedo de que tus mejores años ya hayan pasado y no los aprovechaste"
+    ]
+  }
+];
 }
 
 export const topicCategories: TopicCategory[] = [

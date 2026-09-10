@@ -2,11 +2,10 @@
 import { aiFetch } from "@/lib/ai-fetch";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon } from "lucide-react";
+import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon, List } from "lucide-react";
 import { topicCategories } from "./topics";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-
 
 export const allTopicsList = topicCategories.flatMap((cat, catIdx) =>
   cat.topics.map((t, topicIdx) => {
@@ -32,6 +31,10 @@ export default function ReflexionesPage() {
   const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
   const [tone, setTone] = useState("Libre / Equilibrado");
+  
+  const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
+  const [titles, setTitles] = useState<string[] | null>(null);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [data, setData] = useState<ReflectionData | null>(null);
   
@@ -53,21 +56,51 @@ export default function ReflexionesPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchReflectionData = async (currentTopic: string) => {
-    const res = await aiFetch("/api/generate-reflection", { topic: currentTopic, style: visualStyle, format: imageFormat });
-    if (!res.ok) throw new Error("Error en la solicitud");
-    return await res.json();
+  const handleGenerateTitles = async () => {
+    setIsGeneratingTitles(true);
+    setTitles(null);
+    setData(null);
+    try {
+      // Si el tema está vacío, agarramos uno aleatorio
+      const finalTopic = topic || allTopicsList[Math.floor(Math.random() * allTopicsList.length)].text;
+      if (!topic) setTopic(finalTopic);
+
+      const res = await aiFetch("/api/generate-reflection", { 
+        topic: finalTopic, 
+        mode: "titles" 
+      });
+      if (!res.ok) throw new Error("Error obteniendo títulos");
+      
+      const generated = await res.json();
+      if (generated.titles) {
+        setTitles(generated.titles);
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Hubo un error al generar las ideas de títulos.", "error");
+    } finally {
+      setIsGeneratingTitles(false);
+    }
   };
 
-  const handleGenerate = async (overrideTopic?: string) => {
-    const finalTopic = overrideTopic || topic;
-    
+  const handleGenerateReflection = async (selectedTitle: string) => {
     setIsGenerating(true);
     setData(null);
-    if (overrideTopic) setTopic(overrideTopic);
+    setTopic(selectedTitle); // El título se convierte en el tema principal para la reflexión
+    
+    // Ocultar los títulos una vez seleccionado uno
+    setTitles(null);
 
     try {
-      const reflectionData = await fetchReflectionData(finalTopic);
+      const res = await aiFetch("/api/generate-reflection", { 
+        topic: selectedTitle, 
+        style: visualStyle, 
+        format: imageFormat,
+        tone: tone,
+        mode: "script" 
+      });
+      if (!res.ok) throw new Error("Error en la solicitud");
+      const reflectionData = await res.json();
       setData(reflectionData);
     } catch (error) {
       console.error(error);
@@ -79,8 +112,9 @@ export default function ReflexionesPage() {
 
   const handleCopyAllText = () => {
     if (!data) return;
-    const textToCopy = `*${data.title || 'Reflexión'}*\n\n${data.reflection_text}`;
-    handleCopy(textToCopy, 'all_text');
+    const fullText = `${data.title ? data.title + '\\n\\n' : ''}${data.reflection_text}`;
+    handleCopy(fullText, 'all_text');
+    showToast("¡Texto copiado al portapapeles!", "success");
   };
 
   const handleRegenerateImagePrompt = async () => {
@@ -89,87 +123,70 @@ export default function ReflexionesPage() {
     try {
       const res = await aiFetch("/api/generate-reflection", {
         mode: "single_prompt",
-        topic,
+        reflection_text: data.reflection_text,
         style: visualStyle,
         format: imageFormat,
-        tone,
-        reflection_text: data.reflection_text,
+        existing_image_prompt: data.image_prompt,
       });
-      if (!res.ok) throw new Error("Error al regenerar");
+      if (!res.ok) throw new Error("Error regenerando");
       const newData = await res.json();
       setData({ ...data, image_prompt: newData.image_prompt });
+      showToast("Prompt regenerado", "success");
     } catch (error) {
       console.error(error);
-      showToast("Error al regenerar el prompt.", "error");
+      showToast("Error al regenerar", "error");
     } finally {
       setRegenerating(false);
     }
   };
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] p-4 md:p-6 lg:p-12 selection:bg-indigo-500/30">
-      <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
+    <main className="min-h-screen p-4 md:p-8">
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
-        <header className="text-center space-y-4">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
-            <BookOpen className="w-8 h-8 md:w-10 md:h-10 text-indigo-400" />
-            Reflexiones Diarias
-          </h1>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Generador de textos virales y prompts visuales para tus redes. Optimizado para crear rápido desde tu celular.
+        {/* Encabezado */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3 text-indigo-400 mb-2">
+            <BookOpen className="w-8 h-8" />
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Reflexiones y Textos</h1>
+          </div>
+          <p className="text-slate-400 max-w-2xl text-lg">
+            Genera guiones altamente empáticos y humanos. Toca las fibras sensibles de tu audiencia con verdades incómodas, dolores reales y vulnerabilidad.
           </p>
-        </header>
+        </div>
 
-        <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              ¿Sobre qué quieres reflexionar hoy?
-            </label>
-            <textarea
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej. El miedo a fracasar, dejar ir el pasado, la presión de la sociedad..."
-              className="w-full h-24 bg-slate-950/50 border border-slate-700/50 rounded-2xl p-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-slate-400" /> Tono Emocional
-              </label>
+        {/* Panel de Configuración */}
+        <div className="bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-sm">
+          <div className="space-y-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-indigo-400" /> Tono
+                </label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
                 >
                   <option value="Libre / Equilibrado">Libre / Equilibrado</option>
-                  <option value="Melancólico y Triste">Melancólico y Triste</option>
-                  <option value="Desamor y Decepción (Corazón Roto)">Desamor y Decepción (Corazón Roto)</option>
-                  <option value="Amor y Nostalgia (Sentimental)">Amor y Nostalgia (Sentimental)</option>
-                  <option value="Crudo / Verdades que Duelen">Crudo / Verdades que Duelen</option>
-                  <option value="Frustración y Cansancio Mental">Frustración y Cansancio Mental</option>
-                  <option value="Paz y Aceptación (Soltar)">Paz y Aceptación (Soltar)</option>
-                  <option value="Esperanzador y Motivador">Esperanzador y Motivador</option>
-                  <option value="Filosófico y Profundo">Filosófico y Profundo</option>
+                  <option value="Duro y Confrontativo">Duro y Confrontativo</option>
+                  <option value="Empático y Comprensivo">Empático y Comprensivo</option>
+                  <option value="Profundo y Filosófico">Profundo y Filosófico</option>
                 </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-slate-400" /> Estilo Visual
-              </label>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-pink-400" /> Estilo Visual
+                </label>
                 <select
                   value={visualStyle}
                   onChange={(e) => setVisualStyle(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
                 >
                   <option value="Fotografía Realista">Fotografía Realista</option>
-                  <option value="Animación 3D (Pixar/Disney)">Animación 3D (Pixar)</option>
-                  <option value="Cinemático Oscuro">Cinemático Oscuro</option>
-                  <option value="Ilustración Digital 2D">Ilustración Digital 2D</option>
-                  <option value="Anime / Manga">Anime / Manga</option>
-                  <option value="Acuarela y Arte Tradicional">Acuarela Tradicional</option>
-                  <option value="Cyberpunk / Futurista">Cyberpunk / Futurista</option>
+                  <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
+                  <option value="Ilustración Minimalista">Ilustración Minimalista</option>
+                  <option value="Anime Estético">Anime Estético (Lofi)</option>
                 </select>
               </div>
               <div className="space-y-2">
@@ -196,10 +213,11 @@ export default function ReflexionesPage() {
                 <input
                   type="text"
                   value={searchTerm}
-                  placeholder="🔍 Busca un tema o escribe su número (ej. 1, 5, amor)..."
+                  placeholder="Escribe tu tema o busca uno (ej. amor, fracaso, soledad)..."
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-3 py-3 text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
+                    setTopic(e.target.value);
                     setShowDropdown(true);
                   }}
                   onFocus={() => setShowDropdown(true)}
@@ -219,9 +237,9 @@ export default function ReflexionesPage() {
                       <button
                         key={t.id}
                         onClick={() => {
-                          setSearchTerm("");
+                          setSearchTerm(t.text);
+                          setTopic(t.text);
                           setShowDropdown(false);
-                          handleGenerate(t.text);
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-slate-800 border-b border-slate-800/50 flex items-center gap-3 transition-colors last:border-0"
                       >
@@ -231,7 +249,7 @@ export default function ReflexionesPage() {
                     ))
                   ) : (
                     <div className="px-4 py-3 text-slate-500 text-sm text-center">
-                      No se encontraron temas con esa búsqueda.
+                      No se encontraron temas. Escribe el tuyo y presiona el botón.
                     </div>
                   )}
                 </div>
@@ -240,26 +258,49 @@ export default function ReflexionesPage() {
           </div>
 
           <button
-            onClick={() => handleGenerate()}
-            disabled={isGenerating}
+            onClick={handleGenerateTitles}
+            disabled={isGeneratingTitles || isGenerating}
             className="w-full group flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 disabled:opacity-50 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]"
           >
-            {isGenerating ? (
-              <>
-                <RefreshCw className="w-6 h-6 animate-spin" />
-                Escribiendo reflexión...
-              </>
+            {isGeneratingTitles ? (
+              <><RefreshCw className="w-6 h-6 animate-spin" /> Pensando títulos profundos...</>
             ) : (
-              <>
-                <Sparkles className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                {topic ? "Generar Texto y Prompt" : "Sorpréndeme (Reflexión Aleatoria 🎲)"}
-              </>
+              <><List className="w-6 h-6 group-hover:scale-110 transition-transform" /> Generar 10 Títulos de este Tema</>
             )}
           </button>
         </div>
 
-        {/* Zona de Resultados */}
-        {data && (
+        {/* Zona de Selección de Títulos */}
+        {titles && titles.length > 0 && (
+          <div className="bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl animate-in fade-in slide-in-from-bottom-4">
+            <h2 className="text-xl font-bold text-white mb-4 text-center">Selecciona el título que más conecte:</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {titles.map((t, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleGenerateReflection(t)}
+                  className="text-left bg-slate-950/60 hover:bg-indigo-900/40 hover:border-indigo-500/50 border border-slate-800 p-4 rounded-xl transition-all duration-200 group"
+                >
+                  <span className="flex items-start gap-3">
+                    <span className="text-indigo-500 font-bold mt-1">{idx + 1}.</span>
+                    <span className="text-slate-300 group-hover:text-indigo-200 leading-relaxed font-medium">{t}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Cargando la reflexión */}
+        {isGenerating && (
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400 animate-pulse">
+            <RefreshCw className="w-10 h-10 animate-spin text-indigo-500 mb-4" />
+            <p className="text-lg font-medium">Escribiendo desde el dolor y la experiencia...</p>
+          </div>
+        )}
+
+        {/* Zona de Resultados de Reflexión */}
+        {data && !isGenerating && (
           <div className="animate-in slide-in-from-bottom-4 duration-700 max-w-3xl mx-auto">
             <div className="flex flex-col space-y-6 bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-purple-500 to-pink-500"></div>
