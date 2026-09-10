@@ -85,17 +85,17 @@ ESTRUCTURA OBLIGATORIA (Sigue este molde exacto pero adaptado al tema):
 [TÍTULO PRINCIPAL CON EMOJI] (Ej: 💔 ENTRE LA ESPOSA Y LA AMANTE, o 🥀 NO SABES QUIÉN ERES SIN ELLA)
 
 [SUBTÍTULO 1 CON EMOJI] (Perspectiva 1 o Inicio)
-[Párrafo desarrollando el dolor o la situación de esta parte, integrando emojis en el texto].
+[Párrafo EXTENSO y PROFUNDO desarrollando el dolor, la psicología y la situación detallada de esta parte. No escatimes en palabras, explica bien el sentimiento. Integra emojis en el texto].
 
 ➖➖➖➖➖➖➖➖➖➖
 
 [SUBTÍTULO 2 CON EMOJI] (Perspectiva 2 o Conflicto)
-[Párrafo con la otra cara de la moneda o el nudo del problema, integrando emojis].
+[Párrafo EXTENSO con la otra cara de la moneda o el nudo del problema. Analiza a fondo las emociones de esta otra parte, integrando emojis].
 
 ➖➖➖➖➖➖➖➖➖➖
 
 [SUBTÍTULO 3 CON EMOJI] (La verdad cruda o Desenlace)
-[Párrafo de cierre, directo y sin filtros, que dé una lección de realidad].
+[Párrafo EXTENSO de cierre, directo y sin filtros, que dé una lección de realidad cruda y profunda].
 
 ➖➖➖➖➖➖➖➖➖➖🔥 
 
@@ -106,7 +106,7 @@ ESTRUCTURA OBLIGATORIA (Sigue este molde exacto pero adaptado al tema):
 
 <constraints>
 - PROHIBIDO el positivismo tóxico.
-- El texto debe tener entre 150 y 250 palabras.
+- El texto debe ser LARGO y PROFUNDO (Entre 300 y 450 palabras). Desarrolla bien cada idea, no seas breve.
 - El título del JSON debe ser corto y contundente.
 - USA EMOJIS DENTRO DEL TEXTO, no solo al principio.
 </constraints>
