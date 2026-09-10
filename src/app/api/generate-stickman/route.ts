@@ -48,10 +48,9 @@ PART 1: Image Prompts (Paragraph Style)
 Step 1 – Character Base Prompt
 Before writing the scene prompts, first create a Stickman Base Design Prompt that matches the mood and theme of the story.
 This base prompt should include:
-- Overall vibe (motivational, funny, stressed, calm, etc.)
-- Character style (simple black stickman, rounded head, clean lines)
-- Consistent features (expression style, line thickness, minimal design)
-- White or minimal background style
+- Overall vibe: Cheerful, modern, and engaging.
+- Character style: Modern 2D vector animation style, cute stylized stickman wearing a trendy hoodie and sneakers, perfectly round head with casual messy hair, thick black outlines, flat solid colors, expressive and happy face.
+- MUST include keywords: "High quality vector art, crisp thick outlines, white background, trendy youth clothing, cheerful anime-like eyes".
 
 Step 2 – Scene Image Prompts
 For each scene, write one paragraph.
