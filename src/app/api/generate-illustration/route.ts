@@ -72,6 +72,25 @@ Responde SOLO con un JSON válido:
   "image_prompt": "El nuevo prompt visual en inglés..."
 }
 `;
+    } else if (mode === "titles") {
+      prompt = `
+Eres un director de arte y experto en contenido viral de redes sociales.
+El usuario quiere generar ideas para IMÁGENES VIRALES con texto integrado sobre el nicho: "${niche}".
+${idea ? `Dirección o idea del usuario: "${idea}"` : `Genera ideas innovadoras basadas en este nicho.`}
+
+TAREA:
+Genera exactamente 10 títulos (ideas de conceptos o frases gancho) para estas imágenes.
+Los títulos deben ser descripciones breves de la vibra de la imagen o la frase principal. Deben ser muy atractivos, listos para captar la atención.
+
+Responde SOLO con un JSON válido en este formato:
+{
+  "titles": [
+    "Idea 1...",
+    "Idea 2...",
+    "Idea 3..."
+  ]
+}
+`;
     } else {
       prompt = `
 Eres un director de arte experto en crear contenido visual viral para redes sociales.
