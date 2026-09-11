@@ -286,7 +286,7 @@ export default function IlustracionesPage() {
                           disabled={regenerating}
                           className="flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 px-3 rounded-lg transition-colors"
                         >
-                          <RefreshCw className={\`w-3.5 h-3.5 \${regenerating ? 'animate-spin' : ''}\`} />
+                          <RefreshCw className={"w-3.5 h-3.5 " + (regenerating ? "animate-spin" : "")} />
                           Regenerar
                         </button>
                         <button
@@ -328,14 +328,14 @@ export default function IlustracionesPage() {
                     </label>
                     <div className="w-full rounded-2xl overflow-hidden border-2 border-slate-700/50 shadow-2xl relative bg-slate-950 aspect-[9/16] max-h-[600px] flex items-center justify-center">
                       <img 
-                        src={\`data:image/jpeg;base64,\${data.generated_image_base64}\`} 
+                        src={"data:image/jpeg;base64," + data.generated_image_base64}
                         alt={data.title}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <a 
-                      href={\`data:image/jpeg;base64,\${data.generated_image_base64}\`} 
-                      download={\`ilustracion-\${data.title.replace(/\\s+/g, '-').toLowerCase()}.jpg\`}
+                      href={"data:image/jpeg;base64," + data.generated_image_base64}
+                      download={"ilustracion-" + data.title.replace(/\s+/g, '-').toLowerCase() + ".jpg"}
                       className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-center font-semibold transition-colors flex items-center justify-center gap-2"
                     >
                       Descargar Imagen
