@@ -31,6 +31,7 @@ export default function ReflexionesPage() {
   const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
   const [tone, setTone] = useState("Libre / Equilibrado");
+  const [reflectionStyle, setReflectionStyle] = useState("Viral / Polémico");
   
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
   const [titles, setTitles] = useState<string[] | null>(null);
@@ -67,7 +68,8 @@ export default function ReflexionesPage() {
 
       const res = await aiFetch("/api/generate-reflection", { 
         topic: finalTopic, 
-        mode: "titles" 
+        mode: "titles",
+        reflectionStyle
       });
       if (!res.ok) throw new Error("Error obteniendo títulos");
       
@@ -87,6 +89,7 @@ export default function ReflexionesPage() {
     setIsGenerating(true);
     setData(null);
     setTopic(selectedTitle); // El título se convierte en el tema principal para la reflexión
+    setSearchTerm(selectedTitle);
     
     // Ocultar los títulos una vez seleccionado uno
     setTitles(null);
@@ -97,6 +100,7 @@ export default function ReflexionesPage() {
         style: visualStyle, 
         format: imageFormat,
         tone: tone,
+        reflectionStyle,
         mode: "script" 
       });
       if (!res.ok) throw new Error("Error en la solicitud");
@@ -158,7 +162,7 @@ export default function ReflexionesPage() {
         {/* Panel de Configuración */}
         <div className="bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl backdrop-blur-sm">
           <div className="space-y-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-indigo-400" /> Tono
@@ -166,7 +170,7 @@ export default function ReflexionesPage() {
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none text-sm"
                 >
                   <option value="Libre / Equilibrado">Libre / Equilibrado</option>
                   <option value="Duro y Confrontativo">Duro y Confrontativo</option>
@@ -176,12 +180,25 @@ export default function ReflexionesPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-emerald-400" /> Estilo de Redacción
+                </label>
+                <select
+                  value={reflectionStyle}
+                  onChange={(e) => setReflectionStyle(e.target.value)}
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none text-sm"
+                >
+                  <option value="Viral / Polémico">🔥 Viral / Polémico (3 partes)</option>
+                  <option value="Psicológico / Sanación">🧠 Psicológico / Sanación (4 bloques)</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
                   <ImageIcon className="w-4 h-4 text-pink-400" /> Estilo Visual
                 </label>
                 <select
                   value={visualStyle}
                   onChange={(e) => setVisualStyle(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none text-sm"
                 >
                   <option value="Fotografía Realista">Fotografía Realista</option>
                   <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
