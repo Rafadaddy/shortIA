@@ -170,9 +170,13 @@ ${systemInstructionBlock}
 ============================================
 INSTRUCCIONES DE FORMATO DE SALIDA (JSON)
 ============================================
-Genera un "image_prompt" EN INGLÉS.
-Basado en el estilo visual de reflexiones virales: dramático, melancólico, a menudo desaturado o en blanco y negro, iluminación cinemática y realista.
-Formato: "A dramatic, highly realistic and emotional scene of [describe the exact scene related to the topic: e.g., a sad man sitting alone in the dark, or a divided couple in bed]. Melancholic atmosphere, desaturated colors, cinematic lighting, masterpiece, 8k resolution. Seamlessly integrated into the environment, there is bold, stylish white typography that perfectly spells: '[FRASE GANCHO DEL TEXTO EN ESPAÑOL]'. [Estilo visual: \${requestedStyle}]. \${aspectRatioFlag}"
+Genera un "image_prompt" EN INGLÉS que sea una representación visual directa, literal o metafórica DE LA ESCENA EXACTA de la que hablaste en el texto.
+- Si hablaste de alguien llorando mientras revisa su teléfono en la oscuridad, el prompt debe describir eso.
+- Si hablaste de dos personas en la misma cama dándose la espalda, el prompt debe describir exactamente eso.
+- PROHIBIDO hacer imágenes genéricas. Debe capturar el momento cumbre y la acción de tu reflexión.
+
+Formato estricto:
+"A dramatic, highly realistic and emotional scene of [DESCRIBE LA ACCIÓN, SUJETO O METÁFORA EXACTA BASADA EN TU TEXTO]. Melancholic atmosphere, desaturated colors, cinematic lighting, masterpiece, 8k resolution. Seamlessly integrated into the environment, there is bold, stylish white typography that perfectly spells: '[FRASE GANCHO DEL TEXTO EN ESPAÑOL]'. [Estilo visual: ${requestedStyle}]. ${aspectRatioFlag}"
 
 Responde SOLO con un JSON válido:
 {
