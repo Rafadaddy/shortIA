@@ -21,43 +21,62 @@ interface ComicData {
   music_recommendation: string;
 }
 
-const comicNiches = [
-  "Ese momento en que te conviertes en tu papá o tu mamá sin darte cuenta",
-  "Cuando alguien que querías se convirtió en un completo extraño",
-  "El precio silencioso de querer caerle bien a todos",
-  "La trampa de comparar tu vida con lo que ves en redes sociales",
-  "Crecer y darte cuenta de que los adultos tampoco saben qué están haciendo",
-  "Amor que llegó en el momento equivocado (o con la persona equivocada)",
-  "Ese trabajo que te quitó la energía pero te enseñó quién eres",
-  "La soledad que sientes rodeado de gente que te quiere",
-  "Cuando tu mayor enemigo resultó ser tu propio cerebro",
-  "El día que decidiste dejar de esperar que las cosas cambiaran solas",
-  "Amistades que duran para siempre... hasta que no duran",
-  "Fracasar en algo que amabas y volver a intentarlo de todas formas",
-  "El primer salario y la realidad de lo poco que alcanza",
-  "Cuando tu ex aparece happy con alguien más y tú sigues viendo Netflix solo",
-  "El momento en que te das cuenta que tu mejor amigo ya no te llama",
-  "La presión de cumplir 30 sin tener nada 'resuelto'",
-  "Cuando trabajas tanto que no tienes tiempo para vivir",
-  "El día que entendiste por qué tu papá se sentaba solo a mirar al techo",
-  "Cuando alguien te dice 'estás cambiando' y tú solo estás creciendo",
-  "La ansiedad de ver a tus amigos con hijos y tú sin saber regar una planta",
-  "Cuando tu pareja te dice 'no eres el mismo de antes' y tiene razón",
-  "El orgullo de comprar algo con tu propio esfuerzo por primera vez",
-  "La injusticia de trabajar más que todos y ganar menos que todos",
-  "Cuando te das cuenta de que estás repitiendo los errores de tu ex",
-  "El día que dejaste de buscar la aprobación de tu padre",
-  "La frustración de ser bueno en algo que nadie valora",
-  "Cuando tu mejor amiga se enamora de tu ex y no sabes qué hacer",
-  "El precio de mantener una fachada de 'todo está bien'",
-  "La trampa del 'mañana empiezo' que nunca llega",
-  "Cuando te das cuenta de que ya no tienes nada en común con tus amigos de la infancia",
-  "El momento en que eliges tu felicidad aunque otros no la entiendan",
-  "La soledad de ser el 'fuerte' del grupo nadie pregunta cómo estás"
+const carouselTopics = [
+  "🎲 Aleatorio / Sorpréndeme (La IA elegirá un tema al azar)",
+  "❤️ AMOR: Detalles cotidianos que enamoran",
+  "❤️ AMOR: Señales de amor verdadero",
+  "❤️ AMOR: Gestos después de años juntos",
+  "❤️ AMOR: Amor a distancia",
+  "❤️ AMOR: Reconquistar después de crisis",
+  "❤️ AMOR: Pequeños sacrificios por amor",
+  "❤️ AMOR: Cuando el amor madura",
+  "❤️ AMOR: Comunicación en pareja",
+  "❤️ AMOR: Rutina vs espontaneidad",
+  "❤️ AMOR: Amor propio en la relación",
+  "💔 DESAMOR: Superar una ruptura",
+  "💔 DESAMOR: Cuando ya no hay vuelta atrás",
+  "💔 DESAMOR: Aprender a soltar",
+  "💔 DESAMOR: El duelo del amor perdido",
+  "💔 DESAMOR: Cuando el amor no es suficiente",
+  "💔 DESAMOR: Dejar ir con amor",
+  "💔 DESAMOR: Reconstruirse después",
+  "💔 DESAMOR: Amor no correspondido",
+  "💔 DESAMOR: Cuando duele pero es necesario",
+  "💔 DESAMOR: Cerrar ciclos",
+  "👨‍👩‍👧 FAMILIA: Cosas que extrañas de tu infancia",
+  "👨‍👩‍👧 FAMILIA: Cuando entiendes a tus padres",
+  "👨‍👩‍👧 FAMILIA: Hermanos: amor y odio",
+  "👨‍👩‍👧 FAMILIA: Abuelos: sabiduría y nostalgia",
+  "👨‍👩‍👧 FAMILIA: Reuniones familiares caóticas",
+  "👨‍👩‍👧 FAMILIA: Cuando te conviertes en el adulto",
+  "👨‍👩‍👧 FAMILIA: Tradiciones familiares",
+  "👨‍👩‍👧 FAMILIA: Distancia y familia",
+  "👨‍👩‍👧 FAMILIA: Padres solteros",
+  "👨‍👩‍👧 FAMILIA: Legado familiar",
+  "🌟 MOTIVACIÓN: Superar el miedo al fracaso",
+  "🌟 MOTIVACIÓN: Cuando todo sale mal pero sigues",
+  "🌟 MOTIVACIÓN: Pequeños logros diarios",
+  "🌟 MOTIVACIÓN: Dejar de compararte",
+  "🌟 MOTIVACIÓN: Empezar de cero",
+  "🌟 MOTIVACIÓN: Cuando nadie cree en ti",
+  "🌟 MOTIVACIÓN: Disciplina vs motivación",
+  "🌟 MOTIVACIÓN: Quemado/burnout",
+  "🌟 MOTIVACIÓN: Cambiar de rumbo",
+  "🌟 MOTIVACIÓN: Celebrar el progreso",
+  "🤝 AMISTAD: Amigos de verdad",
+  "🤝 AMISTAD: Amistades que duran años",
+  "🤝 AMISTAD: Distancia y amistad",
+  "🤝 AMISTAD: Amistades tóxicas",
+  "🤝 AMISTAD: Nuevas amistades",
+  "🤝 AMISTAD: Amistad vs amor",
+  "🤝 AMISTAD: Lealtad",
+  "🤝 AMISTAD: Amigos en momentos difíciles",
+  "🤝 AMISTAD: Reencontrarse",
+  "🤝 AMISTAD: Círculos pequeños"
 ];
 
 export default function HistorietasPage() {
-  const [niche, setNiche] = useState(comicNiches[0]);
+  const [niche, setNiche] = useState(carouselTopics[0]);
   const [idea, setIdea] = useState("");
   const [characterDesc, setCharacterDesc] = useState("");
   const [panelCount, setPanelCount] = useState(4);
@@ -149,7 +168,7 @@ export default function HistorietasPage() {
                 onChange={(e) => setNiche(e.target.value)}
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all appearance-none"
               >
-                {comicNiches.map(n => (
+                {carouselTopics.map(n => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
