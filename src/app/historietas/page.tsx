@@ -177,7 +177,7 @@ export default function HistorietasPage() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Cantidad de Viñetas: <span className="text-emerald-400 font-bold">{panelCount}</span>
+                Cantidad de Imágenes / Diapositivas: <span className="text-emerald-400 font-bold">{panelCount}</span>
               </label>
               <div className="relative pt-1 pb-2">
                 <input
@@ -196,7 +196,7 @@ export default function HistorietasPage() {
                 </div>
               </div>
               <p className="text-xs text-slate-500">
-                {panelCount <= 4 ? "Historia rápida" : panelCount <= 10 ? "Historia completa" : "Historia extensa (tardará más)"}
+                {panelCount <= 4 ? "Carrusel corto" : panelCount <= 10 ? "Carrusel ideal" : "Carrusel extenso (tardará más)"}
               </p>
             </div>
           </div>
