@@ -29,6 +29,9 @@ interface FacelessData {
     text: string;
     image_prompt: string;
   };
+  caption?: string;
+  music_recommendation?: string;
+  hashtags?: string[];
   script_sections: {
     hook: string;
     development: string;
@@ -41,6 +44,7 @@ interface FacelessData {
 export default function FacelessYouTubePage() {
   const [topic, setTopic] = useState("");
   const [sceneCount, setSceneCount] = useState("8");
+  const [duration, setDuration] = useState("1 Minuto");
   const [bodyColor, setBodyColor] = useState("yellow");
   const [shortsColor, setShortsColor] = useState("black");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
@@ -93,7 +97,7 @@ export default function FacelessYouTubePage() {
     if (selectedTopic) setTopic(selectedTopic);
 
     try {
-      const res = await aiFetch("/api/generate-faceless", { mode: "full", topic: finalTopic, bodyColor, shortsColor, sceneCount: parseInt(sceneCount) });
+      const res = await aiFetch("/api/generate-faceless", { mode: "full", topic: finalTopic, bodyColor, shortsColor, sceneCount: parseInt(sceneCount), duration });
       if (!res.ok) throw new Error("Error fetching video data");
       const generatedData = await res.json();
       setData(generatedData);
@@ -102,6 +106,15 @@ export default function FacelessYouTubePage() {
     } finally {
       setIsGeneratingVideo(false);
     }
+  };
+
+
+  const handleCopyMetadata = () => {
+    if (!data) return;
+    let text = `🎵 Música: ${data.music_recommendation}\n\n`;
+    text += `${data.caption}\n\n`;
+    text += data.hashtags ? data.hashtags.map(h => h.startsWith('#') ? h : `#${h}`).join(" ") : "";
+    handleCopy(text, "metadata");
   };
 
   const handleCopyFullScript = () => {
@@ -118,7 +131,13 @@ export default function FacelessYouTubePage() {
       fullText += `Escena ${s.scene_number}: ${s.narration}\n`;
     });
     
-    handleCopy(fullText, 'full_script');
+    if (data.caption) {
+        fullText += `\n--- PUBLICACIÓN ---\n`;
+        fullText += `Caption: ${data.caption}\n`;
+        fullText += `Música: ${data.music_recommendation}\n`;
+        fullText += `Hashtags: ${data.hashtags?.join(" ")}\n`;
+      }
+      handleCopy(fullText, 'full_script');
   };
 
   const handleRegenerateScenePrompt = async (sceneIndex: number, promptType: "image" | "animation") => {
@@ -220,10 +239,25 @@ export default function FacelessYouTubePage() {
                   return <option key={num} value={num}>{num} Escenas</option>;
                 })}
               </select>
-            </div>
-          </div>
+              </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Duración Objetivo</label>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all appearance-none"
+                >
+                  <option value="1 Minuto">1 Minuto</option>
+                  <option value="3 Minutos">3 Minutos</option>
+                  <option value="5 Minutos">5 Minutos</option>
+                  <option value="10 Minutos">10 Minutos</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={handleGenerateIdeas}
               disabled={isGeneratingIdeas || isGeneratingVideo}

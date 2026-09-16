@@ -4,7 +4,7 @@ import { chatCompletion } from "@/lib/api-helpers";
 export async function POST(req: NextRequest) {
   try {
     const requestBody = await req.json();
-    const { mode, topic, bodyColor, shortsColor, sceneCount, scene_number, narration, visual_concept, existing_image_prompt, prompt_type } = requestBody;
+    const { mode, topic, bodyColor, shortsColor, sceneCount, duration, scene_number, narration, visual_concept, existing_image_prompt, prompt_type } = requestBody;
 
     const count = sceneCount || 8;
     let prompt = "";
@@ -28,6 +28,13 @@ REGLAS:
 - Mantener la narración y concepto visual
 - El prompt debe estar en inglés
 - Incluir pose, cámara, entorno e iluminación
+
+
+🌟 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
+- ES OBLIGATORIO incluir "caption", "music_recommendation" y "hashtags".
+- "caption": Un texto persuasivo para la descripción del video en redes (30-50 palabras).
+- "music_recommendation": Describe una canción específica y su vibra (ej: "Beat phonk oscuro y rápido").
+- "hashtags": Lista de 5 a 8 hashtags virales.
 
 Responde SOLO con un JSON válido:
 {
