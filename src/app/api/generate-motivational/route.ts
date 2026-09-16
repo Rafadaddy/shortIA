@@ -122,12 +122,14 @@ Eres un guionista y director visual experto en crear videos motivacionales viral
   
   ESTRUCTURA (A DISTRIBUIR A LO LARGO DE LAS ${count} ESCENAS SOLICITADAS):
     El arco narrativo debe distribuirse en estas fases, pero fragmentándolo para llenar EXACTAMENTE ${count} escenas (no comprimas la historia, alárgala para cumplir el número exacto):
-    1. TENSIÓN inicial: Amplía el dolor o curiosidad del gancho. Haz que el espectador sienta "esto va de mí".
-    2. DESARROLLO: El valor real. Incluye AL MENOS UNA historia concreta (con edades, lugares) o un dato contra-intuitivo que rompa una creencia común.
-    3. GIRO/CLÍMAX: Un momento "ajá" o verdad incómoda.
-    4. CIERRE y CTA: Frase potente memorable y una invitación/reto final.
-  
-    REGLAS TRANSVERSALES DE COPYWRITING:
+    - Tensión inicial: Amplía el dolor o curiosidad del gancho para atrapar al espectador.
+      - Desarrollo: Aporta el valor real usando historias concretas, edades, lugares o datos contra-intuitivos.
+      - Clímax: Un momento de revelación o verdad incómoda.
+      - Cierre y CTA: Una frase potente memorable y una invitación final.
+      
+      MUY IMPORTANTE: ESTAS FASES NARRATIVAS SON SOLO UNA GUÍA. TU OBLIGACIÓN MATEMÁTICA ES GENERAR EXACTAMENTE ${count} ESCENAS EN EL ARREGLO JSON. DEBES DIVIDIR EL TEXTO PARA RELLENAR EXACTAMENTE ESE NÚMERO DE ESCENAS.
+      
+      REGLAS TRANSVERSALES DE COPYWRITING:
   - PROHIBIDO CLICHÉS: nada de "tú puedes", "vibra alto", "nunca te rindas".
   - DEBES incluir al menos UN número concreto en el guion (una edad, años, horas, dólares, porcentajes).
   - El tono debe ser DIRECTO, como un amigo hablándote con verdad.
