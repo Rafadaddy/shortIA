@@ -394,6 +394,7 @@ return (
                   {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
                 </button>
               </div>
+              </div>
 
               <div className="space-y-6">
                 {data.scenes.map((scene, idx) => (
