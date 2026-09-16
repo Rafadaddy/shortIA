@@ -7,6 +7,7 @@ export async function chatCompletion(
 ): Promise<string> {
   const providerConfig = requestBody._provider as ProviderConfig | undefined;
   const groqKey = process.env.GROQ_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
 
   console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS" : "NOT FOUND");
   console.log("[API-Helpers] _provider from request:", providerConfig ? `${providerConfig.providerId} / ${providerConfig.model}` : "NULL");
