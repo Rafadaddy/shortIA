@@ -51,7 +51,7 @@ Cada idea debe ser ÚNICA y tener un ENFOQUE DIFERENTE:
 - Algunas en datos curiosos que inspiran
 - Algunas en historias reales o hipotéticas
 
- válido:
+Responde SOLO con un JSON válido:
 {
   "ideas": [
     {
@@ -81,7 +81,7 @@ REGLAS:
 - Formato vertical 9:16
 - ${styleInstruction}
 
- válido:
+Responde SOLO con un JSON válido:
 {
   "image_prompt": "El nuevo prompt visual en inglés..."
 }
@@ -101,7 +101,7 @@ REGLAS:
 - El prompt debe estar en inglés
 - Transiciones suaves entre escenas
 
- válido:
+Responde SOLO con un JSON válido:
 {
   "animation_prompt": "El nuevo prompt de animación en inglés..."
 }
