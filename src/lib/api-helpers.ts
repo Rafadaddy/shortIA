@@ -22,8 +22,8 @@ export async function chatCompletion(
       );
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : String(error);
-      console.error(`[API-Helpers] Error desde ${providerConfig.providerId}, intentando fallback a servidor local:`, errMsg);
-      // No lanzamos error aquí, dejamos que intente la Prioridad 2
+      console.error(`[API-Helpers] Error desde ${providerConfig.providerId}:`, errMsg);
+      throw new Error(errMsg);
     }
   }
 
@@ -36,6 +36,45 @@ export async function chatCompletion(
       [{ role: "user", content: prompt }],
       { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
     );
+  }throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
+}
+
+export async function generateImageWithGemini(
+  prompt: string,
+  apiKey: string,
+  aspectRatio: string = "1:1"
+): Promise<string> {
+  // Map standard aspect ratios to Gemini supported formats
+  let geminiRatio = "1:1";
+  if (aspectRatio.includes("16:9")) geminiRatio = "16:9";
+  if (aspectRatio.includes("9:16")) geminiRatio = "9:16";
+  if (aspectRatio.includes("3:4")) geminiRatio = "3:4";
+  if (aspectRatio.includes("4:3")) geminiRatio = "4:3";
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      instances: [{ prompt }],
+      parameters: {
+        sampleCount: 1,
+        aspectRatio: geminiRatio,
+        outputOptions: { mimeType: "image/jpeg" },
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    console.error("[API-Helpers] Gemini Image Error:", err);
+    throw new Error(`Gemini Image Error: ${response.status} ${response.statusText}`);
   }
 
-  throw new Error("No hay API key configurada o la API key falló. Abre Configuracion y agrega una API key válida.");
+  const data = await response.json();
+  if (data.predictions && data.predictions.length > 0) {
+    return data.predictions[0].bytesBase64Encoded;
+  }
+  
+  throw new Error("No se pudo generar la imagen con Gemini");
+}
