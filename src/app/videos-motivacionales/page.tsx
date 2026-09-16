@@ -59,6 +59,7 @@ const tones = [
 ];
 
 const visualStyles = [
+  "🎲 Aleatorio / Que la IA decida",
   "Cinemático Oscuro",
   "Paisajes Épicos",
   "Urbano / Calle",

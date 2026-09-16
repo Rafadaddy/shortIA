@@ -13,7 +13,9 @@ export async function POST(req: NextRequest) {
     const count = sceneCount || 5;
 
     let styleInstruction = "";
-    if (requestedStyle.includes("Cinemático Oscuro")) {
+    if (requestedStyle.includes("Aleatorio") || requestedStyle.includes("IA decida")) {
+      styleInstruction = "Dynamic visual style tailored specifically to the narrative. Period-accurate settings (e.g. 19th-century workshop for Edison, 90s court for Jordan). Highly coherent, visually stunning, avoiding generic metaphors.";
+    } else if (requestedStyle.includes("Cinemático Oscuro")) {
       styleInstruction = "Dark cinematic style, dramatic shadows, moody lighting, high contrast, film grain. Moody atmosphere with deep blacks and warm highlights.";
     } else if (requestedStyle.includes("Paisajes Épicos")) {
       styleInstruction = "Epic landscape cinematography, golden hour lighting, vast open spaces, drone-style aerial shots, majestic mountains or oceans, warm sunset tones.";
@@ -38,6 +40,10 @@ Genera 8 ideas de videos motivacionales cortos (~40 segundos) para un nicho espe
 
 Nicho: "${niche || 'Desarrollo personal y motivación'}"
 
+
+[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
+
+[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
 Cada idea debe ser ÚNICA y tener un ENFOQUE DIFERENTE:
 - Algunas enfocadas en dolor/fracaso
 - Algunas en superación personal
@@ -106,6 +112,7 @@ REGLAS:
 Eres un guionista y director visual experto en crear videos motivacionales virales para TikTok, Instagram Reels y YouTube Shorts.
 
 Tema/Nicho: "${niche || 'Desarrollo personal y motivación'}"
+[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
 ${idea ? `Idea específica: "${idea}"` : "Genera una idea original y poderosa basada en el nicho."}
 Tono Emocional: "${requestedTone}"
 Duración objetivo: ${requestedDuration}
@@ -179,7 +186,7 @@ Responde SOLO con un JSON válido:
 `;
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode === "single_prompt" ? 0.9 : 0.85 });
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode === "single_prompt" ? 0.9 : 0.98 });
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
