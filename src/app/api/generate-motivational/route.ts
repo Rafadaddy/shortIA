@@ -45,7 +45,7 @@ Cada idea debe ser ÚNICA y tener un ENFOQUE DIFERENTE:
 - Algunas en datos curiosos que inspiran
 - Algunas en historias reales o hipotéticas
 
-Responde SOLO con un JSON válido:
+ válido:
 {
   "ideas": [
     {
@@ -74,7 +74,7 @@ REGLAS:
 - Formato vertical 9:16
 - ${styleInstruction}
 
-Responde SOLO con un JSON válido:
+ válido:
 {
   "image_prompt": "El nuevo prompt visual en inglés..."
 }
@@ -94,7 +94,7 @@ REGLAS:
 - El prompt debe estar en inglés
 - Transiciones suaves entre escenas
 
-Responde SOLO con un JSON válido:
+ válido:
 {
   "animation_prompt": "El nuevo prompt de animación en inglés..."
 }
@@ -149,6 +149,13 @@ Para cada escena (${count} escenas):
 6. "duration": Duración estimada de la escena
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🌟 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
+- ES OBLIGATORIO generar los campos "caption", "music_recommendation" y "hashtags" en la respuesta JSON.
+- "caption": Un texto reflexivo o persuasivo para la descripción del video en redes sociales (30-50 palabras).
+- "music_recommendation": Describe una canción o pista de audio específica y su vibra (ej: "Piano nostálgico cinemático", "Phonk agresivo para entrenar").
+- "hashtags": Proporciona una lista de 5 a 8 hashtags virales relevantes.
 
 Responde SOLO con un JSON válido:
 {
