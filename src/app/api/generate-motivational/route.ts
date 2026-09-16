@@ -163,13 +163,14 @@ IMPORTANTE: DEBES GENERAR EXACTAMENTE ${count} ESCENAS EN EL ARREGLO "scenes". �
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-🌟 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
-- ES OBLIGATORIO generar los campos "caption", "music_recommendation" y "hashtags" en la respuesta JSON.
-- "caption": Un texto reflexivo o persuasivo para la descripción del video en redes sociales (30-50 palabras).
-- "music_recommendation": Describe una canción o pista de audio específica y su vibra (ej: "Piano nostálgico cinemático", "Phonk agresivo para entrenar").
-- "hashtags": Proporciona una lista de 5 a 8 hashtags virales relevantes.
 
-Responde SOLO con un JSON válido:
+  🚀 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
+  - ES ESTRICTAMENTE OBLIGATORIO generar los campos "caption", "music_recommendation" y "hashtags" en la respuesta JSON. Si no los incluyes, el sistema fallará.
+  - "caption": Un texto reflexivo o persuasivo para la descripción del video en redes sociales (30-50 palabras).
+  - "music_recommendation": Describe la pista de fondo ideal (ej: "Piano nostálgico cinemático").
+  - "hashtags": Array de strings con 5 a 8 hashtags virales relevantes.
+
+  Responde SOLO con un JSON válido:
 {
   "title": "Título impactante del video",
   "full_narration": "La narración completa del video (para copiar y narrar)",
@@ -185,7 +186,7 @@ Responde SOLO con un JSON válido:
       }
       // ... repite hasta la escena ${count}
     ],
-  "caption": "Caption para redes sociales (20-30 palabras) con hashtags",
+  "caption": "El texto persuasivo para redes sociales...",
   "music_recommendation": "Tipo de música sugerida",
   "hashtags": ["#motivacion", "#desarrollopersonal", "#frases"]
 }
