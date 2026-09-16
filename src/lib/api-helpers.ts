@@ -23,7 +23,7 @@ export async function chatCompletion(
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : String(error);
       console.error(`[API-Helpers] Error desde ${providerConfig.providerId}:`, errMsg);
-      throw new Error(errMsg);
+      // throw new Error(errMsg); // Comentado para permitir fallback a Groq
     }
   }
 
