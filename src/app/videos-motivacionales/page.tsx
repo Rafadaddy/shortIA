@@ -120,7 +120,10 @@ export default function VideosMotivacionalesPage() {
 
     try {
       const res = await aiFetch("/api/generate-motivational", { mode: "ideas", niche });
-      if (!res.ok) throw new Error("Error al generar ideas");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al generar ideas");
+      }
       const generated = await res.json();
       if (generated.ideas) {
         setIdeas(generated.ideas);
