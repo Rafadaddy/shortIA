@@ -70,7 +70,8 @@ Prompt anterior (NO repetir): "${existing_prompt}"
 REGLAS:
 - Genera un prompt completamente diferente al anterior
 - Mantener la narración como inspiración para la escena
-- El prompt debe estar en inglés
+- El prompt debe estar en inglés y ser ALTAMENTE DETALLADO (mínimo 30 palabras).
+- Usa estructura avanzada: [Main subject] + [Environment] + [Lighting details] + [Camera shot] + [Atmosphere] + [Quality tags].
 - Formato vertical 9:16
 - ${styleInstruction}
 
@@ -144,7 +145,7 @@ Para cada escena (${count} escenas):
 1. "scene_number": Número de escena
 2. "narration": Línea exacta de la narración para esta escena
 3. "visual_concept": Descripción en español de qué se ve en pantalla
-4. "image_prompt": Prompt en inglés para generar la imagen (DALL-E/Midjourney)
+4. "image_prompt": Prompt MUY DETALLADO en inglés para Midjourney/DALL-E (mínimo 30 palabras). Estructura obligatoria: [Sujeto principal/Acción] + [Entorno/Fondo] + [Iluminación, ej: cinematic lighting, golden hour] + [Ángulo de cámara, ej: close-up, wide angle] + [Atmósfera/Emoción] + [Calidad, ej: 8k, photorealistic].
 5. "animation_prompt": Prompt en inglés para animar el video (Runway/Veo3)
 6. "duration": Duración estimada de la escena
 
