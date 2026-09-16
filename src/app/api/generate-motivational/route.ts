@@ -35,33 +35,31 @@ export async function POST(req: NextRequest) {
 
     if (mode === "ideas") {
       prompt = `
-Eres un creador de contenido motivacional viral para TikTok/Instagram/YouTube Shorts.
-Genera 8 ideas de videos motivacionales cortos (~40 segundos) para un nicho específico.
-
-Nicho: "${niche || 'Desarrollo personal y motivación'}"
-
-
-[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
-
-[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
-Cada idea debe ser ÚNICA y tener un ENFOQUE DIFERENTE:
-- Algunas enfocadas en dolor/fracaso
-- Algunas en superación personal
-- Algunas en reflexión filosófica
-- Algunas en datos curiosos que inspiran
-- Algunas en historias reales o hipotéticas
-
-Responde SOLO con un JSON válido:
-{
-  "ideas": [
-    {
-      "title": "Título corto y impactante",
-      "hook": "Frase gancho de 1 línea que detenga al lector",
-      "focus": "Enfoque del video (dolor, superación, reflexión, etc.)"
-    }
-  ]
-}
-`;
+  Eres un guionista y copywriter experto en contenido viral para TikTok, Reels y Shorts, especializado en videos motivacionales con tono crudo, realista y directo. Tu estilo se parece a creadores que dicen verdades incómodas, no a coaches de autoayuda genéricos.
+  Genera 8 ideas de videos altamente clicables para el siguiente tema.
+  
+  Nicho/Tema: "${niche || 'Desarrollo personal y motivación'}"
+  
+  REGLAS OBLIGATORIAS PARA LOS GANCHOS (TÍTULOS):
+  - Máximo 15 palabras (se lee en menos de 2 segundos).
+  - Debe sonar como algo que diría una persona REAL, lenguaje coloquial y directo.
+  - PROHIBIDO CLICHÉS: "tú puedes", "cree en ti", "el cielo es el límite", "eres un guerrero", "vibra alto".
+  - Usa técnicas variadas: Dolor emocional específico, curiosidad, historias reales con números/edades, contradicciones o urgencia temporal.
+  - Prohibido empezar dos ganchos igual.
+  
+  [VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o enfoque. Huye de lo genérico.
+  
+  Responde SOLO con un JSON válido:
+  {
+    "ideas": [
+      {
+        "title": "Título corto y crudo (el gancho)",
+        "hook": "La técnica usada (ej: Dolor emocional, Contradicción, Historia con números)",
+        "focus": "Breve explicación de por qué funciona este enfoque"
+      }
+    ]
+  }
+  `;
     } else if (mode === "single_prompt") {
       if (prompt_type === "image") {
         prompt = `
@@ -109,29 +107,31 @@ Responde SOLO con un JSON válido:
       }
     } else {
       prompt = `
-Eres un guionista y director visual experto en crear videos motivacionales virales para TikTok, Instagram Reels y YouTube Shorts.
-
-Tema/Nicho: "${niche || 'Desarrollo personal y motivación'}"
-[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o el mismo enfoque si te piden este tema de nuevo. Explora personajes históricos menos conocidos, anécdotas diferentes o filosofías únicas. Huye de los clichés.
-${idea ? `Idea específica: "${idea}"` : "Genera una idea original y poderosa basada en el nicho."}
-Tono Emocional: "${requestedTone}"
-Duración objetivo: ${requestedDuration}
-Estilo Visual: "${requestedStyle}"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 REGLAS PARA EL GUION (NARRACIÓN)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-La narración debe ser un MONÓLOGO directo, como si le hablaras directamente al espectador.
-
-ESTRUCTURA (A DISTRIBUIR A LO LARGO DE LAS ${count} ESCENAS SOLICITADAS):
-  El arco narrativo debe contener un Gancho, Desarrollo, Climax y Cierre, pero DEBES fragmentar y distribuir todo este arco en EXACTAMENTE ${count} ESCENAS. No comprimas la historia en 3 o 4 escenas, alárgala para cumplir el número exacto de escenas solicitadas.
-
-  REGLAS DE ORO:
-- NO uses frases genéricas como "tú puedes" o "nunca te rindas"
-- SÍ usa datos reales, comparaciones impactantes o situaciones que todos sienten
-- El tono debe ser DIRECTO, como un amigo hablándote con verdad
-- LONGITUD OBLIGATORIA POR ESCENA: Cada escena debe durar exactamente ${requestedDuration}. 
+Eres un guionista y director visual experto en crear videos motivacionales virales para TikTok y Shorts. Tu estilo es crudo, realista y directo, como un amigo diciendo verdades incómodas. Cero autoayuda genérica.
+  
+  Tema/Nicho: "${niche || 'Desarrollo personal y motivación'}"
+  [VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o enfoque. Huye de los clichés.
+  ${idea ? `Idea base (Gancho elegido): "${idea}"` : "Genera un gancho original basado en el nicho."}
+  Tono Emocional: "${requestedTone} (Crudo y directo)"
+  Duración objetivo: ${requestedDuration}
+  Estilo Visual: "${requestedStyle}"
+  
+  🔥🔥🔥 REGLAS PARA EL GUION (NARRACIÓN) 🔥🔥🔥
+  
+  La narración debe ser un MONÓLOGO directo, como si le hablaras directamente al espectador.
+  
+  ESTRUCTURA (A DISTRIBUIR A LO LARGO DE LAS ${count} ESCENAS SOLICITADAS):
+    El arco narrativo debe distribuirse en estas fases, pero fragmentándolo para llenar EXACTAMENTE ${count} escenas (no comprimas la historia, alárgala para cumplir el número exacto):
+    1. TENSIÓN inicial: Amplía el dolor o curiosidad del gancho. Haz que el espectador sienta "esto va de mí".
+    2. DESARROLLO: El valor real. Incluye AL MENOS UNA historia concreta (con edades, lugares) o un dato contra-intuitivo que rompa una creencia común.
+    3. GIRO/CLÍMAX: Un momento "ajá" o verdad incómoda.
+    4. CIERRE y CTA: Frase potente memorable y una invitación/reto final.
+  
+    REGLAS TRANSVERSALES DE COPYWRITING:
+  - PROHIBIDO CLICHÉS: nada de "tú puedes", "vibra alto", "nunca te rindas".
+  - DEBES incluir al menos UN número concreto en el guion (una edad, años, horas, dólares, porcentajes).
+  - El tono debe ser DIRECTO, como un amigo hablándote con verdad.
+  - LONGITUD OBLIGATORIA POR ESCENA: Cada escena debe durar exactamente ${requestedDuration}. 
   * Si es "5 Segundos": Escribe entre 15 y 20 palabras POR ESCENA.
   * Si es "10 Segundos": Escribe entre 30 y 40 palabras POR ESCENA.
   * Si es "15 Segundos": Escribe entre 45 y 55 palabras POR ESCENA.
