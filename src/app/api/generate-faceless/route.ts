@@ -31,14 +31,74 @@ REGLAS:
 - Incluir pose, cámara, entorno e iluminación
 
 
+🌟 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
+- ES OBLIGATORIO incluir "caption", "music_recommendation" y "hashtags".
+- "caption": Un texto persuasivo para la descripción del video en redes (30-50 palabras).
+- "music_recommendation": Describe una canción específica y su vibra (ej: "Beat phonk oscuro y rápido").
+- "hashtags": Lista de 5 a 8 hashtags virales.
 
-  🚀 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
-  - ES ESTRICTAMENTE OBLIGATORIO generar los campos "caption", "music_recommendation" y "hashtags" en la respuesta JSON. Si no los incluyes, el sistema fallará.
-  - "caption": Un texto reflexivo o persuasivo para la descripción del video en redes sociales (30-50 palabras).
-  - "music_recommendation": Describe la pista de fondo ideal (ej: "Piano nostálgico cinemático").
-  - "hashtags": Array de strings con 5 a 8 hashtags virales relevantes.
+Responde SOLO con un JSON válido:
+{
+  "image_prompt": "El nuevo prompt visual en inglés..."
+}
+`;
+      } else {
+        prompt = `
+Eres un director de arte experto en animación para YouTube.
+Regenera SOLO el prompt de animación/video para la escena ${scene_number} de un video faceless.
 
-  Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
+Narración: "${narration}"
+Concepto visual: "${visual_concept}"
+Prompt anterior (NO repetir): "${existing_image_prompt}"
+
+REGLAS:
+- Genera un prompt completamente diferente al anterior
+- Describir el movimiento y la cámara
+- Duración: 5 segundos
+- El prompt debe estar en inglés
+
+Responde SOLO con un JSON válido:
+{
+  "animation_prompt": "El nuevo prompt de animación en inglés..."
+}
+`;
+      }
+    } else if (mode === "ideas") {
+      prompt = `
+Eres un creador experto de contenido para YouTube.
+Genera 5 ideas de video altamente atractivas y muy clicables para un canal de YouTube faceless con animación (Público objetivo: jóvenes/adultos interesados en historias, reflexiones o fitness).
+Responde ÚNICAMENTE con un JSON válido con esta estructura:
+{
+  "ideas": [
+    {
+      "title": "Título del Video",
+      "hook": "Hook emocional en una sola frase",
+      "pain_point": "El dolor o problema del público objetivo que resuelve",
+      "why_it_works": "Por qué funcionará bien"
+    }
+  ]
+}
+`;
+    } else {
+      prompt = `
+Eres un guionista y director de animación para un canal de YouTube de Historias Faceless.
+Tema: "${topic}"
+
+Personaje Base: ${characterBase}
+
+Debes generar un guion narrativo completo basado en este tema. IMPORTANTE: EL GUION DEBE DIVIDIRSE EN EXACTAMENTE ${count} ESCENAS. Distribuye el arco narrativo (Inicio, Desarrollo, Clímax, Final) a lo largo de las ${count} escenas solicitadas.
+El guion debe tener un tono conversacional, directo, envolvente y emocional.
+Divide el guion en EXACTAMENTE ${count} escenas que representen los momentos visuales más importantes. Cada escena dura unos 5 segundos.
+
+Para cada escena, necesitas generar:
+1. Líneas de narración (el texto).
+2. Concepto visual (lo que pasa).
+3. Prompt de imagen en INGLÉS (usando la descripción base del personaje, alterando pose, cámara, entorno).
+4. Prompt de animación en INGLÉS para herramientas como Runway/Veo3.
+
+Además, genera UNA miniatura (Thumbnail) con alto CTR.
+
+Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
 {
   "title": "Título llamativo",
   "thumbnail": {
