@@ -11,20 +11,7 @@ export async function chatCompletion(
   console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS" : "NOT FOUND");
   console.log("[API-Helpers] _provider from request:", providerConfig ? `${providerConfig.providerId} / ${providerConfig.model}` : "NULL");
 
-  // PRIORIDAD 1: Usar la API Key local del servidor (process.env) si existe, pero respetando el modelo elegido en la UI.
-  if (groqKey) {
-    // Si el usuario usa su API key local (que es un proxy especial), el ǧnico modelo que funciona es openai/gpt-oss-120b
-    const model = "openai/gpt-oss-120b";
-      
-    console.log(`[API-Helpers] Usando API key LOCAL del servidor | Modelo: ${model}`);
-    return generateChatCompletion(
-      { providerId: "groq", apiKey: groqKey, model },
-      [{ role: "user", content: prompt }],
-      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
-    );
-  }
-
-  // PRIORIDAD 2: Usar la API Key y configuración enviada desde el cliente (UI)
+    // PRIORIDAD 1: Usar la API Key y configuración enviada desde el cliente (UI)
   if (providerConfig && providerConfig.apiKey) {
     console.log(`[API-Helpers] Usando configuración del cliente: ${providerConfig.providerId} | Modelo: ${providerConfig.model}`);
     try {
@@ -40,7 +27,16 @@ export async function chatCompletion(
     }
   }
 
-  throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
+  // PRIORIDAD 2: Usar la API Key local del servidor (process.env) como fallback
+  if (groqKey) {
+    const model = "openai/gpt-oss-120b";
+    console.log(`[API-Helpers] Fallback a API key LOCAL del servidor | Modelo forzado: ${model}`);
+    return generateChatCompletion(
+      { providerId: "groq", apiKey: groqKey, model },
+      [{ role: "user", content: prompt }],
+      { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+    );
+  }throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
 }
 
 export async function generateImageWithGemini(

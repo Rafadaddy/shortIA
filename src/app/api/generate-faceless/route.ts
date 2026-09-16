@@ -126,7 +126,14 @@ Asegúrate de incluir EXACTAMENTE ${count} escenas en el arreglo 'scenes'. Las n
     }
 
     const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.7 });
-    const data = JSON.parse(jsonText);
+        // Safely parse JSON in case of markdown backticks
+    let cleanJson = jsonText.trim();
+    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
+    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
+    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
+    cleanJson = cleanJson.trim();
+    
+    const data = JSON.parse(cleanJson);
 
     return NextResponse.json(data);
   } catch (error: unknown) {
