@@ -9,6 +9,14 @@ export async function POST(req: NextRequest) {
 
     const count = sceneCount || 8;
     let prompt = "";
+    const scenesTemplate = Array.from({ length: count }).map((_, i) => `{
+      "scene_number": ${i + 1},
+      "narration": "Línea de la narración...",
+      "visual_concept": "Qué se ve en pantalla...",
+      "image_prompt": "English prompt...",
+      "animation_prompt": "English animation prompt...",
+      "duration": "~10s"
+    }`).join(',\n      ');
 
     const characterBase = `Stylized muscular humanoid character with smooth ${bodyColor || 'yellow'} skin, simple oval head with no facial features except two white oval eyes. Clean line art, thick black outlines, flat solid colors. Very defined but simplified musculature on chest, arms, and abs. Wearing short ${shortsColor || 'black'} athletic shorts. Body proportions heroic and slightly exaggerated. Minimalist digital illustration style, no gradients, no detailed shading, only subtle contour lines. Soft pastel background. Modern, comic-like, simple, clean aesthetic.`;
 
@@ -112,11 +120,8 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
     "ending": "Final: El desenlace y la moraleja o cierre"
   },
   "scenes": [
-    {
-      "scene_number": 1,
-      "narration": "Línea exacta del guion que corresponde a esta escena...",
-      "visual_concept": "Descripción en español de lo que se ve en pantalla...",
-      "image_prompt": "English prompt: ${characterBase} performing [action]. Environment: [env]. Lighting: neutral soft light with hard shadows. Camera: [angle].",
+      ${scenesTemplate}
+    ]. Environment: [env]. Lighting: neutral soft light with hard shadows. Camera: [angle].",
       "animation_prompt": "Camera: [type]. Action: [movement]. Environment: [env]. Duration: 5 seconds.",
       "duration": "5s"
     }

@@ -11,6 +11,14 @@ export async function POST(req: NextRequest) {
     const requestedStyle = style || "Cinemático Oscuro";
     const requestedTone = tone || "Emotivo y Profundo";
     const count = sceneCount || 5;
+    const scenesTemplate = Array.from({ length: count }).map((_, i) => `{
+      "scene_number": ${i + 1},
+      "narration": "Línea de la narración...",
+      "visual_concept": "Qué se ve en pantalla...",
+      "image_prompt": "English prompt...",
+      "animation_prompt": "English animation prompt...",
+      "duration": "~10s"
+    }`).join(',\n      ');
     const requestedDuration = duration || "10 Segundos";
 
     let styleInstruction = "";
@@ -176,16 +184,7 @@ IMPORTANTE: DEBES GENERAR EXACTAMENTE ${count} ESCENAS EN EL ARREGLO "scenes". �
   "title": "Título impactante del video",
   "full_narration": "La narración completa del video (para copiar y narrar)",
   "scenes": [
-      // OBLIGATORIO: ESTE ARREGLO DEBE CONTENER EXACTAMENTE ${count} OBJETOS (ESCENAS).
-      {
-        "scene_number": 1,
-        "narration": "Línea de la narración...",
-        "visual_concept": "Qué se ve en pantalla...",
-        "image_prompt": "Prompt en inglés para imagen...",
-        "animation_prompt": "Prompt en inglés para animación...",
-        "duration": "~10s"
-      }
-      // ... repite hasta la escena ${count}
+      ${scenesTemplate}
     ],
   "caption": "El texto persuasivo para redes sociales...",
   "music_recommendation": "Tipo de música sugerida",
