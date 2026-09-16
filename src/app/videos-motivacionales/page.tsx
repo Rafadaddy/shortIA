@@ -75,7 +75,7 @@ export default function VideosMotivacionalesPage() {
   const [tone, setTone] = useState("Emotivo y Profundo");
   const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro");
   const [sceneCount, setSceneCount] = useState(5);
-  const [duration, setDuration] = useState("40 Segundos");
+  const [duration, setDuration] = useState("10 Segundos");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [data, setData] = useState<MotivationalData | null>(null);
@@ -303,17 +303,16 @@ return (
 
           
             <div className="space-y-2 mb-6">
-              <label className="text-sm font-medium text-slate-300">Duración Objetivo</label>
+              <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
               <select
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
                 className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
               >
-                <option value="40 Segundos">~40 Segundos (Corto)</option>
-                <option value="1 Minuto">1 Minuto</option>
-                <option value="3 Minutos">3 Minutos</option>
-                <option value="5 Minutos">5 Minutos</option>
-                <option value="10 Minutos">10 Minutos</option>
+                <option value="5 Segundos">5 Segundos</option>
+                <option value="10 Segundos">10 Segundos</option>
+                <option value="15 Segundos">15 Segundos</option>
+                <option value="20 Segundos">20 Segundos</option>
               </select>
             </div>
 <div className="flex flex-col sm:flex-row gap-4">

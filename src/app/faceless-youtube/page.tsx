@@ -44,7 +44,7 @@ interface FacelessData {
 export default function FacelessYouTubePage() {
   const [topic, setTopic] = useState("");
   const [sceneCount, setSceneCount] = useState("8");
-  const [duration, setDuration] = useState("1 Minuto");
+  const [duration, setDuration] = useState("10 Segundos");
   const [bodyColor, setBodyColor] = useState("yellow");
   const [shortsColor, setShortsColor] = useState("black");
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
@@ -242,16 +242,16 @@ export default function FacelessYouTubePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Duración Objetivo</label>
+                <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
                 <select
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all appearance-none"
                 >
-                  <option value="1 Minuto">1 Minuto</option>
-                  <option value="3 Minutos">3 Minutos</option>
-                  <option value="5 Minutos">5 Minutos</option>
-                  <option value="10 Minutos">10 Minutos</option>
+                  <option value="5 Segundos">5 Segundos</option>
+                  <option value="10 Segundos">10 Segundos</option>
+                  <option value="15 Segundos">15 Segundos</option>
+                  <option value="20 Segundos">20 Segundos</option>
                 </select>
               </div>
 

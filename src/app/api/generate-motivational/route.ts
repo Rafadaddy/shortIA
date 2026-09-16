@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const requestedStyle = style || "Cinemático Oscuro";
     const requestedTone = tone || "Emotivo y Profundo";
     const count = sceneCount || 5;
-    const requestedDuration = duration || "40 Segundos";
+    const requestedDuration = duration || "10 Segundos";
 
     let styleInstruction = "";
     if (requestedStyle.includes("Aleatorio") || requestedStyle.includes("IA decida")) {
@@ -134,12 +134,12 @@ REGLAS DE ORO:
 - NO uses frases genéricas como "tú puedes" o "nunca te rindas"
 - SÍ usa datos reales, comparaciones impactantes o situaciones que todos sienten
 - El tono debe ser DIRECTO, como un amigo hablándote con verdad
-- LONGITUD OBLIGATORIA: La duración de este video debe ser de ${requestedDuration}. 
-  * Si es 40 segundos o 1 Minuto: Escribe un guion corto (~150 palabras).
-  * Si es 3 Minutos: Escribe un guion detallado (~450 palabras).
-  * Si es 5 Minutos: Escribe un guion extenso (~750 palabras).
-  * Si es 10 Minutos: Escribe un guion MUY LARGO, tipo documental (~1500 palabras). ¡Expándete muchísimo!
-  * Divide equitativamente estas palabras entre tus ${count} escenas. ¡Cada escena debe ser lo suficientemente larga para cubrir su tiempo en pantalla!
+- LONGITUD OBLIGATORIA POR ESCENA: Cada escena debe durar exactamente ${requestedDuration}. 
+  * Si es "5 Segundos": Escribe entre 15 y 20 palabras POR ESCENA.
+  * Si es "10 Segundos": Escribe entre 30 y 40 palabras POR ESCENA.
+  * Si es "15 Segundos": Escribe entre 45 y 55 palabras POR ESCENA.
+  * Si es "20 Segundos": Escribe entre 60 y 75 palabras POR ESCENA.
+  * ¡Esto es crucial! No escribas guiones de 3 segundos si te piden 10. Expándete en la narración de cada punto.
 - Usa pausas naturales marcadas con "..."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
