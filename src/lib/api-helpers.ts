@@ -10,9 +10,10 @@ export async function chatCompletion(
   const geminiKey = process.env.GEMINI_API_KEY;
 
   console.log("[API-Helpers] GROQ_API_KEY from env:", groqKey ? "EXISTS" : "NOT FOUND");
+  console.log("[API-Helpers] GEMINI_API_KEY from env:", geminiKey ? "EXISTS" : "NOT FOUND");
   console.log("[API-Helpers] _provider from request:", providerConfig ? `${providerConfig.providerId} / ${providerConfig.model}` : "NULL");
 
-    // PRIORIDAD 1: Usar la API Key y configuración enviada desde el cliente (UI)
+  // PRIORIDAD 1: Usar la API Key y configuración enviada desde el cliente (UI)
   if (providerConfig && providerConfig.apiKey) {
     console.log(`[API-Helpers] Usando configuración del cliente: ${providerConfig.providerId} | Modelo: ${providerConfig.model}`);
     try {
@@ -24,20 +25,41 @@ export async function chatCompletion(
     } catch (error: unknown) {
       const errMsg = error instanceof Error ? error.message : String(error);
       console.error(`[API-Helpers] Error desde ${providerConfig.providerId}:`, errMsg);
-      // throw new Error(errMsg); // Comentado para permitir fallback a Groq
+      console.error(`[API-Helpers] Fallando a claves locales si existen...`);
     }
   }
 
-  // PRIORIDAD 2: Usar la API Key local del servidor (process.env) como fallback
+  // PRIORIDAD 2: Usar GEMINI Key del servidor (process.env.GEMINI_API_KEY) con soporte para multiples llaves
+  if (geminiKey) {
+    const keys = geminiKey.split(',').map(k => k.trim()).filter(Boolean);
+    console.log(`[API-Helpers] Fallback a API key GEMINI del servidor (${keys.length} llaves detectadas)`);
+    
+    for (const key of keys) {
+      try {
+        return await generateChatCompletion(
+          { providerId: "google", apiKey: key, model: "gemini-2.0-flash" },
+          [{ role: "user", content: prompt }],
+          { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+        );
+      } catch (error: unknown) {
+        console.error(`[API-Helpers] La llave de Gemini terminada en ...${key.slice(-4)} falló. Intentando con la siguiente si existe...`);
+      }
+    }
+    console.error(`[API-Helpers] Todas las llaves de Gemini fallaron. Pasando al salvavidas final (Groq).`);
+  }
+
+  // PRIORIDAD 3: Usar la API Key de Groq local del servidor (process.env) como último fallback
   if (groqKey) {
     const model = "openai/gpt-oss-120b";
-    console.log(`[API-Helpers] Fallback a API key LOCAL del servidor | Modelo forzado: ${model}`);
+    console.log(`[API-Helpers] Fallback a API key GROQ del servidor | Modelo forzado: ${model}`);
     return generateChatCompletion(
       { providerId: "groq", apiKey: groqKey, model },
       [{ role: "user", content: prompt }],
       { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
     );
-  }throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
+  }
+
+  throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
 }
 
 export async function generateImageWithGemini(
