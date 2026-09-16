@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const { mode, niche, idea, tone, duration, style, sceneCount, prompt_type, scene_number, narration, existing_prompt } = requestBody;
 
     let prompt = "";
-    const requestedDuration = duration || "40 segundos";
+    const requestedDuration = duration || `${count * 10} segundos`;
     const requestedStyle = style || "Cinemático Oscuro";
     const requestedTone = tone || "Emotivo y Profundo";
     const count = sceneCount || 5;
@@ -134,8 +134,8 @@ REGLAS DE ORO:
 - NO uses frases genéricas como "tú puedes" o "nunca te rindas"
 - SÍ usa datos reales, comparaciones impactantes o situaciones que todos sienten
 - El tono debe ser DIRECTO, como un amigo hablándote con verdad
-- Longitud ideal: 100-150 palabras (para ~40 segundos de lectura)
-- Usa NHaces pausas naturales marcadas con "..."
+- LONGITUD OBLIGATORIA: Cada escena durará ~10 segundos. Debes escribir entre 30 y 40 palabras POR ESCENA. ¡Un guion corto arruinará el video! Profundiza en cada línea.
+- Usa pausas naturales marcadas con "..."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 REGLAS PARA LOS PROMPTS DE IMAGEN/VIDEO
@@ -176,7 +176,7 @@ Responde SOLO con un JSON válido:
       "visual_concept": "Qué se ve en pantalla...",
       "image_prompt": "Prompt en inglés para imagen...",
       "animation_prompt": "Prompt en inglés para animación...",
-      "duration": "5-8s"
+      "duration": "~10s"
     }
   ],
   "caption": "Caption para redes sociales (20-30 palabras) con hashtags",
