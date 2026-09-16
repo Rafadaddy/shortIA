@@ -85,7 +85,7 @@ Tema: "${topic}"
 
 Personaje Base: ${characterBase}
 
-Debes generar un guion narrativo completo basado en este tema, con una ESTRUCTURA DE HISTORIA CLARA (Inicio, Desarrollo, Clímax, Final).
+Debes generar un guion narrativo completo basado en este tema. IMPORTANTE: EL GUION DEBE DIVIDIRSE EN EXACTAMENTE ${count} ESCENAS. Distribuye el arco narrativo (Inicio, Desarrollo, Clímax, Final) a lo largo de las ${count} escenas solicitadas.
 El guion debe tener un tono conversacional, directo, envolvente y emocional.
 Divide el guion en EXACTAMENTE ${count} escenas que representen los momentos visuales más importantes. Cada escena dura unos 5 segundos.
 

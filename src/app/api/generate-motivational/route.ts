@@ -124,13 +124,10 @@ Estilo Visual: "${requestedStyle}"
 
 La narración debe ser un MONÓLOGO directo, como si le hablaras directamente al espectador.
 
-ESTRUCTURA:
-1. GANCHO (5 seg): Una frase que detenga el scroll. Algo que duelan o que haga pensar.
-2. DESARROLLO (20 seg): Profundiza en el tema. Usa datos, comparaciones o situaciones cotidianas.
-3. CLÍMAX (10 seg): La verdad más fuerte. El momento "wow".
-4. CIERRE (5 seg): Una frase final que se quede en la cabeza. Algo que inspire a compartir.
+ESTRUCTURA (A DISTRIBUIR A LO LARGO DE LAS ${count} ESCENAS SOLICITADAS):
+  El arco narrativo debe contener un Gancho, Desarrollo, Climax y Cierre, pero DEBES fragmentar y distribuir todo este arco en EXACTAMENTE ${count} ESCENAS. No comprimas la historia en 3 o 4 escenas, alárgala para cumplir el número exacto de escenas solicitadas.
 
-REGLAS DE ORO:
+  REGLAS DE ORO:
 - NO uses frases genéricas como "tú puedes" o "nunca te rindas"
 - SÍ usa datos reales, comparaciones impactantes o situaciones que todos sienten
 - El tono debe ser DIRECTO, como un amigo hablándote con verdad
@@ -175,15 +172,17 @@ Responde SOLO con un JSON válido:
   "title": "Título impactante del video",
   "full_narration": "La narración completa del video (para copiar y narrar)",
   "scenes": [
-    {
-      "scene_number": 1,
-      "narration": "Línea de la narración...",
-      "visual_concept": "Qué se ve en pantalla...",
-      "image_prompt": "Prompt en inglés para imagen...",
-      "animation_prompt": "Prompt en inglés para animación...",
-      "duration": "~10s"
-    }
-  ],
+      // OBLIGATORIO: ESTE ARREGLO DEBE CONTENER EXACTAMENTE ${count} OBJETOS (ESCENAS).
+      {
+        "scene_number": 1,
+        "narration": "Línea de la narración...",
+        "visual_concept": "Qué se ve en pantalla...",
+        "image_prompt": "Prompt en inglés para imagen...",
+        "animation_prompt": "Prompt en inglés para animación...",
+        "duration": "~10s"
+      }
+      // ... repite hasta la escena ${count}
+    ],
   "caption": "Caption para redes sociales (20-30 palabras) con hashtags",
   "music_recommendation": "Tipo de música sugerida",
   "hashtags": ["#motivacion", "#desarrollopersonal", "#frases"]
