@@ -194,7 +194,7 @@ export default function VideosMotivacionalesPage() {
 
   const handleCopyAllImagePrompts = () => {
     if (!data) return;
-    let text = data.scenes.map((s, i) => `Imagen ${i + 1}:\n${s.image_prompt}`).join("\n\n---\n\n");
+    const text = data.scenes.map((s, i) => `Imagen ${i + 1}:\n${s.image_prompt}`).join("\n\n---\n\n");
     handleCopy(text, "all_image_prompts");
   };
 return (
