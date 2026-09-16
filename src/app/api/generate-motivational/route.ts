@@ -153,7 +153,7 @@ Cada escena visual debe:
 - Coherencia visual entre todas las escenas
 - ${styleInstruction}
 
-Para cada escena (${count} escenas):
+IMPORTANTE: DEBES GENERAR EXACTAMENTE ${count} ESCENAS EN EL ARREGLO "scenes". ¡ES OBLIGATORIO! Ni una más, ni una menos. Para cada escena:
 1. "scene_number": Número de escena
 2. "narration": Línea exacta de la narración para esta escena
 3. "visual_concept": Descripción en español de qué se ve en pantalla
