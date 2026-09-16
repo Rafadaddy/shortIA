@@ -183,7 +183,21 @@ export default function VideosMotivacionalesPage() {
     handleCopy(text, "all");
   };
 
-  return (
+  
+  const handleCopyMetadata = () => {
+    if (!data) return;
+    let text = `🎵 Música: ${data.music_recommendation}\n\n`;
+    text += `${data.caption}\n\n`;
+    text += data.hashtags ? data.hashtags.map(h => h.startsWith('#') ? h : `#${h}`).join(" ") : "";
+    handleCopy(text, "metadata");
+  };
+
+  const handleCopyAllImagePrompts = () => {
+    if (!data) return;
+    let text = data.scenes.map((s, i) => `Imagen ${i + 1}:\n${s.image_prompt}`).join("\n\n---\n\n");
+    handleCopy(text, "all_image_prompts");
+  };
+return (
     <main className="min-h-[calc(100vh-4rem)] p-4 md:p-6 lg:p-12 selection:bg-amber-500/30">
       <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
 
@@ -366,8 +380,15 @@ export default function VideosMotivacionalesPage() {
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <Video className="w-5 h-5 text-amber-500" /> Desglose de Escenas
                 </h3>
-                <button
-                  onClick={handleCopyAll}
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCopyAllImagePrompts}
+                    className="flex items-center gap-2 bg-pink-600/20 text-pink-400 border border-pink-500/30 hover:bg-pink-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+                  >
+                    {copiedStates['all_image_prompts'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Prompts Imágenes</>}
+                  </button>
+                  <button
+                    onClick={handleCopyAll}
                   className="flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
                 >
                   {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
@@ -386,9 +407,20 @@ export default function VideosMotivacionalesPage() {
                       <span className="text-slate-500 text-xs">{scene.duration}</span>
                     </div>
 
-                    <div className="mb-4">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Narración de esta escena</span>
-                      <p className="text-amber-200/90 text-sm font-medium mt-1 italic">&quot;{scene.narration}&quot;</p>
+                    <div className="mb-4 relative">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">Narración de esta escena</span>
+                          <p className="text-amber-200/90 text-sm font-medium mt-1 italic">&quot;{scene.narration}&quot;</p>
+                        </div>
+                        <button
+                          onClick={() => handleCopy(scene.narration, `narration_${idx}`)}
+                          className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-amber-300 ml-2 shrink-0"
+                          title="Copiar texto de esta escena"
+                        >
+                          {copiedStates[`narration_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="border-l-2 border-purple-500/50 pl-3 mb-4">
@@ -455,7 +487,18 @@ export default function VideosMotivacionalesPage() {
             </div>
 
             {/* Info Extra */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-8">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-500" /> Datos de Publicación
+                </h3>
+                <button
+                  onClick={handleCopyMetadata}
+                  className="flex items-center gap-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
+                >
+                  {copiedStates['metadata'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Textos (Caption + Música)</>}
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
                 <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 block">
                   🎵 Música Sugerida
