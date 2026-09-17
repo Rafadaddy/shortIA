@@ -16,9 +16,9 @@ export async function POST(req: NextRequest) {
 
     if (mode === "ideas") {
       prompt = `Actúa como el estratega viral para el canal "EL PATO CAPITALISTA".
-PERSONAJE: Pato blanco millonario adulto, elegante, directo. El patrón que te dice la neta del dinero en México.
+PERSONAJE: Pato blanco multimillonario, sumamente educado, elegante y sofisticado (estilo Rico McPato). Habla con propiedad y mucha clase sobre finanzas en México.
 AUDIENCIA: Mexicanos 20-40 años (ganan $8k-$30k).
-CONTEXTO: OXXO, NU, BBVA, Coppel, CETES, tandas, quincena, varo, chamba.
+CONTEXTO: OXXO, NU, BBVA, Coppel, CETES, tandas, quincena. CERO JERGA DE CALLE (No uses "varo", "chamba", ni hables como pandillero).
 TONO ELEGIDO PARA HOY: "${tone || 'Directo y Regañón'}"
 
 Genera 5 ideas de video altamente atractivas y muy clicables basadas en el TEMA: "${topic || 'Finanzas y Mentalidad'}"
@@ -40,7 +40,7 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura:
     } else if (mode === "script_only") {
       prompt = `Actúa como el guionista de Shorts virales para mi canal "EL PATO CAPITALISTA".
 
-PERSONAJE: Pato blanco millonario adulto, elegante, directo. Es el patrón que te dice la neta del dinero en México.
+PERSONAJE: Pato blanco multimillonario, educado, elegante, con un lenguaje impecable y sofisticado (estilo Rico McPato). Es un magnate enseñándole a sus aprendices sobre el dinero en México. NO habla como de la calle ni usa jerga de barrio. Habla con clase, autoridad y extrema riqueza.
 TONO ELEGIDO: "${tone || 'Directo y Regañón'}"
 AUDIENCIA: Mexicanos 20-40 años que ganan $8k-$30k, con deudas, quieren ahorrar e invertir.
 TEMA A DESARROLLAR: "${idea}"
@@ -51,7 +51,7 @@ REGLAS OBLIGATORIAS PARA EL GUION:
 1. SOLO 1 IDEA CENTRAL. Nada de "3 consejos". 1 idea que cale.
 2. CONTEXTO MÉXICO 2026: OXXO, NU, BBVA, Coppel, CETES, tandas, quincena.
 3. CERO GENERICIDADES.
-4. TONO: Ajustado al tono elegido ("${tone}"). Usa palabras como lana, varo, chamba.
+4. TONO: Ajustado al tono elegido ("${tone}"). Educado, directo, de alta sociedad. Mantiene el contexto mexicano pero con lenguaje culto y de negocios.
 5. CIERRE MATADOR: Termina con una frase dura del pato + CTA (Ej: "Sígueme, no seas...").
 6. TAMAÑO: DEBES escribir texto suficiente (aprox 130-200 palabras) para dividirse en ${count} escenas sin quedar vacío. Es un monólogo continuo.
 

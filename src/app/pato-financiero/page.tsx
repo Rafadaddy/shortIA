@@ -44,11 +44,11 @@ const duckTopics = [
 ];
 
 const duckTones = [
-  "Regañón con barrio (El Patrón duro)",
-  "Crudo y Directo (Sin anestesia)",
-  "Elegante y Sofisticado (Consejo de millonario)",
-  "Sarcástico y Burlón (Sobre malas decisiones)",
-  "Motivacional Extremo (Mentalidad de Tiburón)"
+  "Mentor Multimillonario (Educado y directo)",
+  "Aristocrático y Sofisticado (Estilo Rico McPato)",
+  "Crudo y Realista (Sin anestesia, pero con clase)",
+  "Sarcástico y Burlón (De la ignorancia financiera)",
+  "Motivacional de Alto Nivel (Mentalidad de Magnate)"
 ];
 
 const duckStyles = [
@@ -290,7 +290,7 @@ export default function PatoFinancieroPage() {
                 <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-emerald-500 outline-none resize-none leading-relaxed" />
                 <div className="flex flex-wrap gap-3">
                   <button onClick={() => improveScript("Hazlo más largo y detallado")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más largo</button>
-                  <button onClick={() => improveScript("Hazlo más crudo, regañón y agresivo con el que escucha")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Más Regañón</button>
+                  <button onClick={() => improveScript("Hazlo más educado, sofisticado pero muy exigente")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Más Clase y Exigencia</button>
                 </div>
               </div>
             )}
