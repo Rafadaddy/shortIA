@@ -5,97 +5,138 @@ import { chatCompletion } from "@/lib/api-helpers";
 export async function POST(req: NextRequest) {
   try {
     const requestBody = await req.json();
-    const { topic, mode, scene_number, existing_prompt, prompt_type, base_prompt, scene_context } = requestBody;
+    const { topic, mode, idea, sceneCount, current_script, instruction, scene_number, existing_prompt, prompt_type, base_prompt, scene_context } = requestBody;
 
     let prompt = "";
+    const count = sceneCount || 10;
 
-    if (mode === "single_prompt") {
-       prompt = `
-You are an expert AI YouTube content creator and visual storytelling expert specializing in simple stickman animations.
-Regenerate ONLY the ${prompt_type === 'image' ? 'Image Prompt' : 'Animation Prompt'} for Scene ${scene_number}.
+    if (mode === "ideas") {
+      prompt = `Eres un experto creador de contenido para YouTube especializado en videos educativos, de psicología y curiosidades animadas con "stickman" (monigotes).
+Genera 8 ideas de videos altamente clicables (títulos y ganchos) para el siguiente tema general.
 
-Topic: "${topic}"
-Context: "${scene_context}"
-${prompt_type === 'image' ? `Stickman Base Prompt: "${base_prompt}"` : ''}
-Previous Prompt (DO NOT REPEAT): "${existing_prompt}"
+Tema General: "${topic || 'Psicología, hábitos o datos curiosos'}"
 
-RULES:
-- Make it different from the previous prompt.
-- Keep it aligned with the context of the scene.
-- Keep descriptions clear, simple, and visual.
-${prompt_type === 'image' ? '- Must start with "Use the same stickman character as before."\n- Include Pose, Action, Facial Expression, at least one Prop, and clean/simple background.\n- Aspect ratio MUST be 16:9.' : '- Keep movements slow, natural, and minimal.\n- Only animate arms, head, facial expression, or props. Body position remains mostly static.'}
+REGLAS PARA LOS GANCHOS (TÍTULOS):
+- Máximo 15 palabras.
+- Título muy llamativo al estilo de "Kurzgesagt" o canales de curiosidades.
 
-Reply ONLY with a valid JSON:
+Responde SOLO con un JSON válido:
 {
-  "${prompt_type === 'image' ? 'image_prompt' : 'animation_prompt'}": "The new prompt in English..."
-}
-`;
-    } else {
-      prompt = `
-1. ROLE
+  "ideas": [
+    {
+      "title": "Título corto y llamativo",
+      "hook": "La premisa central del video",
+      "focus": "Por qué este tema es interesante"
+    }
+  ]
+}`;
+    } else if (mode === "script_only") {
+      prompt = `Eres un guionista experto para canales de YouTube de animación (estilo "stickman").
+Tema/Idea base: "${idea}"
+
+ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * 6} SEGUNDOS.
+
+REGLAS:
+- La narración debe ser clara, educativa y entretenida.
+- Debe tener una introducción gancho, un desarrollo fácil de entender y una conclusión.
+- Usa lenguaje sencillo.
+- DEBES escribir suficiente texto para un video de ${count * 6} segundos. (Aprox 20-25 palabras por cada 6 segundos).
+
+Responde SOLO con un JSON válido:
+{
+  "script": "Aquí va el texto completo del guion, escrito como un solo bloque de texto narrativo..."
+}`;
+    } else if (mode === "improve_script") {
+      prompt = `Eres un guionista experto en contenido de animación para YouTube.
+Tienes el siguiente guion base:
+"${current_script}"
+
+Instrucción del usuario para mejorarlo/modificarlo: "${instruction}"
+
+Reescribe el guion completo aplicando la instrucción. Mantén el tono educativo y dinámico.
+
+Responde SOLO con un JSON válido:
+{
+  "script": "Aquí va el nuevo texto completo del guion..."
+}`;
+    } else if (mode === "full_from_script") {
+      // PRE-SPLITTING IN BACKEND
+      const sentences = current_script.split(/(?<=[.?!])\s+/).filter((s: string) => s.trim().length > 0);
+      const preSplitScenes = Array.from({ length: count }, () => [] as string[]);
+      
+      if (sentences.length > 0) {
+        sentences.forEach((s: string, i: number) => {
+            const index = Math.min(Math.floor(i / (sentences.length / count)), count - 1);
+            preSplitScenes[index].push(s);
+        });
+      } else {
+        preSplitScenes[0].push(current_script);
+      }
+
+      const scenesTextBlocks = preSplitScenes.map((sentencesArr, i) => {
+        return `ESCENA ${i + 1} NARRACIÓN: "${sentencesArr.join(' ')}"`;
+      }).join('\n\n');
+
+      const scenesTemplate = Array.from({ length: count }).map((_, i) => `{
+        "scene_number": ${i + 1},
+        "voiceover": "Texto exacto de la Escena ${i + 1}",
+        "image_prompt": "English prompt...",
+        "animation_prompt": "English animation prompt..."
+      }`).join(',\n      ');
+
+      prompt = `1. ROLE
 You are a professional AI YouTube content creator and visual storytelling expert specializing in simple stickman animations.
 
-TASK
-Create a complete ~59-second YouTube video on the topic:
-"${topic || 'Generate a short, engaging topic for a motivational or psychology-based video that inspires personal growth.'}"
+El usuario ya aprobó el guion en español. YO, el sistema, lo he dividido en EXACTAMENTE ${count} escenas para ti.
 
-The video should be engaging, beginner-friendly, and easy to understand.
-Total duration: 55–60 seconds
-Divide the video into 10 scenes (approximately 6 seconds each).
+AQUÍ ESTÁN TUS ESCENAS PRE-DIVIDIDAS (NO LAS ALTERES, USA ESTE TEXTO EXACTO PARA EL "voiceover"):
+${scenesTextBlocks}
+
+TU TAREA:
+1. Toma cada una de las ${count} escenas.
+2. Genera los prompts visuales en INGLÉS para ilustrar cada escena.
+3. Genera un "base_prompt" general para el personaje.
 
 OUTPUT FORMAT:
 
-PART 1: Image Prompts (Paragraph Style)
-Step 1 – Character Base Prompt
-Before writing the scene prompts, first create a Stickman Base Design Prompt that matches the mood and theme of the story.
-This base prompt should include:
-- Overall vibe: Cheerful, modern, and engaging.
-- Character style: Modern 2D vector animation style, cute stylized stickman wearing a trendy hoodie and sneakers, perfectly round head with casual messy hair, thick black outlines, flat solid colors, expressive and happy face.
-- MUST include keywords: "High quality vector art, crisp thick outlines, white background, trendy youth clothing, cheerful anime-like eyes".
+Step 1 - Character Base Prompt
+Create a Stickman Base Design Prompt.
+- Overall vibe: Cheerful, modern, engaging.
+- Style: Modern 2D vector animation style, cute stylized stickman wearing a trendy hoodie and sneakers, perfectly round head, casual messy hair, thick black outlines, flat solid colors.
+- MUST include: "High quality vector art, crisp thick outlines, white background, trendy youth clothing, cheerful anime-like eyes".
 
-Step 2 – Scene Image Prompts
-For each scene, write one paragraph.
-Start every paragraph with: "Use the same stickman character as before."
-Then describe clearly:
-- Pose (standing, sitting, walking, etc.)
-- Action
-- Facial expression
-- At least one prop (required in every scene — examples: table, chair, clock, phone, book, laptop, etc.)
-- Clean, simple background (plain white or minimal)
-Guidelines: Aspect ratio MUST be 16:9. Keep the character design identical across all scenes.
+Step 2 - Scene Prompts (Image & Animation)
+For each scene:
+- image_prompt: Start with "Use the same stickman character as before." Describe Pose, Action, Expression, Prop. 16:9 aspect ratio.
+- animation_prompt: Short animation instructions (only arms, head, expression, props).
 
-PART 2: Motion / Animation Prompts
-For each scene, provide short animation instructions.
-Rules: Only animate arms, head, facial expression, or props. Body position remains mostly static. Movements should be slow, natural, and minimal. Mention emotion if relevant.
-
-PART 3: Voiceover Script
-For each scene: Write short, engaging narration in SPANISH (Español) (1–2 sentences per scene). Clearly describe what the stickman is doing, thinking, or feeling, and the purpose of the scene. Include tone or emotion.
-
-GLOBAL RULES
-- Same stickman character throughout the entire video
-- Only pose, expression, or props change
-- Output must fit a ~59-second video
-- CRITICAL: The 'title' and 'voiceover' MUST be written in fluent SPANISH.
-- CRITICAL: The 'base_prompt', 'image_prompt', and 'animation_prompt' MUST be written in ENGLISH.
+CRITICAL: The 'title' and 'voiceover' MUST be in SPANISH. The prompts MUST be in ENGLISH.
 
 Respond ONLY with a valid JSON object matching this structure:
 {
   "title": "Título del video en español",
   "base_prompt": "The Stickman Base Design Prompt in English...",
   "scenes": [
-    {
-      "scene_number": 1,
-      "voiceover": "Narración en español...",
-      "image_prompt": "Image prompt in English...",
-      "animation_prompt": "Animation prompt in English..."
-    }
+    ${scenesTemplate}
   ]
-}
-`;
+}`;
+    } else if (mode === "single_prompt") {
+      prompt = `You are an expert AI YouTube content creator...
+Regenerate ONLY the ${prompt_type === 'image' ? 'Image Prompt' : 'Animation Prompt'} for Scene ${scene_number}.
+
+Context: "${scene_context}"
+${prompt_type === 'image' ? `Stickman Base Prompt: "${base_prompt}"` : ''}
+Previous Prompt (DO NOT REPEAT): "${existing_prompt}"
+
+RULES: Make it different. Keep it simple and visual. ${prompt_type === 'image' ? '- Start with "Use the same stickman character as before." Aspect ratio 16:9.' : '- Slow minimal movements.'}
+
+Reply ONLY with a valid JSON:
+{
+  "${prompt_type === 'image' ? 'image_prompt' : 'animation_prompt'}": "The new prompt in English..."
+}`;
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.7 });
-        // Safely parse JSON in case of markdown backticks
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode?.includes("script") || mode === "ideas" ? 0.9 : 0.7 });
     let cleanJson = jsonText.trim();
     if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
     else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
@@ -103,7 +144,6 @@ Respond ONLY with a valid JSON object matching this structure:
     cleanJson = cleanJson.trim();
     
     const data = JSON.parse(cleanJson);
-
     return NextResponse.json(data);
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : "Unknown error";
