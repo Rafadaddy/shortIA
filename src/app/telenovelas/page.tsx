@@ -33,30 +33,30 @@ interface TelenovelaData {
 }
 
 const novelaTopics = [
-  "El Culto a las Villanas (Teresa, Rubí, Soraya)",
-  "Debates Épicos (Teresa vs Rubí, Paola vs Soraya)",
-  "Villanas que tenían toooooda la razón",
-  "Momentos y Muertes Absurdas (Caídas ridículas, ceguera)",
-  "Detrás de Cámaras Turbio (Cachetadas reales, peleas)",
-  "Finales alternativos censurados por Televisa",
-  "Casos surrealistas de La Rosa de Guadalupe",
-  "Resumen de novela completa en 60 segundos"
+  "El CEO Millonario Finge ser Pobre",
+  "La Venganza de la Esposa Traicionada",
+  "La Suegra Tóxica y Humillante recibe Karma",
+  "Romance Tóxico: El Jefe y la Empleada",
+  "Descubrí el Secreto de mi Familia Rica",
+  "Traición Brutal de mi Mejor Amiga",
+  "Me humillaron, pero soy la dueña de todo",
+  "Identidad Oculta (La heredera secreta)"
 ];
 
 const novelaTones = [
-  "La Tía Chismosa (Humor, jerga moderna, salseo)",
-  "Narrador Dramático de Televisa (Exagerado y grave)",
-  "Análisis Psicológico / Crítico (¿Por qué funcionaba?)",
-  "Voz de Villana (Empoderada, cínica, modo Paola Bracho)",
-  "Defensor Polémico (Defendiendo lo indefendible)"
+  "Suspenso Extremo (Dejan con ganas de más)",
+  "Venganza Dulce y Kármica",
+  "Drama Tóxico y Posesivo",
+  "Humillación y Superioridad (Ego)",
+  "Misterio e Intriga Rápida"
 ];
 
 const novelaStyles = [
-  "Nostalgia Noventera (Filtro cálido/sepia, grano vintage)",
-  "Colores Saturados 2000s (Rojos intensos, piel bronceada)",
-  "Dramatismo Extremo (Zoom-ins agresivos, alto contraste)",
-  "Pantalla Dividida (Clip de fondo + Narrador)",
-  "Estilo Dark Camp (Oscuro, villano, elegante)"
+  "Cine Moderno Oscuro (Estilo DramaBox/ReelShort)",
+  "Lujo y Riqueza Exagerada (Mansiones modernas)",
+  "Contraste Alto y Neón Nocturno",
+  "Iluminación Fría y Tensa (Oficina de CEO)",
+  "Estilo POV TikTok Urbano"
 ];
 
 export default function TelenovelasPage() {
@@ -202,10 +202,10 @@ export default function TelenovelasPage() {
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Tv className="w-8 h-8 md:w-10 md:h-10 text-purple-500" />
-            Drama & Telenovelas
+            Mini-Dramas TikTok
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Generador de contenido viral sobre novelas mexicanas: villanas icónicas, chismes de set y debates de oro.
+            Generador de contenido viral estilo DramaBox / ReelShort: venganzas, CEOs encubiertos y suegras malvadas.
           </p>
         </header>
 
@@ -213,18 +213,18 @@ export default function TelenovelasPage() {
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-purple-500/20 text-purple-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">Configuración del Drama</h2>
+            <h2 className="text-xl font-bold text-white">Configuración del Drama Moderno</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Nicho de Telenovela</label>
+              <label className="text-sm font-medium text-slate-300">Nicho / Tropo</label>
               <select value={topic} onChange={(e) => setTopic(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-purple-500 outline-none">
                 {novelaTopics.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Tono del Narrador</label>
+              <label className="text-sm font-medium text-slate-300">Tono del Drama</label>
               <select value={tone} onChange={(e) => setTone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-purple-500 outline-none">
                 {novelaTones.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
@@ -259,7 +259,7 @@ export default function TelenovelasPage() {
 
           {ideas && (
             <div className="mt-8 space-y-4 animate-in fade-in">
-              <h3 className="text-lg font-semibold text-purple-300 mb-2">Selecciona el chisme/idea a desarrollar:</h3>
+              <h3 className="text-lg font-semibold text-purple-300 mb-2">Selecciona el drama a desarrollar:</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {ideas.map((idea, idx) => (
                   <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-purple-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
@@ -283,14 +283,14 @@ export default function TelenovelasPage() {
             {isGeneratingScript && !scriptText ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-400">
                 <Loader2 className="w-10 h-10 animate-spin text-purple-500 mb-4" />
-                <p className="animate-pulse">Escribiendo con exceso de drama...</p>
+                <p className="animate-pulse">Escribiendo traiciones y secretos...</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-purple-500 outline-none resize-none leading-relaxed" />
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo más largo y con más detalles o diálogos de la novela")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más detalles</button>
-                  <button onClick={() => improveScript("Hazlo más polémico para que la gente pelee en los comentarios")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Más Polémico</button>
+                  <button onClick={() => improveScript("Hazlo más intenso, sube el nivel de traición o venganza")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más Venganza</button>
+                  <button onClick={() => improveScript("Déjalo en un cliffhanger enorme (final abierto)")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Suspenso</button>
                 </div>
               </div>
             )}
@@ -317,7 +317,7 @@ export default function TelenovelasPage() {
               <div className="flex justify-between items-center mb-8 border-b border-slate-800/60 pb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">{data.title}</h2>
-                  <p className="text-purple-400 text-sm font-semibold">Guion viral listo</p>
+                  <p className="text-purple-400 text-sm font-semibold">Mini-Serie lista</p>
                 </div>
                 <button onClick={handleCopyAll} className="flex items-center gap-2 bg-purple-600/20 text-purple-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-purple-600/40 transition-colors">
                   {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
