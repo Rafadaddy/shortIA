@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign, Tv } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -45,6 +45,10 @@ export function Sidebar() {
           <Link href="/pato-financiero" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <DollarSign className="w-5 h-5 text-emerald-400" />
             Pato Financiero
+          </Link>
+          <Link href="/telenovelas" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Tv className="w-5 h-5 text-purple-400" />
+            Telenovelas
           </Link>
           <Link href="/stickman" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <PlaySquare className="w-5 h-5 text-emerald-400" />
@@ -103,6 +107,10 @@ export function Sidebar() {
           <DollarSign className="w-5 h-5" />
           <span className="text-[10px] font-medium">Finanzas</span>
         </Link>
+        <Link href="/telenovelas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-purple-400 active:text-purple-400 min-w-[4rem] flex-shrink-0">
+          <Tv className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Novelas</span>
+        </Link>
         <Link href="/stickman" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <PlaySquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">Stickman</span>
@@ -123,4 +131,5 @@ export function Sidebar() {
     </>
   );
 }
+
 
