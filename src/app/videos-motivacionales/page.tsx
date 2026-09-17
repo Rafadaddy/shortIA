@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useRef, useEffect } from "react";
 import { Flame, Loader2, Play, Check, Copy, RefreshCw, Wand2, ArrowRight, Type, Image as ImageIcon, Sparkles } from "lucide-react";
 
@@ -27,20 +27,20 @@ interface MotivationalIdea {
 }
 
 const motivationalNiches = [
-  "Desarrollo personal y superación", "Disciplina y hábitos diarios", "Superar el miedo al fracaso",
-  "Salud mental y autoestima", "Éxito financiero y mentalidad", "Relaciones y amor propio",
-  "Productividad y enfoque", "Cambios de vida y transformation", "Resiliencia después del dolor",
-  "Propósito de vida y significado", "Estudios y aprendizaje", "Fitness y fuerza mental",
-  "Soledad y fortaleza interior", "Tiempo y arrepentimiento",
+  "Desarrollo personal y superaciÃ³n", "Disciplina y hÃ¡bitos diarios", "Superar el miedo al fracaso",
+  "Salud mental y autoestima", "Ã‰xito financiero y mentalidad", "Relaciones y amor propio",
+  "Productividad y enfoque", "Cambios de vida y transformation", "Resiliencia despuÃ©s del dolor",
+  "PropÃ³sito de vida y significado", "Estudios y aprendizaje", "Fitness y fuerza mental",
+  "Soledad y fortaleza interior", "Tiempo y arrepentimiento", "Reflexión Cristiana y Fe", "Misterios Bíblicos y Profecías", "Oración y Paz Espiritual",
 ];
 
 const toneOptions = [
-  "Emotivo y Profundo", "Crudo y Directo (Verdades incómodas)", "Épico y Heroico",
-  "Reflexivo y Filosófico", "Agresivo y Desafiante (Estilo Gym)",
+  "Emotivo y Profundo", "Crudo y Directo (Verdades incÃ³modas)", "Ã‰pico y Heroico",
+  "Reflexivo y FilosÃ³fico", "Agresivo y Desafiante (Estilo Gym)", "Esperanzador y Espiritual (Cristiano)",
 ];
 
 const styleOptions = [
-  "Cinemático Oscuro", "Paisajes Épicos", "Urbano / Calle", "Minimalista", 
+  "CinemÃ¡tico Oscuro", "Paisajes Ã‰picos", "Urbano / Calle", "Minimalista", 
   "Natural / Bosque", "Noir / B&W", "Colorido / Vibrante", "IA decida el mejor estilo"
 ];
 
@@ -238,25 +238,25 @@ export default function MotivationalVideos() {
 
   const handleCopyAll = () => {
     if (!data) return;
-    let text = `🎥 TÍTULO: ${data.title}\n\n`;
-    text += `🗣️ NARRACIÓN COMPLETA:\n${data.full_narration}\n\n`;
+    let text = `ðŸŽ¥ TÃTULO: ${data.title}\n\n`;
+    text += `ðŸ—£ï¸ NARRACIÃ“N COMPLETA:\n${data.full_narration}\n\n`;
     text += `---\n\n`;
     data.scenes.forEach((s) => {
-      text += `🎬 ESCENA ${s.scene_number} (${s.duration})\n`;
-      text += `🗣️ Voz: ${s.narration}\n`;
-      text += `👁️ Visual: ${s.visual_concept}\n`;
-      text += `🎨 Imagen: ${s.image_prompt}\n`;
-      text += `✨ Video: ${s.animation_prompt}\n\n`;
+      text += `ðŸŽ¬ ESCENA ${s.scene_number} (${s.duration})\n`;
+      text += `ðŸ—£ï¸ Voz: ${s.narration}\n`;
+      text += `ðŸ‘ï¸ Visual: ${s.visual_concept}\n`;
+      text += `ðŸŽ¨ Imagen: ${s.image_prompt}\n`;
+      text += `âœ¨ Video: ${s.animation_prompt}\n\n`;
     });
-    text += `📝 Caption: ${data.caption}\n`;
-    text += `🎵 Música: ${data.music_recommendation}\n`;
+    text += `ðŸ“ Caption: ${data.caption}\n`;
+    text += `ðŸŽµ MÃºsica: ${data.music_recommendation}\n`;
     text += `# ${data.hashtags?.join(" ") || ""}`;
     handleCopy(text, "all");
   };
 
   const handleCopyMetadata = () => {
     if (!data) return;
-    let text = `🎵 Música: ${data.music_recommendation}\n\n`;
+    let text = `ðŸŽµ MÃºsica: ${data.music_recommendation}\n\n`;
     text += `${data.caption}\n\n`;
     text += data.hashtags ? data.hashtags.map(h => h.startsWith('#') ? h : `#${h}`).join(" ") : "";
     handleCopy(text, "metadata");
@@ -276,16 +276,16 @@ export default function MotivationalVideos() {
           </p>
         </header>
 
-        {/* PASO 1: CONFIGURACIÓN E IDEAS */}
+        {/* PASO 1: CONFIGURACIÃ“N E IDEAS */}
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-amber-500/20 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">Configuración e Ideas</h2>
+            <h2 className="text-xl font-bold text-white">ConfiguraciÃ³n e Ideas</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Nicho / Temática</label>
+              <label className="text-sm font-medium text-slate-300">Nicho / TemÃ¡tica</label>
               <select value={niche} onChange={(e) => setNiche(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
                 <option value="">Selecciona un nicho...</option>
                 {motivationalNiches.map(n => <option key={n} value={n}>{n}</option>)}
@@ -298,13 +298,13 @@ export default function MotivationalVideos() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
+              <label className="text-sm font-medium text-slate-300">DuraciÃ³n por Escena</label>
               <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
                 {durationOptions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Número de Escenas (Define el largo del guion)</label>
+              <label className="text-sm font-medium text-slate-300">NÃºmero de Escenas (Define el largo del guion)</label>
               <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
                 <input type="range" min="3" max="12" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-amber-500" />
                 <span className="text-amber-400 font-bold min-w-[2ch]">{sceneCount}</span>
@@ -337,7 +337,7 @@ export default function MotivationalVideos() {
           <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
             <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
               <div className="bg-amber-500/20 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
-              <h2 className="text-xl font-bold text-white">Edición del Guion</h2>
+              <h2 className="text-xl font-bold text-white">EdiciÃ³n del Guion</h2>
             </div>
             
             {isGeneratingScript && !scriptText ? (
@@ -355,13 +355,13 @@ export default function MotivationalVideos() {
                 />
                 
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo más largo y detallado")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
-                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Más largo
+                  <button onClick={() => improveScript("Hazlo mÃ¡s largo y detallado")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} MÃ¡s largo
                   </button>
-                  <button onClick={() => improveScript("Hazlo más corto y ve directo al grano")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
-                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Más corto
+                  <button onClick={() => improveScript("Hazlo mÃ¡s corto y ve directo al grano")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} MÃ¡s corto
                   </button>
-                  <button onClick={() => improveScript("Reescríbelo con un enfoque totalmente distinto pero manteniendo el tema")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                  <button onClick={() => improveScript("ReescrÃ­belo con un enfoque totalmente distinto pero manteniendo el tema")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
                     {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />} Cambiar Enfoque
                   </button>
                 </div>
@@ -418,7 +418,7 @@ export default function MotivationalVideos() {
                     <div className="mb-4 relative">
                       <div className="flex justify-between items-start">
                         <div>
-                          <span className="text-xs font-semibold text-slate-500 uppercase">Narración de esta escena</span>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">NarraciÃ³n de esta escena</span>
                           <p className="text-amber-200/90 text-sm font-medium mt-1 italic">&quot;{scene.narration}&quot;</p>
                         </div>
                         <button onClick={() => handleCopy(scene.narration, `narration_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-amber-300 ml-2 shrink-0">
@@ -444,7 +444,7 @@ export default function MotivationalVideos() {
                       </div>
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-semibold text-emerald-400 uppercase">Prompt Animación</span>
+                          <span className="text-xs font-semibold text-emerald-400 uppercase">Prompt AnimaciÃ³n</span>
                           <div className="flex items-center gap-1">
                             <button onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
                               {copiedStates[`anim_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -460,18 +460,18 @@ export default function MotivationalVideos() {
             </div>
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-8">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2"><Sparkles className="w-5 h-5 text-amber-500" /> Datos de Publicación</h3>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2"><Sparkles className="w-5 h-5 text-amber-500" /> Datos de PublicaciÃ³n</h3>
               <button onClick={handleCopyMetadata} className="flex items-center gap-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors">
-                {copiedStates['metadata'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Textos (Caption + Música)</>}
+                {copiedStates['metadata'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Textos (Caption + MÃºsica)</>}
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 block">🎵 Música Sugerida</span>
+                <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 block">ðŸŽµ MÃºsica Sugerida</span>
                 <p className="text-sm text-slate-300 italic">&quot;{data.music_recommendation}&quot;</p>
               </div>
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 block">📝 Caption</span>
+                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 block">ðŸ“ Caption</span>
                 <p className="text-slate-300 text-sm">{data.caption}</p>
               </div>
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
@@ -486,3 +486,5 @@ export default function MotivationalVideos() {
     </main>
   );
 }
+
+
