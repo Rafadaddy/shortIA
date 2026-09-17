@@ -95,25 +95,43 @@ Responde SOLO con un JSON válido:
 {
   "script": "Aquí va el nuevo texto completo del guion..."
 }`;
-    } else if (mode === "full_from_script") {
+        } else if (mode === "full_from_script") {
+      // BACKEND PRE-SPLITTING FOR 100% RELIABLE SCENE COUNT
+      const sentences = current_script.split(/(?<=[.?!])\s+/).filter((s: string) => s.trim().length > 0);
+      const preSplitScenes = Array.from({ length: count }, () => [] as string[]);
+      
+      // Distribute sentences as evenly as possible across the requested scene count
+      if (sentences.length > 0) {
+        sentences.forEach((s: string, i: number) => {
+            const index = Math.min(Math.floor(i / (sentences.length / count)), count - 1);
+            preSplitScenes[index].push(s);
+        });
+      } else {
+        preSplitScenes[0].push(current_script);
+      }
+
+      const scenesTextBlocks = preSplitScenes.map((sentencesArr, i) => {
+        return `ESCENA ${i + 1} NARRACIÓN: "${sentencesArr.join(' ')}"`;
+      }).join('\n\n');
+
       const scenesTemplate = Array.from({ length: count }).map((_, i) => `{
         "scene_number": ${i + 1},
-        "narration": "Línea exacta del guion que corresponde a esta escena...",
+        "narration": "Texto exacto de la Escena ${i + 1}",
         "visual_concept": "Qué se ve en pantalla...",
         "image_prompt": "English prompt...",
         "animation_prompt": "English animation prompt...",
         "duration": "~10s"
-      }`).join(',\\n      ');
+      }`).join(',\n      ');
 
       prompt = `Eres un director visual experto en crear videos virales para TikTok y Shorts.
-El usuario ya aprobó el siguiente guion:
-"${current_script}"
+El usuario ya aprobó el guion. YO, el sistema, ya he dividido el guion en EXACTAMENTE ${count} escenas para ti.
 
-TU TAREA MATEMÁTICA ESTRICTA:
-1. Divide el guion en EXACTAMENTE ${count} escenas. ¡ESTO ES UNA REGLA MATEMÁTICA INQUEBRANTABLE!
-   - Si el guion es muy corto, pon menos palabras por escena, pero NO reduzcas el número de escenas. 
-   - El arreglo JSON "scenes" DEBE tener ${count} elementos físicos. Ni uno más, ni uno menos.
-2. Genera los prompts visuales para cada escena.
+AQUÍ ESTÁN TUS ESCENAS PRE-DIVIDIDAS (NO LAS ALTERES, USA ESTE TEXTO EXACTO PARA CADA "narration"):
+${scenesTextBlocks}
+
+TU TAREA:
+1. Toma cada una de las ${count} escenas que te di arriba.
+2. Genera los prompts visuales para ilustrar cada escena.
 3. Genera la metadata de publicación.
 
 Estilo Visual: "${requestedStyle}"
@@ -126,7 +144,6 @@ REGLAS PARA LOS PROMPTS:
 - animation_prompt: Prompt en inglés para animar el video (Runway/Veo3).
 
 🚀 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
-- ES ESTRICTAMENTE OBLIGATORIO generar los campos "caption", "music_recommendation" y "hashtags" en la respuesta JSON.
 - "caption": Texto para redes sociales (30-50 palabras).
 - "music_recommendation": Pista de fondo ideal.
 - "hashtags": Array de 5 a 8 hashtags.
