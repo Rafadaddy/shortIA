@@ -109,8 +109,10 @@ Responde SOLO con un JSON válido:
 El usuario ya aprobó el siguiente guion:
 "${current_script}"
 
-TU TAREA:
-1. Divide este guion en EXACTAMENTE ${count} escenas.
+TU TAREA MATEMÁTICA ESTRICTA:
+1. Divide el guion en EXACTAMENTE ${count} escenas. ¡ESTO ES UNA REGLA MATEMÁTICA INQUEBRANTABLE!
+   - Si el guion es muy corto, pon menos palabras por escena, pero NO reduzcas el número de escenas. 
+   - El arreglo JSON "scenes" DEBE tener ${count} elementos físicos. Ni uno más, ni uno menos.
 2. Genera los prompts visuales para cada escena.
 3. Genera la metadata de publicación.
 
