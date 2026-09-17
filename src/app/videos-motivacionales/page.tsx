@@ -297,6 +297,19 @@ export default function MotivationalVideos() {
                 {toneOptions.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
+              <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
+                {durationOptions.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Número de Escenas (Define el largo del guion)</label>
+              <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
+                <input type="range" min="3" max="12" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-amber-500" />
+                <span className="text-amber-400 font-bold min-w-[2ch]">{sceneCount}</span>
+              </div>
+            </div>
           </div>
 
           <button onClick={generateIdeas} disabled={!niche || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
@@ -365,25 +378,12 @@ export default function MotivationalVideos() {
               <h2 className="text-xl font-bold text-white">Generar Escenas Visuales</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-300">Estilo Visual</label>
                 <select value={style} onChange={(e) => setStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
                   {styleOptions.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
-                <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
-                  {durationOptions.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300">Número de Escenas</label>
-                <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
-                  <input type="range" min="3" max="12" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-amber-500" />
-                  <span className="text-amber-400 font-bold min-w-[2ch]">{sceneCount}</span>
-                </div>
               </div>
             </div>
 

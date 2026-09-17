@@ -65,7 +65,7 @@ Tema/Nicho: "${niche || 'Desarrollo personal y motivación'}"
 Idea base (Gancho elegido): "${idea}"
 Tono Emocional: "${requestedTone} (Crudo y directo)"
 
-ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * 10} SEGUNDOS.
+ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * (parseInt(requestedDuration) || 10)} SEGUNDOS.
 
 REGLAS:
 - La narración debe ser un MONÓLOGO directo.
