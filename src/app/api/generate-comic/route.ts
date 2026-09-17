@@ -42,16 +42,17 @@ Eres un director de arte experto en crear carruseles y cómics virales para rede
 Regenera SOLO el prompt de imagen para la viñeta/diapositiva ${panel_number} de una historieta.
 
 Estilo Visual: "${requestedStyle}"
+Instrucciones del estilo: ${styleInstruction}
 ${charInstruction}
 Diálogo de la viñeta: "${dialogue}"
 Prompt anterior (NO repetir): "${existing_prompt}"
 
 REGLAS:
-- Genera un prompt completamente diferente al anterior
-- Mantener el texto o diálogo "${dialogue}" en español dentro del prompt
-- Mantener el estilo visual solicitado
-- El prompt debe estar en inglés
-- Incluir una escena específica y dinámica, no genérica
+- Genera un prompt completamente diferente al anterior.
+- Mantener el texto o diálogo "${dialogue}" en español dentro del prompt.
+- ADAPTARSE ESTRICTAMENTE AL ESTILO VISUAL SOLICITADO.
+- El prompt debe estar en inglés.
+- Incluir una escena específica y dinámica, no genérica.
 
 Responde SOLO con un JSON válido:
 {
@@ -65,15 +66,15 @@ Responde SOLO con un JSON válido:
 
     const prompt = `
 ACTÚA COMO GENERADOR DE CARRUSELES REFLEXIVOS PARA REDES SOCIALES.
-OBJETIVO: Crear contenido tipo carrusel de EXACTAMENTE ${panelCount} imágenes (diapositivas) con frases reflexivas/emocionales acompañadas de descripciones de imágenes realistas.
+OBJETIVO: Crear contenido tipo carrusel de EXACTAMENTE ${panelCount} imágenes (diapositivas) con frases reflexivas/emocionales acompañadas de descripciones de imágenes visuales.
 
 REGLAS OBLIGATORIAS:
-1. ✅ CADA GENERACIÓN DEBE SER UN TEMA COMPLETAMENTE DIFERENTE. NO repetir el mismo ángulo o concepto. NO solo cambiar palabras del mismo tema.
+1. 🥇 CADA GENERACIÓN DEBE SER UN TEMA COMPLETAMENTE DIFERENTE. NO repetir el mismo ángulo o concepto. NO solo cambiar palabras del mismo tema.
    Ejemplo INCORRECTO: "Cómo enamorar a tu pareja" / "Formas de conquistar a tu amor" (Es lo mismo).
    Ejemplo CORRECTO: "Detalles que mantienen el amor vivo después de 10 años" / "Señales de que te extraña aunque no lo diga" (Temas diferentes).
-2. ✅ USAR SIEMPRE UN SUB-TEMA ESPECÍFICO (no genérico) basado en el nicho: "${niche || 'Amor, Desamor, Familia, Motivación, o Amistad'}". ${idea ? `Idea específica: "${idea}"` : ''}
-3. ✅ VARIAR ENTRE LAS DIFERENTES CATEGORÍAS (Amor de pareja, Desamor, Familia, Motivación/Crecimiento, Amistad). Rota entre ellas y usa subtemas únicos.
-4. ✅ EL NÚMERO DE DIAPOSITIVAS DEBE SER EXACTAMENTE: ${panelCount}.
+2. 🥇 USAR SIEMPRE UN SUB-TEMA ESPECÍFICO (no genérico) basado en el nicho: "${niche || 'Amor, Desamor, Familia, Motivación, o Amistad'}". ${idea ? `Idea específica: "${idea}"` : ''}
+3. 🥇 VARIAR ENTRE LAS DIFERENTES CATEGORÍAS (Amor de pareja, Desamor, Familia, Motivación/Crecimiento, Amistad). Rota entre ellas y usa subtemas únicos.
+4. 🥇 EL NÚMERO DE DIAPOSITIVAS DEBE SER EXACTAMENTE: ${panelCount}.
 
 ESTRUCTURA DEL CARRUSEL:
 
@@ -88,10 +89,10 @@ DIAPOSITIVAS 2 A ${panelCount} (CONTENIDO):
 ESTILO VISUAL (PARA LOS IMAGE_PROMPTS):
 ${charInstruction}
 Para cada diapositiva, proporciona la descripción de la escena (image_prompt) en INGLÉS siguiendo esto:
-- Imágenes realistas, cálidas, emotivas, situaciones cotidianas y reconocibles.
-- Iluminación cálida (atardecer, luz natural, ambientes acogedores), colores tonos cálidos (beige, dorado, terracota, crema).
-- Estilo base: ${styleInstruction}.
-- FORMATO OBLIGATORIO DEL PROMPT DE IMAGEN: "A dramatic, highly realistic and emotional scene of [Descripción detallada de la escena]. Warm lighting, warm tones (beige, gold, terracotta). Masterpiece, 8k. Integrated into the artwork, there is bold elegant typography reading: '[Texto principal/Diálogo en Español]'. ${aspectRatioFlag}"
+- Estilo visual solicitado: "${requestedStyle}".
+- Instrucciones obligatorias del estilo visual: ${styleInstruction}.
+- FORMATO OBLIGATORIO DEL PROMPT DE IMAGEN:
+"[Describe la escena detalladamente siguiendo ESTRICTAMENTE las reglas visuales del estilo solicitado arriba. NO uses frases genéricas como 'highly realistic' o '8k masterpiece' si el estilo es Stickman o Animado]. Integrated into the artwork, there is bold typography reading: '[Texto principal/Diálogo en Español]'. ${aspectRatioFlag}"
 
 FORMATO DE SALIDA (JSON ESTRICTO):
 Debes generar un JSON válido con la siguiente estructura exacta:
@@ -120,8 +121,15 @@ CADA VEZ que genere contenido: Elige un SUB-TEMA ESPECÍFICO no usado antes. NO 
 `;
 
     const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.85 });
-    const data = JSON.parse(jsonText);
+    
+    // Safely parse JSON in case of markdown backticks
+    let cleanJson = jsonText.trim();
+    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
+    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
+    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
+    cleanJson = cleanJson.trim();
 
+    const data = JSON.parse(cleanJson);
     return NextResponse.json(data);
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : "Error desconocido";
