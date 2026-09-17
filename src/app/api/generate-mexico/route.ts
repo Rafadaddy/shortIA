@@ -55,7 +55,7 @@ ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * (parseInt(request
 
 INSTRUCCIONES PARA EL CONTENIDO:
 1. Con diálogos y expresiones 100% mexicanas orgánicas (usa sutilmente palabras como: güey, chale, órale, no manches, mija/mijo, ándale, qué oso, nmms, etc.).
-2. Relata el drama casero en primera persona (POV) o como una anécdota intensa.
+2. El guion DEBE estar estructurado como un DIÁLOGO DIRECTO e interacciones entre los personajes (Ej: MAMÁ: "texto..." HIJO: "texto..."). Los personajes deben mantenerse constantes de principio a fin del video.
 3. INICIA con el Hook fuerte que capture la atención.
 4. MANTÉN el Tono Elegido ("${tone}"). Si es comedia, hazlo absurdo. Si es terror de mamá, que se sienta el pánico a la chancla.
 5. TAMAÑO: Escribe un texto continuo, hilado y robusto (aprox 130-200 palabras) para dividirse luego en ${count} escenas. NO enumeres las escenas.
@@ -117,7 +117,7 @@ ESTILO VISUAL SOLICITADO: "${visualStyle}"
 
 REGLAS PARA IMAGE PROMPT:
 - El prompt debe describir hogares latinoamericanos/mexicanos realistas (mesas con mantel de plástico, sillas Coca-Cola, paredes a medio pintar, patios con tendederos, mamás con mandil, etc. dependiendo la escena).
-- Si hay chancla, documéntalo.
+- Si hay chancla, documéntalo.\n- CONSISTENCIA DE PERSONAJES: Si describes a un personaje en la escena 1 (ej. \"45 year old mexican mother wearing a red apron and glasses\"), DEBES usar exactamente esa misma descripción física en todas las demás escenas para que la IA dibuje a la misma persona durante todo el video.
 - Usa hiper-realismo o estilo de cámara celular (POV).
 - NUNCA uses nombres de marcas prohibidas explícitamente, pero describe el objeto ("yellow plastic bag", "blue water tank on roof" para tinaco Rotoplas).
 - Formato sugerido: "[Sujeto mexicano], [Acción cómica/dramática], [Entorno de casa mexicana], ${visualStyle}. --ar 9:16"
@@ -169,3 +169,4 @@ Responde SOLO con JSON válido:
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
