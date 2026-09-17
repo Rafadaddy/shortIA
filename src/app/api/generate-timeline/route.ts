@@ -1,3 +1,4 @@
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
 import { chatCompletion } from "@/lib/api-helpers";
 
@@ -6,13 +7,11 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json();
     const { mode, topic, characterRef, stepCount } = requestBody;
 
-    const count = stepCount || 8;
+    const count = stepCount ? parseInt(stepCount) : 8;
     let prompt = "";
 
     if (mode === "ideas") {
-      prompt = `
-Eres un estratega de contenido viral en formato corto para YouTube Shorts / TikTok. Genera 10 títulos de temas de video altamente atractivos (con alto potencial de clics) para un canal que se enfoca en:
-
+      prompt = `Eres un estratega de contenido viral en formato corto para YouTube Shorts / TikTok. Genera 10 títulos de temas de video altamente atractivos (con alto potencial de clics) para un canal que se enfoca en:
 - Curiosidad extrema
 - "¿Cuánto es demasiado?"
 - Límites humanos
@@ -22,279 +21,104 @@ REGLAS:
 - Títulos cortos, impactantes, despertar curiosidad
 - Usa frases dramáticas como: "¿Cuánto ___ acabaría contigo?", "¿Puede ___ matarte?", "¿Qué pasa si ___?"
 - Haz que el tema parezca peligroso pero educativo
-- Contenido basado en ciencia / animación 3D
-- Cada título en 1 línea
-- Usa 1-2 emojis relevantes
-- Termina con 3-5 hashtags: #interesante #datos #3d #ciencia #comida #naturaleza #animacion #shorts
-
-Ejemplos del tono (NO reutilizar):
-¿Cuánta agua acabaría contigo? 💦
-¿Puede el sol quemar tus ojos? 🔥
-¿Cuántas bebidas energéticas son demasiadas? 😵
+- Cada título en 1 línea con 1-2 emojis y hashtags
 
 Responde SOLO con un JSON válido:
 {
-  "ideas": ["Título 1 con #hashtags", "Título 2 con #hashtags", ... (10 ideas)"]
-}
-`;
-    } else if (mode === "script") {      prompt = `
-Eres un guionista profesional de YouTube Shorts, creando videos altamente atractivos, impulsados por la curiosidad, animados en 3D o narrados.
-
+  "ideas": ["Título 1 con #hashtags", "Título 2 con #hashtags"]
+}`;
+    } else if (mode === "script") {
+      prompt = `Eres un guionista profesional de YouTube Shorts, creando videos altamente atractivos, impulsados por la curiosidad, animados en 3D.
 Escribe un guion de 200-250 palabras para el tema: "${topic}"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 REGLAS PARA EL GUION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-GANCHO:
-Empieza solo con un gancho de una sola frase. Sin frases extra ni comentarios.
-Ejemplos de gancho:
-- "¿Cuánto tiempo puede aguantar tu cuerpo sin dormir?"
-- "¿Cuántos Cheetos Picantes harían falta para acabar contigo?"
-- "¿Qué pasaría si dejaras de parpadear?"
-
-ETIQUETAS DE PASO:
-Cada paso debe etiquetarse exactamente con la cantidad, unidad o tiempo relevante para el escenario.
-Ejemplos: "Bolsa 1", "Día 3", "Una Taza", "Minuto 5", "Hora 2"
-NO agregues palabras como "Nivel", "Paso", "–", "Nivel 1", "Paso 1"
-
-ESCALADA:
-Cada paso debe aumentar el riesgo y la intensidad.
-
-ESTRUCTURA DE ORACIONES:
-- Usa oraciones largas, fluidas y descriptivas
-- Intercala oraciones dramáticas más cortas
-- Múltiples detalles sensoriales en una sola frase
-- Evita que todas las frases sean muy cortas
-- Ritmo natural e inmersivo
-
-CLÍMAX:
-Termina con el límite máximo extremo, fatal o imposible.
-
-TONO:
-Tiempo presente, urgente, inmersivo. Frases dramáticas ocasionales.
-
-CONTEO: 200-250 palabras.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGLAS PARA EL GUION:
+GANCHO: Empieza con un gancho de una frase (Ej. "¿Cuánta azúcar puede matarte?").
+ETIQUETAS DE PASO: Cada paso debe etiquetarse exactamente con la cantidad, unidad o tiempo (Ej. "Día 3", "Una Taza", "Minuto 5"). No agregues la palabra "Paso".
+ESTRUCTURA: Al menos ${count} pasos escalonados.
+CLÍMAX: Termina con el límite fatal o extremo.
 
 Responde SOLO con un JSON válido:
 {
-  "title": "Título del video que genere curiosidad",
-  "script": "El gancho inicial\n\nEtiquetaDelPaso 1\nNarración...\n\nEtiquetaDelPaso 2\nNarración...\n\n...(todos los pasos)"
-}
-`;
+  "title": "Título del video",
+  "script": "El gancho inicial\n\nEtiquetaDelPaso 1\nNarración...\n\nEtiquetaDelPaso 2\nNarración..."
+}`;
     } else if (mode === "images") {
-      prompt = `
-Eres un director de visualización médica y narrador visual para YouTube Shorts.
+      // PRE-SPLIT LOGIC IF APPLICABLE? Actually, the timeline relies on parsing steps. We can let the prompt do it, or we can just send the script.
+      // The timeline generator uses `characterRef` as the script text.
+      prompt = `Eres un director de arte y visualización médica 3D.
+Genera prompts de imagen, video y metadata para visualizar la línea de tiempo de este guion:
 
-Genera prompts de imagen e prompts de video que sigan visualmente la línea de tiempo de un guion, mostrando el deterioro físico y mental progresivo de un personaje de referencia único e idéntico.
-
-GUION A VISUALIZAR:
+GUION:
 ${characterRef}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎨 REGLA DE FONDO GLOBAL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Fondo morado sólido y plano en CADA imagen y video.
-Sin degradados, texturas ni entornos.
-El fondo debe permanecer claramente visible detrás de todos los objetos.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧍 SOLO OBJETOS PERMITIDOS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Silla, sofá, bañera, mesa, sombra en el piso debajo de los muebles, tazas, latas, envoltorios, controles, libros, pantallas.
-La utilería debe coincidir con el escenario.
-La utilería debe estar físicamente apoyada (con gravedad).
-No se permiten objetos extra.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 PERSONAJE DE REFERENCIA (NO CAMBIAR)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-CUERPO Y PIEL:
+🎯 PERSONAJE DE REFERENCIA (ESTILO OBLIGATORIO):
 - Figura humana hiperrealista 3D CGI
-- Estructura esquelética completa visible A TRAVÉS de piel transparente intacta
-- Capa de piel fina, transparente, similar al vidrio
-- La piel es continua, ligeramente brillante, silicona médica / resina transparente
-- Los huesos son visibles debajo pero NO expuestos
-- Color de hueso natural blanco roto / beige
-- Esto NO es un esqueleto desnudo
+- Piel transparente intacta similar al vidrio donde se ve el esqueleto completo
+- Exactamente 2 globos oculares realistas en las cuencas (mirando al frente)
 
-CRÁNEO Y OJOS (BLOQUEO DURO):
-- Cráneo cubierto por piel facial transparente
-- Exactamente 2 globos oculares humanos realistas
-- Ubicados SOLO dentro de las cuencas oculares
-- Mirando al frente, visibles a través de la piel
-- Curvatura realista y reflejos sutiles
-- Cuencas de ojos NO pueden estar vacías
-- Sin dientes expuestos
-- Sin otros ojos en ninguna parte del cuerpo
+🎯 FONDO Y POSTURA (¡NUEVAS REGLAS!):
+- El entorno (fondo) DEBE SER DINÁMICO Y ESTRICTAMENTE RELACIONADO A LA ESCENA. Si el texto habla de sal, el personaje está en una cocina o un salar. Si habla de insomnio, está en una cama o habitación oscura. Si habla de sol, está en un desierto. ¡CERO FONDOS MORADOS a menos que sea un vacío abstracto!
+- La postura DEBE SER DINÁMICA. El personaje puede estar de pie, acostado, cocinando, gateando o sentado, dependiendo de lo que pase en el guion.
+- La iluminación debe coincidir con el entorno.
 
-LÍMITES DE ANATOMÍA:
-- NO órganos
-- NO músculos
-- NO venas
-- NO intestinos
-- NO tejido cardíaco
-- Efectos internos SOLO como luz simbólica o neblina
+🎯 REGLA DE ACCIÓN: Cada paso muestra el deterioro progresivo. Muestra los efectos que menciona el guion en el personaje transparente.
 
-POSICIÓN:
-- De frente en todo momento
-- Perfectamente centrado
-- Sentado según el escenario (bañera, sofá, mesa, etc.)
-- Idéntico en todas las imágenes
+FORMATO DE IMAGEN (Ejemplo dinámico):
+"Hyper-realistic 3D CGI human figure with intact transparent glass-like skin over skeleton, exactly two eyeballs, [Postura: standing/laying/sitting], interacting with [Objeto relacionado], located in a [ENTORNO DINÁMICO: dark bedroom, modern kitchen, desert], [efectos físicos del guion], dramatic lighting. --ar 9:16"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ EFECTOS VISUALES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FORMATO DE VIDEO (Animación del movimiento en ese mismo entorno):
+"3-6 sec vertical: [misma descripción de personaje y entorno]. [Acción/Movimiento]. Camera [push-in/shake]."
 
-INTERNOS (RAYOS X / SUPERPOSICIÓN):
-- Cerebro brillando al rojo vivo o parpadeando
-- Sangre espesándose y fluyendo lentamente (simbólico)
-- Pulmones parcialmente llenos de neblina de fluido translúcido
-- Columna vertebral resaltada en rojo para indicar dolor
-- Corazón como luz pulsante interna (sin forma de órgano)
-
-EXTERNOS:
-- Ojos volviéndose rojo oscuro o temblando
-- Piel transparente secándose y agrietándose como cuero viejo
-- Columna encorvándose hacia adelante (aún de frente)
-- Manos temblando
-- Hombros colapsando hacia adentro
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📐 REGLA DE ESTRUCTURA — UNA ACCIÓN = UN PROMPT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Cada oración, cláusula o escalada en el guion = un prompt.
-Incluso dentro de la misma escena:
-- Nueva sensación → nuevo prompt
-- Nuevo síntoma → nuevo prompt
-- Nuevo cambio físico → nuevo prompt
-- Nuevo efecto mental → nuevo prompt
-Nunca fusiones acciones.
-Nunca te saltes pasos.
-
-PRIMERA IMAGEN — ANCLA:
-- Representa la primera acción del guion
-- Personaje de piel transparente claramente visible
-- Postura sentada y utilería correctas
-- Fondo morado sólido visible
-- Iluminación que define: Transparencia de piel, visibilidad de huesos, postura
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 FORMATO DE PROMPT DE IMAGEN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-"Front-facing, centered hyper-realistic 3D CGI human figure with intact transparent skin over skeleton, sitting [postura], natural bone color visible beneath glass-like skin, exactly two visible eyeballs in skull sockets, solid purple background, [utilería del escenario], [efectos internos: brain glow, blood thickening, lung haze], [efectos externos: eye redness, trembling hands, hunched spine], dramatic lighting emphasizing decline. --ar 9:16"
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 FORMATO DE PROMPT DE VIDEO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-El prompt de video debe ser la VERSIÓN ANIMADA del prompt de imagen correspondiente.
-Debe describir el MOVIMIENTO de la misma escena, personaje y objetos.
-
-REGLAS PARA COHERENCIA:
-- El prompt de video debe empezar con la misma escena que el prompt de imagen
-- El personaje debe ser el mismo (misma postura, mismos objetos)
-- El movimiento debe ser la EVOLUCIÓN de lo que se describe en la narración
-- Si la narración dice "las manos empiezan a temblar", el video muestra las manos temblando
-- Si la narración dice "el cerebro se inflama", el video muestra el cerebro pulsando
-- Fondo morado sólido SIEMPRE
-
-FORMATO:
-"3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting in [misma postura que imagen]. [Movimiento del personaje según narración]. [Cámara: push-in lento o sacudida sutil]. Solid purple background."
-
-Ejemplo coherente:
-Narración: "En el minuto 10, tus manos empiezan a temblar sin control"
-Prompt Imagen: "Front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting on chair. Hands resting on knees with slight tremor. Solid purple background..."
-Prompt Video: "3-6 sec vertical: front-facing 3D CGI human figure with intact transparent skin over skeleton, sitting on chair. Hands trembling uncontrollably on knees. Brain pulses red. Slow camera push-in. Solid purple background."
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 DATOS DE PUBLICACIÓN (OBLIGATORIOS):
+- caption: Texto para redes (30-50 palabras)
+- hashtags: Array de 5 hashtags
+- music_recommendation: Qué tipo de música usar
 
 Responde SOLO con un JSON válido:
 {
-  "reference_prompt": "Prompt completo para generar el personaje de referencia (una sola imagen que defina al personaje)",
+  "reference_prompt": "Prompt de personaje base transparente",
+  "caption": "Texto persuasivo para redes",
+  "music_recommendation": "Música sugerida (ej. Dark synthwave suspense)",
+  "hashtags": ["#curiosidades", "#3d", "#cuerpo"],
   "timeline": [
     {
-      "step_name": "Etiqueta del paso del guion",
-      "image_prompt": "Prompt de imagen en inglés con --ar 9:16",
-      "video_prompt": "Prompt de video en inglés, 3-6 segundos"
+      "step_name": "Etiqueta del paso (Ej: Día 1)",
+      "image_prompt": "Prompt de imagen",
+      "video_prompt": "Prompt de video"
     }
   ]
-}
-`;
+}`;
     } else if (mode === "single_prompt") {
       const { step_name, narration, prompt_type, existing_image_prompt } = requestBody;
       
       if (prompt_type === "image") {
-        prompt = `
-Eres un director de visualización médica. Regenera SOLO el prompt de imagen para esta escena.
+        prompt = `Regenera SOLO el prompt de imagen para la escena: ${step_name} - ${narration}
+REGLAS: Personaje de piel transparente hiperrealista. ENTORNO Y POSTURA DINÁMICA relacionada a la escena (no fondo morado, no siempre sentado).
+Prompt anterior: ${existing_image_prompt}
 
-CONTEXTO DEL PERSONAJE:
-${characterRef}
-
-ESCENA:
-Paso: ${step_name}
-Narración: ${narration}
-
-REGLAS:
-- Fondo morado sólido
-- Personaje de piel transparente con esqueleto visible
-- Exactamente 2 ojos en las cuencas
-- Sentado, de frente, centrado
-- Mostrar los efectos físicos que describe la narración
-- NO incluir el prompt de video, SOLO imagen
-- Formato: "Front-facing, centered hyper-realistic 3D CGI human figure with intact transparent skin over skeleton, sitting [postura], [efectos según narración], solid purple background, dramatic lighting. --ar 9:16"
-
-Responde SOLO con un JSON válido:
-{
-  "image_prompt": "El prompt de imagen en inglés"
-}
-`;
+Responde SOLO con JSON válido:
+{ "image_prompt": "El nuevo prompt en inglés..." }`;
       } else {
-        prompt = `
-Eres un director de visualización médica. Regenera SOLO el prompt de video para esta escena.
+        prompt = `Regenera SOLO el prompt de video para la escena: ${step_name} - ${narration}
+Prompt anterior: ${existing_image_prompt}
+REGLAS: Versión animada (3-6s) de la imagen en un ENTORNO DINÁMICO y Postura relacionada a la escena.
 
-CONTEXTO DEL PERSONAJE:
-${characterRef}
-
-ESCENA:
-Paso: ${step_name}
-Narración: ${narration}
-Prompt de imagen actual: ${existing_image_prompt}
-
-REGLAS:
-- El video debe ser la VERSIÓN ANIMADA del prompt de imagen
-- Misma escena, mismo personaje, misma postura
-- El movimiento debe ser la EVOLUCIÓN de lo que dice la narración
-- Cámara: push-in lento o sacudida sutil
-- Fondo morado sólido SIEMPRE
-- 3-6 segundos de duración
-- NO incluir prompt de imagen, SOLO video
-
-Formato:
-"3-6 sec vertical: [misma escena que imagen]. [Movimiento según narración]. Slow camera push-in. Solid purple background."
-
-Responde SOLO con un JSON válido:
-{
-  "video_prompt": "El prompt de video en inglés"
-}
-`;
+Responde SOLO con JSON válido:
+{ "video_prompt": "El nuevo prompt de video en inglés..." }`;
       }
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.85 });
-    const data = JSON.parse(jsonText);
-
+    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode === "script" ? 0.9 : 0.75 });
+    
+    let cleanJson = jsonText.trim();
+    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
+    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
+    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
+    
+    const data = JSON.parse(cleanJson.trim());
     return NextResponse.json(data);
   } catch (error: unknown) {
-    const errMsg = error instanceof Error ? error.message : "Error desconocido";
-    console.error("Error generating timeline:", errMsg);
-    return NextResponse.json({ error: errMsg }, { status: 500 });
+    console.error("Error generating timeline:", error);
+    return NextResponse.json({ error: "Error desconocido" }, { status: 500 });
   }
 }
