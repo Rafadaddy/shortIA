@@ -16,44 +16,56 @@ export async function POST(req: NextRequest) {
     const characterBase = "original character, mature adult anthropomorphic white duck, elegant wealthy businessman, wearing black suit blazer with vest, white dress shirt slightly open, thin delicate gold chain necklace, elegant gold wristwatch with gold bracelet, single gold signet ring, black sunglasses with gold details, serious sophisticated confident expression, not angry not cute, realistic feathers, detailed, ultra realistic, 8k, photorealistic, highly detailed, cinematic lighting --style raw";
 
     if (mode === "ideas") {
-      prompt = `Eres un creador experto de contenido para YouTube enfocado en Finanzas, Trading, Mentalidad Millonaria y Crecimiento Personal.
-Genera 5 ideas de video altamente atractivas y muy clicables.
-Tema General/Nicho: "${topic || 'Finanzas y Mentalidad'}"
+      prompt = `Actúa como el estratega viral para el canal "EL PATO CAPITALISTA".
+PERSONAJE: Pato blanco millonario adulto, serio, elegante, directo, con barrio. El patrón que te dice la neta del dinero en México.
+AUDIENCIA: Mexicanos 20-40 años (ganan $8k-$30k).
+CONTEXTO: OXXO, NU, BBVA, Coppel, CETES, tandas, quincena, varo, chamba.
+
+Genera 5 ideas de video altamente atractivas y muy clicables basadas en el tema: "${topic || 'Finanzas y Mentalidad'}"
+REGLAS:
+1. SOLO 1 IDEA POR SHORT. Que duela, que enseñe y que se comparta.
+2. CERO GENERICIDADES. Conecta con el mexicano promedio.
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {
   "ideas": [
     {
-      "title": "Título del Video",
-      "hook": "Hook emocional o revelador en una frase",
-      "pain_point": "El problema financiero o mental que resuelve",
-      "why_it_works": "Por qué funcionará bien"
+      "title": "TÍTULO (3-4 palabras)",
+      "hook": "HOOK 0-3 SEGUNDOS (Frase que para el scroll)",
+      "pain_point": "El dolor financiero del mexicano que resuelve",
+      "why_it_works": "Por qué se hará viral"
     }
   ]
 }`;
     } else if (mode === "script_only") {
-      prompt = `Eres un guionista experto para canales de YouTube de Finanzas y Motivación estilo "Mentalidad de Tiburón".
-El protagonista (quien narra o protagoniza) es un Pato Millonario, exitoso y elegante.
-Tema/Idea base: "${idea}"
+      prompt = `Actúa como el guionista de Shorts virales para mi canal "EL PATO CAPITALISTA".
+
+PERSONAJE: Pato blanco millonario adulto, traje negro, cadena fina de oro, lentes negros, serio, elegante, directo, con barrio. No es tierno, no es mafioso. Es el patrón que te dice la neta del dinero en México.
+AUDIENCIA: Mexicanos 20-40 años que ganan $8k-$30k, con deudas, quieren ahorrar e invertir.
+OBJETIVO: Un guion que duela, que enseñe y que se comparta.
+TEMA A DESARROLLAR: "${idea}"
 
 ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * (parseInt(requestedDuration) || 10)} SEGUNDOS.
 
-REGLAS:
-- La narración debe ser un MONÓLOGO claro, duro, motivacional y persuasivo. 
-- Mentalidad de abundancia, sin excusas.
-- DEBES escribir suficiente texto (Aprox 130-200 palabras) para asegurar que el guion tenga sustancia y pueda dividirse en ${count} escenas sin quedar vacío.
+REGLAS OBLIGATORIAS PARA EL GUION:
+1. SOLO 1 IDEA CENTRAL. Nada de "3 consejos". 1 idea que cale.
+2. CONTEXTO MÉXICO 2026: OXXO, NU, BBVA, Coppel, CETES, tandas, quincena.
+3. CERO GENERICIDADES: No digas "ahorra". Di "Si ganas $15k, manda $1,500 a NU el mismo día que te pagan, antes de pagar nada".
+4. TONO: Regañón, elegante, con barrio. Usa palabras como lana, varo, chamba.
+5. CIERRE MATADOR: Termina con una frase dura del pato + CTA (Ej: "Sígueme, no seas...").
+6. TAMAÑO: DEBES escribir texto suficiente (aprox 130-200 palabras) para dividirse en ${count} escenas sin quedar vacío. Es un monólogo continuo.
 
 Responde SOLO con un JSON válido:
 {
-  "script": "Aquí va el texto completo del guion, escrito como un solo bloque narrativo..."
+  "script": "Aquí va el texto completo del monólogo, sin nombres de escenas, solo el texto puro, hilado y continuo..."
 }`;
     } else if (mode === "improve_script") {
-      prompt = `Eres un guionista experto en contenido de Finanzas. Tienes el siguiente guion base:
+      prompt = `Eres el guionista de "EL PATO CAPITALISTA". Tienes el siguiente guion base:
 "${current_script}"
 
 Instrucción del usuario para mejorarlo/modificarlo: "${instruction}"
 
-Reescribe el guion completo aplicando la instrucción. Mantén el tono financiero y elegante.
+Reescribe el guion completo aplicando la instrucción. Mantén el tono mexicano, elegante, regañón y con barrio (lana, varo, quincena, Coppel, NU).
 
 Responde SOLO con un JSON válido:
 {
@@ -86,7 +98,7 @@ Responde SOLO con un JSON válido:
         "duration": "~10s"
       }`).join(',\n      ');
 
-      prompt = `Eres un director de arte para un canal de YouTube de Finanzas.
+      prompt = `Eres un director de arte para el canal "EL PATO CAPITALISTA".
 El usuario ya aprobó el guion. YO he dividido el guion en EXACTAMENTE ${count} escenas.
 
 TUS ESCENAS (NO ALTERES LA NARRACIÓN):
@@ -100,12 +112,12 @@ Personaje OBLIGATORIO en cada escena: ${characterBase}
 
 REGLAS PARA IMAGE PROMPT:
 - El prompt DEBE INCLUIR LA DESCRIPCIÓN BASE COMPLETA DEL PERSONAJE.
-- Ponlo en un entorno lujoso/financiero que coincida con el guion (Ej: sitting at luxury executive desk, walking out of a private jet, standing in a Wall Street trading floor).
-- Formato sugerido: "${characterBase}, [Pose/Acción], [Entorno Lujoso]. --ar 4:5"
+- Ponlo en un entorno lujoso/financiero o en escenarios que contrasten (Ej: walking out of an OXXO in a luxury suit, sitting at luxury executive desk, standing in a Wall Street trading floor).
+- Formato sugerido: "${characterBase}, [Pose/Acción], [Entorno]. --ar 4:5"
 
 Responde SOLO con un JSON válido:
 {
-  "title": "Título llamativo",
+  "title": "Título llamativo (MAYÚSCULAS)",
   "thumbnail": {
     "text": "TEXTO CORTO PARA MINIATURA",
     "image_prompt": "English prompt: ${characterBase}, highly emotional pose, luxury background. --ar 16:9"
