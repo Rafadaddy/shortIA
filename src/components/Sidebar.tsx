@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign, Tv } from "lucide-react";
+import { Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign, Tv, Home } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -49,6 +49,10 @@ export function Sidebar() {
           <Link href="/telenovelas" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <Tv className="w-5 h-5 text-purple-400" />
             Telenovelas
+          </Link>
+          <Link href="/casas-mexicanas" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Home className="w-5 h-5 text-orange-400" />
+            Casas Mex
           </Link>
           <Link href="/stickman" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <PlaySquare className="w-5 h-5 text-emerald-400" />
@@ -111,6 +115,10 @@ export function Sidebar() {
           <Tv className="w-5 h-5" />
           <span className="text-[10px] font-medium">Novelas</span>
         </Link>
+        <Link href="/casas-mexicanas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-orange-400 active:text-orange-400 min-w-[4rem] flex-shrink-0">
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Casas</span>
+        </Link>
         <Link href="/stickman" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <PlaySquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">Stickman</span>
@@ -131,5 +139,6 @@ export function Sidebar() {
     </>
   );
 }
+
 
 
