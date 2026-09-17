@@ -1,11 +1,6 @@
 "use client";
-import { aiFetch } from "@/lib/ai-fetch";
-
-import { useState } from "react";
-import { Sparkles, Video, Copy, Check, Flame, RefreshCw, Play, Quote } from "lucide-react";
-import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
-import { useToast } from "@/components/Toast";
-
+import { useState, useRef, useEffect } from "react";
+import { Flame, Loader2, Play, Check, Copy, RefreshCw, Wand2, ArrowRight, Type, Image as ImageIcon, Sparkles } from "lucide-react";
 
 interface Scene {
   scene_number: number;
@@ -16,7 +11,7 @@ interface Scene {
   duration: string;
 }
 
-interface MotivationalData {
+interface VideoData {
   title: string;
   full_narration: string;
   scenes: Scene[];
@@ -32,164 +27,233 @@ interface MotivationalIdea {
 }
 
 const motivationalNiches = [
-  "Desarrollo personal y superación",
-  "Disciplina y hábitos diarios",
-  "Superar el miedo al fracaso",
-  "Salud mental y autoestima",
-  "Éxito financiero y mentalidad",
-  "Relaciones y amor propio",
-  "Productividad y enfoque",
-  "Cambios de vida y transformation",
-  "Resiliencia después del dolor",
-  "Propósito de vida y significado",
-  "Estudios y aprendizaje",
-  "Fitness y fuerza mental",
-  "Soledad y fortaleza interior",
-  "Tiempo y arrepentimiento",
-  "Hábitos tóxicos y crecimiento",
+  "Desarrollo personal y superación", "Disciplina y hábitos diarios", "Superar el miedo al fracaso",
+  "Salud mental y autoestima", "Éxito financiero y mentalidad", "Relaciones y amor propio",
+  "Productividad y enfoque", "Cambios de vida y transformation", "Resiliencia después del dolor",
+  "Propósito de vida y significado", "Estudios y aprendizaje", "Fitness y fuerza mental",
+  "Soledad y fortaleza interior", "Tiempo y arrepentimiento",
 ];
 
-const tones = [
-  { value: "Emotivo y Profundo", icon: "💔", label: "Emotivo" },
-  { value: "Directo y Contestador", icon: "🎯", label: "Directo" },
-  { value: "Motivacional Energético", icon: "🔥", label: "Energético" },
-  { value: "Filosófico y Reflexivo", icon: "🧠", label: "Filosófico" },
-  { value: "Oscuro y Crudo", icon: "🖤", label: "Oscuro" },
-  { value: "Esperanzador y Cálido", icon: "✨", label: "Esperanzador" },
+const toneOptions = [
+  "Emotivo y Profundo", "Crudo y Directo (Verdades incómodas)", "Épico y Heroico",
+  "Reflexivo y Filosófico", "Agresivo y Desafiante (Estilo Gym)",
 ];
 
-const visualStyles = [
-  "🎲 Aleatorio / Que la IA decida",
-  "Cinemático Oscuro",
-  "Paisajes Épicos",
-  "Urbano / Calle",
-  "Minimalista",
-  "Natural / Bosque",
-  "Noir / B&W",
-  "Colorido / Vibrante",
+const styleOptions = [
+  "Cinemático Oscuro", "Paisajes Épicos", "Urbano / Calle", "Minimalista", 
+  "Natural / Bosque", "Noir / B&W", "Colorido / Vibrante", "IA decida el mejor estilo"
 ];
 
-export default function VideosMotivacionalesPage() {
-  const [niche, setNiche] = useState(motivationalNiches[0]);
-  const [idea, setIdea] = useState("");
-  const [tone, setTone] = useState("Emotivo y Profundo");
-  const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro");
-  const [sceneCount, setSceneCount] = useState(5);
-  const [duration, setDuration] = useState("10 Segundos");
-  const [isGenerating, setIsGenerating] = useState(false);
+const durationOptions = ["5 Segundos", "10 Segundos", "15 Segundos", "20 Segundos"];
+
+export default function MotivationalVideos() {
+  const [niche, setNiche] = useState("");
+  const [tone, setTone] = useState(toneOptions[0]);
+  const [style, setStyle] = useState(styleOptions[0]);
+  const [duration, setDuration] = useState(durationOptions[1]);
+  const [sceneCount, setSceneCount] = useState<number>(5);
+
+  const [ideas, setIdeas] = useState<MotivationalIdea[] | null>(null);
+  const [selectedIdea, setSelectedIdea] = useState<MotivationalIdea | null>(null);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
-  const [data, setData] = useState<MotivationalData | null>(null);
-  const [ideas, setIdeas] = useState<MotivationalIdea[]>([]);
+
+  const [scriptText, setScriptText] = useState("");
+  const [isGeneratingScript, setIsGeneratingScript] = useState(false);
+
+  const [data, setData] = useState<VideoData | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+
   const [regeneratingScene, setRegeneratingScene] = useState<number | null>(null);
   const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
 
-  const { copiedStates, handleCopy } = useCopyToClipboard();
-  const { showToast } = useToast();
-
-  const handleGenerate = async (overrideIdea?: string) => {
-    const finalIdea = overrideIdea || idea;
-    setIsGenerating(true);
-    setData(null);
-    setIdeas([]);
-    if (overrideIdea) setIdea(overrideIdea);
-
+  const handleCopy = async (text: string, id: string) => {
     try {
-      const res = await aiFetch("/api/generate-motivational", {
-        niche,
-        idea: finalIdea,
-        tone,
-        style: visualStyle,
-        sceneCount,
-          duration
-        });
-      if (!res.ok) throw new Error("Error al generar");
-      const generatedData = await res.json();
-      setData(generatedData);
-    } catch (error) {
-      console.error(error);
-      showToast("Hubo un error al generar el video motivacional.", "error");
-    } finally {
-      setIsGenerating(false);
+      await navigator.clipboard.writeText(text);
+      setCopiedStates({ ...copiedStates, [id]: true });
+      setTimeout(() => {
+        setCopiedStates((prev) => ({ ...prev, [id]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy", err);
     }
   };
 
-  const handleGenerateIdeas = async () => {
+  const generateIdeas = async () => {
+    if (!niche) return;
     setIsGeneratingIdeas(true);
-    setIdeas([]);
+    setIdeas(null);
+    setSelectedIdea(null);
+    setScriptText("");
     setData(null);
 
     try {
-      const res = await aiFetch("/api/generate-motivational", { mode: "ideas", niche });
+      const res = await fetch("/api/generate-motivational", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "ideas", niche }),
+      });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || "Error al generar ideas");
       }
-      const generated = await res.json();
-      if (generated.ideas) {
-        setIdeas(generated.ideas);
-      }
+      const json = await res.json();
+      setIdeas(json.ideas);
     } catch (error) {
-      showToast("Error al generar ideas.", "error");
+      console.error(error);
+      alert(error instanceof Error ? error.message : "Error al conectar con la IA");
     } finally {
       setIsGeneratingIdeas(false);
     }
   };
 
-  const handleRegenerateScenePrompt = async (sceneIndex: number, promptType: "image" | "animation") => {
-    if (!data || regeneratingScene !== null) return;
-    const scene = data.scenes[sceneIndex];
-    setRegeneratingScene(sceneIndex);
-    setRegeneratingType(promptType);
+  const selectIdeaAndGenerateScript = async (idea: MotivationalIdea) => {
+    setSelectedIdea(idea);
+    setIsGeneratingScript(true);
+    setData(null);
     try {
-      const res = await aiFetch("/api/generate-motivational", {
-        mode: "single_prompt",
-        prompt_type: promptType,
-        niche,
-        style: visualStyle,
-        scene_number: scene.scene_number,
-        narration: scene.narration,
-        existing_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
+      const res = await fetch("/api/generate-motivational", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "script_only",
+          niche,
+          idea: idea.hook,
+          tone,
+          sceneCount
+        }),
       });
-      if (!res.ok) throw new Error("Error al regenerar");
-      const newData = await res.json();
-      const newScenes = [...data.scenes];
-      if (promptType === "image") {
-        newScenes[sceneIndex] = { ...newScenes[sceneIndex], image_prompt: newData.image_prompt };
-      } else {
-        newScenes[sceneIndex] = { ...newScenes[sceneIndex], animation_prompt: newData.animation_prompt };
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al generar el guion");
       }
-      setData({ ...data, scenes: newScenes });
+      const json = await res.json();
+      setScriptText(json.script);
     } catch (error) {
       console.error(error);
-      showToast("Error al regenerar el prompt.", "error");
+      alert(error instanceof Error ? error.message : "Error al conectar con la IA");
+    } finally {
+      setIsGeneratingScript(false);
+    }
+  };
+
+  const improveScript = async (instruction: string) => {
+    if (!scriptText) return;
+    setIsGeneratingScript(true);
+    try {
+      const res = await fetch("/api/generate-motivational", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "improve_script",
+          current_script: scriptText,
+          instruction
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al modificar el guion");
+      }
+      const json = await res.json();
+      setScriptText(json.script);
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : "Error al conectar con la IA");
+    } finally {
+      setIsGeneratingScript(false);
+    }
+  };
+
+  const generateFullVideo = async () => {
+    if (!scriptText) return;
+    setIsGeneratingVideo(true);
+    setData(null);
+
+    try {
+      const res = await fetch("/api/generate-motivational", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "full_from_script",
+          current_script: scriptText,
+          style,
+          duration,
+          sceneCount
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al generar escenas");
+      }
+      const json = await res.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+      alert(error instanceof Error ? error.message : "Error al conectar con la IA");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
+  const handleRegenerateScenePrompt = async (sceneIndex: number, promptType: "image" | "animation") => {
+    if (!data) return;
+    setRegeneratingScene(sceneIndex);
+    setRegeneratingType(promptType);
+    
+    try {
+      const scene = data.scenes[sceneIndex];
+      const res = await fetch("/api/generate-motivational", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "single_prompt",
+          prompt_type: promptType,
+          niche,
+          style,
+          scene_number: scene.scene_number,
+          narration: scene.narration,
+          existing_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt
+        }),
+      });
+      
+      if (!res.ok) throw new Error("Error al regenerar");
+      
+      const json = await res.json();
+      const newData = { ...data };
+      if (promptType === "image") {
+        newData.scenes[sceneIndex].image_prompt = json.image_prompt;
+      } else {
+        newData.scenes[sceneIndex].animation_prompt = json.animation_prompt;
+      }
+      setData(newData);
+    } catch (error) {
+      console.error(error);
+      alert("Error al regenerar el prompt");
     } finally {
       setRegeneratingScene(null);
       setRegeneratingType(null);
     }
   };
 
-  const handleCopyNarration = () => {
-    if (!data) return;
-    handleCopy(data.full_narration, "narration");
-  };
-
   const handleCopyAll = () => {
     if (!data) return;
-    let text = `📝 NARRACIÓN COMPLETA:\n\n${data.full_narration}\n\n`;
-    text += `--- PROMPTS DE ESCENAS ---\n\n`;
-    data.scenes.forEach(s => {
-      text += `ESCENA ${s.scene_number} (${s.duration}):\n`;
-      text += `📖 ${s.narration}\n`;
-      text += `🖼️ Imagen: ${s.image_prompt}\n`;
-      text += `🎬 Video: ${s.animation_prompt}\n\n`;
+    let text = `🎥 TÍTULO: ${data.title}\n\n`;
+    text += `🗣️ NARRACIÓN COMPLETA:\n${data.full_narration}\n\n`;
+    text += `---\n\n`;
+    data.scenes.forEach((s) => {
+      text += `🎬 ESCENA ${s.scene_number} (${s.duration})\n`;
+      text += `🗣️ Voz: ${s.narration}\n`;
+      text += `👁️ Visual: ${s.visual_concept}\n`;
+      text += `🎨 Imagen: ${s.image_prompt}\n`;
+      text += `✨ Video: ${s.animation_prompt}\n\n`;
     });
-    text += `📸 Caption: ${data.caption}\n`;
+    text += `📝 Caption: ${data.caption}\n`;
     text += `🎵 Música: ${data.music_recommendation}\n`;
     text += `# ${data.hashtags?.join(" ") || ""}`;
     handleCopy(text, "all");
   };
 
-  
   const handleCopyMetadata = () => {
     if (!data) return;
     let text = `🎵 Música: ${data.music_recommendation}\n\n`;
@@ -198,303 +262,191 @@ export default function VideosMotivacionalesPage() {
     handleCopy(text, "metadata");
   };
 
-  const handleCopyAllImagePrompts = () => {
-    if (!data) return;
-    const text = data.scenes.map((s, i) => `Imagen ${i + 1}:\n${s.image_prompt}`).join("\n\n---\n\n");
-    handleCopy(text, "all_image_prompts");
-  };
-return (
+  return (
     <main className="min-h-[calc(100vh-4rem)] p-4 md:p-6 lg:p-12 selection:bg-amber-500/30">
       <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
 
         <header className="text-center space-y-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <Flame className="w-8 h-8 md:w-10 md:h-10 text-amber-400" />
-            Videos Motivacionales
+            Generador Avanzado (Paso a Paso)
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Genera reflexiones motivacionales para narrar en videos cortos (~40 seg). Incluye prompts de imagen y animación para cada escena.
+            1. Elige una idea. 2. Perfecciona tu guion. 3. Genera escenas y prompts.
           </p>
         </header>
 
-        {/* Formulario */}
+        {/* PASO 1: CONFIGURACIÓN E IDEAS */}
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              Nicho / Temática
-            </label>
-            <select
-              value={niche}
-              onChange={(e) => setNiche(e.target.value)}
-              className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
-            >
-              {motivationalNiches.map(n => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
+            <div className="bg-amber-500/20 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
+            <h2 className="text-xl font-bold text-white">Configuración e Ideas</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Nicho / Temática</label>
+              <select value={niche} onChange={(e) => setNiche(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
+                <option value="">Selecciona un nicho...</option>
+                {motivationalNiches.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Tono Emocional</label>
+              <select value={tone} onChange={(e) => setTone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
+                {toneOptions.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-amber-400" /> Tono Emocional
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {tones.map(t => (
-                  <button
-                    key={t.value}
-                    onClick={() => setTone(t.value)}
-                    className={`py-2 px-3 rounded-xl text-xs font-medium transition-all border ${
-                      tone === t.value
-                        ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
-                        : "bg-slate-950/50 border-slate-700/50 text-slate-400 hover:border-slate-600"
-                    }`}
-                  >
-                    {t.icon} {t.label}
+          <button onClick={generateIdeas} disabled={!niche || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Generando ideas...</> : <><Wand2 className="w-5 h-5" /> Generar 8 Ideas Virales</>}
+          </button>
+
+          {ideas && (
+            <div className="mt-8 space-y-4">
+              <h3 className="text-lg font-semibold text-white mb-4">Selecciona una idea para escribir el guion:</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {ideas.map((idea, idx) => (
+                  <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-amber-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
+                    <p className="font-bold text-amber-400 mb-1">{idea.title}</p>
+                    <p className="text-sm text-slate-300 mb-2 italic">&quot;{idea.hook}&quot;</p>
+                    <p className="text-xs text-slate-500">{idea.focus}</p>
                   </button>
                 ))}
               </div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <Video className="w-4 h-4 text-amber-400" /> Estilo Visual
-              </label>
-              <select
-                value={visualStyle}
-                onChange={(e) => setVisualStyle(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
-              >
-                {visualStyles.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                Escenas: <span className="text-amber-400 font-bold">{sceneCount}</span>
-              </label>
-              <input
-                type="range"
-                min={3}
-                max={8}
-                value={sceneCount}
-                onChange={(e) => setSceneCount(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-              />
-              <div className="flex justify-between text-xs text-slate-500 px-1">
-                <span>3</span>
-                <span>5</span>
-                <span>8</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">
-              ¿Qué quieres decir en el video? (Opcional)
-            </label>
-            <input
-              type="text"
-              value={idea}
-              onChange={(e) => setIdea(e.target.value)}
-              placeholder="Ej. Por qué la gente fracasa al intentar cambiar, el verdadero costo de no actuar..."
-              className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-            />
-          </div>
-
-          
-            <div className="space-y-2 mb-6">
-              <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all appearance-none"
-              >
-                <option value="5 Segundos">5 Segundos</option>
-                <option value="10 Segundos">10 Segundos</option>
-                <option value="15 Segundos">15 Segundos</option>
-                <option value="20 Segundos">20 Segundos</option>
-              </select>
-            </div>
-<div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={handleGenerateIdeas}
-              disabled={isGenerating || isGeneratingIdeas}
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 border border-slate-700"
-            >
-              {isGeneratingIdeas ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-              Sugerir Ideas
-            </button>
-            <button
-              onClick={() => handleGenerate()}
-              disabled={isGenerating || isGeneratingIdeas}
-              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 disabled:opacity-50 py-4 px-6 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 shadow-lg shadow-amber-900/20"
-            >
-              {isGenerating ? (
-                <><RefreshCw className="w-5 h-5 animate-spin" /> Generando Video...</>
-              ) : (
-                <><Play className="w-5 h-5" /> Generar Video Motivacional</>
-              )}
-            </button>
-          </div>
+          )}
         </div>
 
-        {/* Ideas Generadas */}
-        {ideas.length > 0 && !data && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4">
-            {ideas.map((ideaItem, idx) => (
-              <div
-                key={idx}
-                className="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all group"
-                onClick={() => handleGenerate(ideaItem.title)}
-              >
-                <h3 className="font-bold text-lg text-white mb-2 group-hover:text-amber-400 transition-colors">{ideaItem.title}</h3>
-                <p className="text-sm text-slate-400 mb-3 border-l-2 border-amber-500/30 pl-3 italic">
-                  &quot;{ideaItem.hook}&quot;
-                </p>
-                <div className="text-xs bg-slate-950 p-2 rounded text-slate-300">
-                  <span className="text-amber-400 font-semibold">Enfoque:</span> {ideaItem.focus}
+        {/* PASO 2: GUION NARRATIVO */}
+        {(isGeneratingScript || scriptText) && (
+          <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
+              <div className="bg-amber-500/20 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
+              <h2 className="text-xl font-bold text-white">Edición del Guion</h2>
+            </div>
+            
+            {isGeneratingScript && !scriptText ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <Loader2 className="w-10 h-10 animate-spin text-amber-500 mb-4" />
+                <p>Escribiendo un guion poderoso...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-400 mb-2">Puedes editar el texto a mano o pedirle a la IA que lo mejore.</p>
+                <textarea 
+                  value={scriptText}
+                  onChange={(e) => setScriptText(e.target.value)}
+                  className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none resize-none leading-relaxed"
+                />
+                
+                <div className="flex flex-wrap gap-3">
+                  <button onClick={() => improveScript("Hazlo más largo y detallado")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Más largo
+                  </button>
+                  <button onClick={() => improveScript("Hazlo más corto y ve directo al grano")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <Type className="w-4 h-4" />} Más corto
+                  </button>
+                  <button onClick={() => improveScript("Reescríbelo con un enfoque totalmente distinto pero manteniendo el tema")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-4 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 disabled:opacity-50">
+                    {isGeneratingScript ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />} Cambiar Enfoque
+                  </button>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
 
-        {/* Resultados */}
-        {data && (
-          <div className="space-y-8 animate-in slide-in-from-bottom-8">
-
-            {/* Título */}
-            <div className="bg-slate-900/40 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-xl text-center">
-              <h2 className="text-3xl font-black text-white mb-4 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                {data.title}
-              </h2>
+        {/* PASO 3: ESCENAS Y PROMPTS */}
+        {scriptText && !isGeneratingScript && (
+          <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
+              <div className="bg-amber-500/20 text-amber-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">3</div>
+              <h2 className="text-xl font-bold text-white">Generar Escenas Visuales</h2>
             </div>
 
-            {/* Narración Completa */}
-            <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl relative">
-              <button
-                onClick={handleCopyNarration}
-                className="absolute top-6 right-6 flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-              >
-                {copiedStates['narration'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Narración</>}
-              </button>
-              <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                <Quote className="w-5 h-5 text-amber-400" /> Narración Completa (Para Narrar)
-              </h3>
-              <div className="bg-slate-950/60 p-6 rounded-2xl border border-slate-800">
-                <p className="text-slate-200 text-lg leading-relaxed whitespace-pre-wrap font-medium">
-                  {data.full_narration}
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Estilo Visual</label>
+                <select value={style} onChange={(e) => setStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
+                  {styleOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
               </div>
-              <p className="text-xs text-slate-500 mt-3 flex items-center gap-2">
-                <Play className="w-3 h-3" /> Usa esta narración para grabar tu voz. ~40 segundos de lectura.
-              </p>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Duración por Escena</label>
+                <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
+                  {durationOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Número de Escenas</label>
+                <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
+                  <input type="range" min="3" max="12" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-amber-500" />
+                  <span className="text-amber-400 font-bold min-w-[2ch]">{sceneCount}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Escenas */}
-            <div className="bg-slate-900/40 p-6 rounded-3xl border border-slate-800/60 shadow-xl">
-              <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-2">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Video className="w-5 h-5 text-amber-500" /> Desglose de Escenas
-                </h3>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCopyAllImagePrompts}
-                    className="flex items-center gap-2 bg-pink-600/20 text-pink-400 border border-pink-500/30 hover:bg-pink-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    {copiedStates['all_image_prompts'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Prompts Imágenes</>}
-                  </button>
-                  <button
-                    onClick={handleCopyAll}
-                  className="flex items-center gap-2 bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-                >
+            <button onClick={generateFullVideo} disabled={isGeneratingVideo} className="w-full py-4 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              {isGeneratingVideo ? <><Loader2 className="w-5 h-5 animate-spin" /> Creando Escenas y Prompts...</> : <><ImageIcon className="w-5 h-5" /> Dividir Guion y Generar Prompts</>}
+            </button>
+          </div>
+        )}
+
+        {/* PASO 4: RESULTADO FINAL */}
+        {data && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-800/60 pb-6">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{data.title}</h2>
+                  <p className="text-slate-400 flex items-center gap-2"><Play className="w-4 h-4 text-amber-500" /> Listo para producir</p>
+                </div>
+                <button onClick={handleCopyAll} className="flex items-center gap-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 py-2 px-4 rounded-xl text-sm font-semibold transition-colors">
                   {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
                 </button>
-              </div>
               </div>
 
               <div className="space-y-6">
                 {data.scenes.map((scene, idx) => (
                   <div key={scene.scene_number} className="bg-slate-950 p-5 md:p-6 rounded-2xl border border-slate-800 relative group overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/50"></div>
-
                     <div className="flex justify-between items-center mb-4">
-                      <span className="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-full text-sm">
-                        Escena {scene.scene_number}
-                      </span>
+                      <span className="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-full text-sm">Escena {scene.scene_number}</span>
                       <span className="text-slate-500 text-xs">{scene.duration}</span>
                     </div>
-
                     <div className="mb-4 relative">
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="text-xs font-semibold text-slate-500 uppercase">Narración de esta escena</span>
                           <p className="text-amber-200/90 text-sm font-medium mt-1 italic">&quot;{scene.narration}&quot;</p>
                         </div>
-                        <button
-                          onClick={() => handleCopy(scene.narration, `narration_${idx}`)}
-                          className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-amber-300 ml-2 shrink-0"
-                          title="Copiar texto de esta escena"
-                        >
+                        <button onClick={() => handleCopy(scene.narration, `narration_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-amber-300 ml-2 shrink-0">
                           {copiedStates[`narration_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                         </button>
                       </div>
                     </div>
-
                     <div className="border-l-2 border-purple-500/50 pl-3 mb-4">
                       <span className="text-xs font-semibold text-slate-500 uppercase">En Pantalla</span>
                       <p className="text-slate-300 text-sm mt-1">{scene.visual_concept}</p>
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-semibold text-pink-400 uppercase">Prompt Imagen</span>
                           <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleRegenerateScenePrompt(idx, "image")}
-                              disabled={regeneratingScene !== null}
-                              className="text-xs bg-slate-700/50 p-1.5 rounded-md hover:bg-slate-600/50 text-pink-300"
-                            >
-                              {regeneratingScene === idx && regeneratingType === "image" ? (
-                                <RefreshCw className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <RefreshCw className="w-3 h-3" />
-                              )}
-                            </button>
-                            <button
-                              onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)}
-                              className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300"
-                            >
+                            <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-pink-300">
                               {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                             </button>
                           </div>
                         </div>
                         <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.image_prompt}</p>
                       </div>
-
                       <div className="bg-slate-900 rounded-xl border border-slate-700/50 p-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-semibold text-emerald-400 uppercase">Prompt Animación</span>
                           <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => handleRegenerateScenePrompt(idx, "animation")}
-                              disabled={regeneratingScene !== null}
-                              className="text-xs bg-slate-700/50 p-1.5 rounded-md hover:bg-slate-600/50 text-emerald-300"
-                            >
-                              {regeneratingScene === idx && regeneratingType === "animation" ? (
-                                <RefreshCw className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <RefreshCw className="w-3 h-3" />
-                              )}
-                            </button>
-                            <button
-                              onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)}
-                              className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300"
-                            >
+                            <button onClick={() => handleCopy(scene.animation_prompt, `anim_${idx}`)} className="text-xs bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-emerald-300">
                               {copiedStates[`anim_${idx}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                             </button>
                           </div>
@@ -507,39 +459,26 @@ return (
               </div>
             </div>
 
-            {/* Info Extra */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-8">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-500" /> Datos de Publicación
-                </h3>
-                <button
-                  onClick={handleCopyMetadata}
-                  className="flex items-center gap-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors"
-                >
-                  {copiedStates['metadata'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Textos (Caption + Música)</>}
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-8">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2"><Sparkles className="w-5 h-5 text-amber-500" /> Datos de Publicación</h3>
+              <button onClick={handleCopyMetadata} className="flex items-center gap-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 px-4 rounded-xl text-sm font-semibold transition-colors">
+                {copiedStates['metadata'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Textos (Caption + Música)</>}
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 block">
-                  🎵 Música Sugerida
-                </span>
+                <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 block">🎵 Música Sugerida</span>
                 <p className="text-sm text-slate-300 italic">&quot;{data.music_recommendation}&quot;</p>
               </div>
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 block">
-                  📝 Caption
-                </span>
+                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider mb-2 block">📝 Caption</span>
                 <p className="text-slate-300 text-sm">{data.caption}</p>
               </div>
               <div className="bg-slate-900/50 rounded-2xl border border-slate-800 p-5">
-                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2 block">
-                  # Hashtags
-                </span>
+                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2 block"># Hashtags</span>
                 <p className="text-slate-300 text-sm">{data.hashtags?.join(" ")}</p>
               </div>
             </div>
-
           </div>
         )}
 
