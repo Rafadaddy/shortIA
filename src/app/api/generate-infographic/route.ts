@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
         "3. El ultimo item debe ser el mas polemico o sorprendente.",
         "4. El campo label debe tener de 3 a 6 palabras maximo.",
         "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
-        "6. Genera un UNICO image_prompt en ENGLISH para Ideogram/DALL-E. Este prompt DEBE INCLUIR explicitamente el texto de la lista para que la IA lo escriba. Usa este formato: 'A vertical dark infographic poster containing the text: [TITULO]. 1. [item1] 2. [item2]...'.",
+        "6. Genera un UNICO image_prompt en ENGLISH para Ideogram/DALL-E. El estilo DEBE SER: minimalista, fondo claro (light beige/white), tipografia elegante y limpia, estilo post de Instagram con circulos verdes para los numeros. Este prompt DEBE INCLUIR el texto de la lista. Usa este formato: 'A clean, minimalist vertical infographic poster, light background, sage green accents, containing the exact text: [TITULO]. 1. [item1] 2. [item2]...'.",
         "",
         "Responde SOLO con JSON valido, sin texto adicional, con esta estructura:",
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
-          image_prompt: "A dark infographic vertical poster with neon accents, containing the typography: 'TITLE. 1. First point. 2. Second point...'",
+          image_prompt: "A clean, minimalist vertical infographic poster, light beige background, sage green accents, elegant typography, containing the exact text: 'TITLE. 1. First point. 2. Second point...'",
           items: [{
             num: "01",
             emoji: "emoji",
