@@ -4,7 +4,7 @@ import { chatCompletion } from "@/lib/api-helpers";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, niche, tone, selectedIdea } = body;
+    const { action, niche, tone, selectedIdea, visualStyle } = body;
 
     if (action === "ideas") {
       const prompt = [
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         "3. El ultimo item debe ser el mas polemico o sorprendente.",
         "4. El campo label debe tener de 3 a 6 palabras maximo.",
         "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
-        "6. Genera un UNICO image_prompt en ENGLISH para Ideogram/DALL-E. El diseno debe ser un poster infografico vertical (9:16). INVENTA un estilo visual increible y unico que encaje perfecto con el tema (decide colores, iluminacion, estetica). Este prompt DEBE INCLUIR explicitamente el texto de la lista. Formato: 'A highly aesthetic vertical infographic poster about [TEMA], [ESTILO VISUAL, COLORES, VIBRA], containing the exact typography: [TITULO]. 1. [item1] 2. [item2]...'. Maximo 100 palabras.",
+        `6. Genera un UNICO image_prompt en ENGLISH para Ideogram/DALL-E. El diseno debe ser un poster infografico vertical (9:16). El usuario ha solicitado este estilo visual: "${visualStyle || 'Que la IA decida'}". Adapta los colores, iluminacion y estetica a esta peticion. Este prompt DEBE INCLUIR explicitamente el texto de la lista. Formato: 'A highly aesthetic vertical infographic poster about [TEMA], [ESTILO SOLICITADO], containing the exact typography: [TITULO]. 1. [item1] 2. [item2]...'. Maximo 100 palabras.`,
         "",
         "Responde SOLO con JSON valido, sin texto adicional, con esta estructura:",
         JSON.stringify({

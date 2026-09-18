@@ -29,6 +29,17 @@ const TONES = [
   "Humorístico / Sarcástico"
 ];
 
+const VISUAL_STYLES = [
+  "Que la IA decida (Recomendado)",
+  "Minimalista Claro (Fondo beige, verde salvia)",
+  "Modo Oscuro Elegante (Fondo negro, dorado)",
+  "Cyberpunk Neón (Oscuro, cyan, magenta)",
+  "Retro / Vintage (Tonos sepia y papel desgastado)",
+  "Pastel Aesthetic (Tonos suaves y rosados)",
+  "Corporativo Moderno (Azul marino y blanco)",
+  "Brutalista (Tipografía gigante, blanco y negro)"
+];
+
 interface Idea {
   title: string;
   description: string;
@@ -55,6 +66,7 @@ interface InfographicData {
 export default function ListasViralesPage() {
   const [niche, setNiche] = useState(NICHES[0]);
   const [tone, setTone] = useState(TONES[0]);
+  const [visualStyle, setVisualStyle] = useState(VISUAL_STYLES[0]);
 
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -96,7 +108,7 @@ export default function ListasViralesPage() {
     setData(null);
     setGeneratedImage(null);
     try {
-      const res = await aiFetch("/api/generate-infographic", { action: "list", selectedIdea: idea });
+      const res = await aiFetch("/api/generate-infographic", { action: "list", selectedIdea: idea, visualStyle });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error del servidor");
       if (!json.items) throw new Error("La IA no devolvió la lista correctamente");
@@ -165,7 +177,7 @@ export default function ListasViralesPage() {
             <h2 className="text-xl font-bold text-white">Configuración del Nicho</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Temática / Nicho</label>
               <select value={niche} onChange={e => setNiche(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
@@ -176,6 +188,12 @@ export default function ListasViralesPage() {
               <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Tono del Video</label>
               <select value={tone} onChange={e => setTone(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
                 {TONES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Estilo Visual (Poster)</label>
+              <select value={visualStyle} onChange={e => setVisualStyle(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                {VISUAL_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
