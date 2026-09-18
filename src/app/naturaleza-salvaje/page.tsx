@@ -298,18 +298,40 @@ const handleCopyAll = () => {
           </button>
         </div>
 
+        {/* IDEAS */}
+        {ideas && ideas.length > 0 && !scriptText && !isGeneratingScript && (
+          <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Swords className="w-6 h-6 text-red-500" />
+              Selecciona una Batalla Épica
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {ideas.map((idea, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => selectIdeaAndGenerateScript(idea)}
+                  className="text-left bg-slate-950 p-5 rounded-2xl border border-slate-800 hover:border-red-500/50 hover:bg-slate-900 transition-all group"
+                >
+                  <h3 className="text-red-400 font-black text-lg mb-2 group-hover:text-red-300">{idea.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{idea.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* PASO 2 */}
         {(isGeneratingScript || scriptText) && (
           <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
             <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
               <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
-              <h2 className="text-xl font-bold text-white">EdiciÒÂ³n del Guion Mexicano</h2>
+              <h2 className="text-xl font-bold text-white">Edición del Guion Salvaje</h2>
             </div>
             
             {isGeneratingScript && !scriptText ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-400">
                 <Loader2 className="w-10 h-10 animate-spin text-red-500 mb-4" />
-                <p className="animate-pulse">Escribiendo con sabor a tamal...</p>
+                <p className="animate-pulse">Calculando mordidas y redactando batalla...</p>
               </div>
             ) : (
               <div className="space-y-4">
