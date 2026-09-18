@@ -156,7 +156,7 @@ export default function NaturalezaSalvajePage() {
     try {
       const scene = data.scenes[sceneIndex];
       const res = await aiFetch("/api/generate-wildlife", {
-        mode: "single_prompt",
+        action: "single_prompt",
         prompt_type: promptType,
         scene_number: scene.scene_number,
         narration: scene.narration,

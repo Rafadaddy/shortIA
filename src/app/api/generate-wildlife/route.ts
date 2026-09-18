@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
         "",
         "REGLAS PARA CADA ESCENA:",
         "- image_prompt: En ingles para Midjourney v6. National Geographic, ultra realista, 8K, iluminacion dramatica. NUNCA texto en la imagen.",
+        "- animation_prompt: En ingles para Luma Dream Machine o Runway Gen-3. Describe la animacion, fisica y cinematografia basada en la escena.",
         "- camera_movement: Movimientos de camara epicos (ej. Fast dolly zoom, Slow motion impact).",
         "- audio_cues: Efectos de sonido (ej. Deep sub-bass drop, Bone snap, Roar echo).",
         "",
@@ -92,7 +93,8 @@ export async function POST(req: NextRequest) {
             visual_concept: "Que ocurre visualmente",
             camera_movement: "Movimiento de camara epico",
             audio_cues: "SFX especificos para esta escena",
-            image_prompt: "Hyperrealistic National Geographic wildlife, 8K, dramatic lighting, cinematic"
+            image_prompt: "Hyperrealistic National Geographic wildlife, 8K, dramatic lighting, cinematic",
+            animation_prompt: "A massive hippo bursts out of the water in slow motion, water splashing everywhere, dramatic cinematic lighting"
           }]
         }, null, 2)
       ].join("\n");
@@ -101,14 +103,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(JSON.parse(clean(response)));
     }
 
-    // �� PROMPT INDIVIDUAL �������������������������������������������
+    // €€ PROMPT INDIVIDUAL €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
     if (action === "single_prompt") {
-      const { scene_narration } = body as { scene_narration: string };
-      const prompt = [
-        `Create a better Midjourney v6 image prompt based on this narration: "${scene_narration}".`,
-        "Style: National Geographic cinematic, wildlife, ultra realistic, 8K, dramatic lighting.",
-        'Respond ONLY with valid JSON: { "prompt": "the new prompt in english..." }'
-      ].join("\n");
+      const { scene_narration, prompt_type } = body as { scene_narration: string, prompt_type?: string };
+      
+      const prompt = prompt_type === "animation" 
+        ? [
+            `Create a better Runway Gen-3 / Luma Dream Machine animation prompt based on this narration: "${scene_narration}".`,
+            "Style: National Geographic cinematic motion, ultra realistic, physics, wildlife action.",
+            'Respond ONLY with valid JSON: { "animation_prompt": "the new animation prompt in english..." }'
+          ].join("\n")
+        : [
+            `Create a better Midjourney v6 image prompt based on this narration: "${scene_narration}".`,
+            "Style: National Geographic cinematic, wildlife, ultra realistic, 8K, dramatic lighting.",
+            'Respond ONLY with valid JSON: { "image_prompt": "the new image prompt in english..." }'
+          ].join("\n");
 
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
       return NextResponse.json(JSON.parse(clean(response)));
