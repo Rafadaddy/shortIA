@@ -8,16 +8,35 @@ export async function POST(req: NextRequest) {
 
     if (action === "ideas") {
       const count = itemCount || 10;
+      const angles = [
+        "errores invisibles y hábitos destructivos que el 99% ignora",
+        "secretos contracorriente que van contra el sentido común",
+        "reglas psicológicas crudas y verdades sin filtro de la vida real",
+        "atajos o métodos poco conocidos con resultados masivos",
+        "banderas rojas o señales de advertencia que la gente pasa por alto",
+        "lecciones dolorosas aprendidas demasiado tarde",
+        "preguntas incómodas y verdades que duelen pero salvan vidas"
+      ];
+      const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+      const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
       const prompt = [
-        'Eres un experto creador de contenido viral estilo "Listicles" (Listas de datos, psicologia, finanzas, etc.).',
-        `Genera 4 ideas virales para la tematica: "${niche}".`,
+        'Eres un estratega de contenido viral de clase mundial especializado en listas infográficas y carruseles de alta retención.',
+        `Genera 4 ideas de listas virales FRESCAS, ORIGINALES y NOVEDOSAS para la temática: "${niche}".`,
         `Tono: "${tone}".`,
-        `CANTIDAD OBLIGATORIA: Cada una de las 4 ideas DEBE estar pensada para exactamente ${count} puntos. El titulo DEBE empezar o incluir explicitamente el numero ${count} (ejemplo: "${count} Formas de...", "${count} Errores que...", "${count} Reglas de oro...").`,
+        `Ángulo creativo para esta tanda: ${randomAngle}.`,
+        `Semilla de variedad única: ${seed}.`,
+        "",
+        "REGLAS DE MÁXIMA ORIGINALIDAD:",
+        "- PROHIBIDO REPETIR títulos genéricos trillados (como '10 Hábitos de la gente exitosa', '10 Formas de ahorrar', etc.). Sé ultra específico, intrigante y diferente.",
+        `- Cada una de las 4 ideas DEBE estar pensada para exactamente ${count} puntos.`,
+        `- El título DEBE empezar con el número exacto ${count} (ejemplo: "${count} Cosas que...", "${count} Reglas que...", "${count} Errores de...").`,
+        "",
         "Responde SOLO con JSON valido:",
-        `{ "ideas": [ { "title": "${count} Secretos para...", "description": "Enfoque del video de ${count} puntos" } ] }`
+        `{ "ideas": [ { "title": "${count} ...", "description": "Enfoque original y qué hace única a esta lista" } ] }`
       ].join("\n");
 
-      const response = await chatCompletion(body, prompt, { temperature: 0.7 });
+      const response = await chatCompletion(body, prompt, { temperature: 0.95 });
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       return NextResponse.json(JSON.parse(cleanJson));
     }

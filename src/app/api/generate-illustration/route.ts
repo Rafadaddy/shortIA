@@ -74,24 +74,50 @@ Responde SOLO con un JSON válido:
 }
 `;
     } else if (mode === "titles") {
-      prompt = `
-Eres un director de arte y experto en contenido viral de redes sociales.
-El usuario quiere generar ideas para IMÁGENES VIRALES con texto integrado sobre el nicho: "${niche}".
-${idea ? `Dirección o idea del usuario: "${idea}"` : `Genera ideas innovadoras basadas en este nicho.`}
+      const angles = [
+        "situaciones incómodas de la vida real que nadie se atreve a decir en voz alta",
+        "paradojas psicológicas y verdades crudas poco conocidas",
+        "metáforas visuales impactantes y analogías poéticas o crudas",
+        "frases cortantes y reflexiones anti-cliché que sacuden la mente",
+        "perspectivas contrarias al pensamiento común o sabiduría popular",
+        "momentos de quiebre emocional, superación silenciosa o disciplina dura",
+        "ironía fina sobre la sociedad moderna, la soledad y las ambiciones"
+      ];
+      const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+      const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
-TAREA:
-Genera exactamente 10 títulos (ideas de conceptos o frases gancho) para estas imágenes.
-Los títulos deben ser descripciones breves de la vibra de la imagen o la frase principal. Deben ser muy atractivos, listos para captar la atención.
+      prompt = `
+Eres un director de arte y estratega de contenido viral de clase mundial.
+El usuario quiere ideas para IMÁGENES VIRALES con texto integrado sobre el nicho: "${niche}".
+${idea ? `Dirección específica del usuario: "${idea}"` : `Ángulo creativo para esta tanda: ${randomAngle}.`}
+
+Semilla de variedad única: ${seed}
+
+REGLAS DE MÁXIMA ORIGINALIDAD Y VARIEDAD:
+1. PROHIBIDO GENERAR CLICHÉS O FRASES TÍPICAS DE AUTOAYUDA (como 'El silencio es poder', 'Tu mente es tu límite', 'No confíes en nadie', 'Sé tu propia luz', etc.).
+2. Cada idea debe ser FRESCA, ESPECÍFICA y con un ángulo que despierte curiosidad inmediata.
+3. Varía los tonos: incluye ideas provocadoras, reflexivas, poéticas, intrigantes y crudas.
+4. Genera exactamente 10 títulos/conceptos completamente distintos entre sí y únicos.
 
 Responde SOLO con un JSON válido en este formato:
 {
   "titles": [
-    "Idea 1...",
-    "Idea 2...",
-    "Idea 3..."
+    "Idea fresca 1...",
+    "Idea fresca 2...",
+    "Idea fresca 3...",
+    "Idea fresca 4...",
+    "Idea fresca 5...",
+    "Idea fresca 6...",
+    "Idea fresca 7...",
+    "Idea fresca 8...",
+    "Idea fresca 9...",
+    "Idea fresca 10..."
   ]
 }
 `;
+      const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.95 });
+      const clean = jsonText.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
+      return NextResponse.json(JSON.parse(clean));
     } else {
       prompt = `
 Eres un director de arte experto en crear contenido visual viral para redes sociales.
