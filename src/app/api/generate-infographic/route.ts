@@ -7,63 +7,62 @@ export async function POST(req: NextRequest) {
     const { action, niche, tone, selectedIdea } = body;
 
     if (action === "ideas") {
-      const prompt = `Actúa como un experto creador de contenido viral especializado en "listicles" (listas numeradas) para redes sociales.
-El usuario quiere crear un video de lista (listicle) para el nicho: "${niche}" con un tono "${tone}".
-Genera 3 ideas de títulos (hooks) ultra-virales. Los títulos deben empezar con un número (ej. "7 Formas de...", "10 Hábitos que...").
-Aplica estrategias psicológicas: usa variaciones como "Los Mejores", "Errores", "Razones", "Señales", o "Cosas que no sabías".
+      const prompt = [
+        "Actua como un experto creador de contenido viral especializado en listas numeradas para redes sociales.",
+        `El usuario quiere crear un video de lista para el nicho: "${niche}" con un tono "${tone}".`,
+        'Genera 3 ideas de titulos (hooks) ultra-virales. Los titulos deben empezar con un numero (ej. "7 Formas de...", "10 Habitos que...").',
+        'Aplica estrategias psicologicas: usa variaciones como "Los Mejores", "Errores", "Razones", "Senales", o "Cosas que no sabias".',
+        "",
+        "Responde UNICAMENTE con un JSON valido con esta estructura exacta:",
+        '{ "ideas": [ { "title": "TITULO GANCHERO", "description": "Breve descripcion del valor y por que se hara viral" } ] }'
+      ].join("\n");
 
-Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
-{
-  "ideas": [
-    {
-      "title": "TÍTULO GANCHERO",
-      "description": "Breve descripción del valor y por qué se hará viral"
-    }
-  ]
-}`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      const cleanJson = response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim();
+      const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       return NextResponse.json(JSON.parse(cleanJson));
     }
 
     if (action === "list") {
-      const prompt = `Eres un experto creador de contenido viral especializado en "listicles" para videos verticales (TikTok/Reels) y también en prompts de IA para imágenes.
-Crea el contenido exacto para un video "Infographic Listicle" estático basado en este título: "${selectedIdea.title}".
+      const title = selectedIdea?.title ?? "Lista viral";
+      const prompt = [
+        'Eres un experto creador de contenido viral para TikTok/Reels especializado en listas numeradas.',
+        `Crea el contenido completo para un video "Infographic Listicle" basado en este titulo: "${title}".`,
+        "",
+        "REGLAS:",
+        "1. Genera entre 7 y 12 puntos.",
+        "2. Los primeros 3 items deben ser los mas fuertes y de mayor valor.",
+        "3. El ultimo item debe ser el mas polemico o sorprendente.",
+        "4. El campo label debe tener de 3 a 6 palabras maximo.",
+        "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
+        "6. Para cada item genera un image_prompt en ENGLISH para Midjourney/DALL-E. Maximo 30 palabras, estilo viral dark infographic.",
+        "",
+        "Responde SOLO con JSON valido, sin texto adicional, con esta estructura:",
+        JSON.stringify({
+          title,
+          category: "CATEGORIA EN MAYUSCULAS",
+          subhook: "Frase gancho pequenya",
+          items: [{
+            num: "01",
+            emoji: "emoji",
+            label: "Titulo corto 3-6 palabras",
+            text: "Descripcion practica max 15 palabras.",
+            image_prompt: "viral dark infographic, bold white text, [concept], TikTok 9:16"
+          }],
+          cta: "Call to action especifico",
+          hashtags: ["#Tag1", "#Tag2", "#Tag3"],
+          music: "Tipo de musica sugerida"
+        }, null, 2)
+      ].join("\n");
 
-REGLAS ESTRICTAS DE VIRALIDAD:
-1. Genera entre 7 y 12 puntos (ideal para que la gente tarde en leerlo y el video haga loop).
-2. Los primeros 3 items deben ser extremadamente fuertes y de alto valor.
-3. El último item debe ser el más polémico, memorable o sorprendente (para generar comentarios).
-4. El Título del item (label) debe tener de 3 a 6 palabras máximo.
-5. La descripción práctica (text) debe ser concreta y aportar valor tangible (máximo 15 palabras).
-6. Para cada item, genera un "image_prompt" en INGLÉS para crear una imagen estilo infografía viral en Midjourney/DALL-E. El prompt debe describir un visual impactante, oscuro, moderno, con texto overlay. Máximo 30 palabras.
-
-Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más:
-{
-  "title": "${selectedIdea.title}",
-  "category": "Una o dos palabras en MAYÚSCULAS (ej. PSICOLOGÍA, FINANZAS, HACKS)",
-  "subhook": "Frase de curiosidad pequeña (ej. 'Lee el último dos veces' o 'El #7 te salvará')",
-  "items": [
-    {
-      "num": "01",
-      "emoji": "💡",
-      "label": "Título Corto (3-6 palabras)",
-      "text": "Beneficio concreto o explicación (máx 15 palabras).",
-      "image_prompt": "viral infographic dark background, bold white text overlay, [visual concept], TikTok style, neon accents, 9:16 vertical"
-    }
-  ],
-  "cta": "Call to action específico (comenta/comparte/guarda)",
-  "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4", "#Tag5"],
-  "music": "Sugerencia del tipo de música trending (ej. 'Upbeat motivacional', 'Phonk lofi')"
-}`;
       const response = await chatCompletion(body, prompt, { temperature: 0.7 });
-      const cleanJson = response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim();
+      const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       return NextResponse.json(JSON.parse(cleanJson));
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  } catch (error: any) {
-    console.error("Error generating infographic:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error generating infographic:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
