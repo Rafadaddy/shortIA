@@ -31,48 +31,17 @@ interface WildlifeData {
   scenes: Scene[];
 }
 
-const mexTopics = [
-  "ECONOMÒÂA (La tanda, Coppel, el recibo CFE)",
-  "LA FAMILIA EXTENSA (Suegra, arrimados, el terreno)",
-  "DRAMA Y CONFLICTOS (La chancla, la tele, chismes)",
-  "FIESTAS Y COMIDA (Tamales, 15 aÒÂ±os endeudados)",
-  "PROBLEMAS FÒÂSICOS DE CASA (El boiler, tinaco, goteras)",
-  "AMOR Y VECINDAD (La vecina chismosa, el de los fierros)",
-  "SOLUCIONES A LA MEXICANA (VapoRub, cinta y alambre)"
+const tones = [
+  "Documental Científico (Serio, NatGeo)",
+  "Épico y Cinematográfico (Batalla a muerte)",
+  "Dramático y Brutal (Supervivencia cruda)",
+  "Gamer / e-Sports (Comentarista emocionado)"
 ];
 
-const mexProtagonists = [
-  "MamÒÂ¡ luchona (con la chancla en mano)",
-  "PapÒÂ¡ proveedor (el que apaga todas las luces)",
-  "Abuela sabia (la dueÒÂ±a de los terrenos)",
-  "Hija/o adolescente (sufriendo las reglas)",
-  "Hijo NINI (el mantenido de la casa)",
-  "La Suegra metiche",
-  "El CuÒÂ±ado arrimado"
-];
-
-const mexTones = [
-  "Comedia (Absurdo y gracioso)",
-  "Drama que hace llorar (Novelesco)",
-  "Nostalgia (Recordando la infancia)",
-  "Terror de mamÒÂ¡ enojada",
-  "Motivacional (EchÒÂ¡ndole ganas)"
-];
-
-const mexStyles = [
-  "POV TikTok Casero (CÒÂ¡mara celular realista)",
-  "Casa de Infonavit (Luz de foco ahorrador)",
-  "CinematogrÒÂ¡fico Exagerado (La Rosa de Guadalupe)",
-  "EstÒÂ©tica Vintage Mexicana (Foto 90s)"
-];
-
-export default function CasasMexicanasPage() {
-  const [topic, setTopic] = useState("");
-  const [protagonist, setProtagonist] = useState(mexProtagonists[0]);
-  const [tone, setTone] = useState(mexTones[0]);
-  const [visualStyle, setVisualStyle] = useState(mexStyles[0]);
-  const [sceneCount, setSceneCount] = useState<number>(8);
-  const [duration, setDuration] = useState("10 Segundos");
+export default function NaturalezaSalvajePage() {
+    const [animalA, setAnimalA] = useState("");
+  const [animalB, setAnimalB] = useState("");
+  const [tone, setTone] = useState(tones[0]);
 
   const [ideas, setIdeas] = useState<WildlifeIdea[] | null>(null);
   const [selectedIdea, setSelectedIdea] = useState<WildlifeIdea | null>(null);
@@ -93,14 +62,13 @@ export default function CasasMexicanasPage() {
   const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
   const generateIdeas = async () => {
-    // if (!topic) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
     setSelectedIdea(null);
     setScriptText("");
     setData(null);
     try {
-      const res = await aiFetch("/api/generate-wildlife", { mode: "ideas", topic, tone, protagonist });
+      const res = await aiFetch("/api/generate-wildlife", { action: "ideas", tone, animalA, animalB });
       if (!res.ok) throw new Error("Error");
       const json = await res.json();
       setIdeas(json.ideas);
@@ -116,7 +84,7 @@ export default function CasasMexicanasPage() {
     setIsGeneratingScript(true);
     setData(null);
     try {
-      const res = await aiFetch("/api/generate-wildlife", { mode: "script_only", selectedIdea: idea, tone, protagonist, topic, sceneCount, duration });
+      const res = await aiFetch("/api/generate-wildlife", { action: "script_only", selectedIdea: idea, tone });
       if (!res.ok) throw new Error("Error");
       const json = await res.json();
       setScriptText(json.script);
@@ -131,7 +99,7 @@ export default function CasasMexicanasPage() {
     if (!scriptText) return;
     setIsGeneratingScript(true);
     try {
-      const res = await aiFetch("/api/generate-wildlife", { mode: "improve_script", current_script: scriptText, instruction, tone });
+      const res = await aiFetch("/api/generate-wildlife", { action: "improve_script", customScript: scriptText, instruction, tone });
       if (!res.ok) throw new Error("Error");
       const json = await res.json();
       setScriptText(json.script);
@@ -146,7 +114,7 @@ export default function CasasMexicanasPage() {
     if (!scriptText) return;
     setIsGeneratingVideo(true);
     try {
-      const res = await aiFetch("/api/generate-wildlife", { mode: "full_from_script", current_script: scriptText, visualStyle, sceneCount, duration });
+      const res = await aiFetch("/api/generate-wildlife", { action: "full_from_script", customScript: scriptText });
       if (!res.ok) throw new Error("Error");
       const json = await res.json();
       setData(json);
@@ -170,8 +138,7 @@ export default function CasasMexicanasPage() {
         scene_number: scene.scene_number,
         narration: scene.narration,
         visual_concept: scene.visual_concept,
-        existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
-        visualStyle
+        existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt
       });
       
       const json = await res.json();
@@ -264,78 +231,41 @@ const handleCopyAll = () => {
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">ConfiguraciÒÂ³n del Guion</h2>
+            <h2 className="text-xl font-bold text-white">Configuración de la Batalla</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">CategorÒÂ­a (Tema)</label>
+              <label className="text-sm font-medium text-slate-300">Animal 1 (Opcional)</label>
               <input
                 type="text"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                placeholder="Ej. Visitas, Escribe el tuyo o dÒÂ©jalo en blanco"
-                list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
+                value={animalA}
+                onChange={(e) => setAnimalA(e.target.value)}
+                placeholder="Ej. León Africano"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
               />
-              <datalist id="topic-list">
-                <option value="ðÅ¸Å½Â² Aleatorio / SorprÒÂ©ndeme" />
-                <option value="âÅ“Â¨ Tema Libre (Borra esto y escribe el tuyo)" />
-                {mexTopics.map(n => <option key={n} value={n} />)}
-              </datalist>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Protagonista</label>
-              <select value={protagonist} onChange={(e) => setProtagonist(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none">
-                {mexProtagonists.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <label className="text-sm font-medium text-slate-300">Animal 2 (Opcional)</label>
+              <input
+                type="text"
+                value={animalB}
+                onChange={(e) => setAnimalB(e.target.value)}
+                placeholder="Ej. Tigre Siberiano"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
+              />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Tono del Drama/Comedia</label>
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-medium text-slate-300">Tono del Relato</label>
               <select value={tone} onChange={(e) => setTone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none">
-                {mexTones.map(t => <option key={t} value={t}>{t}</option>)}
+                {tones.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">EstÒÂ©tica Visual</label>
-              <select value={visualStyle} onChange={(e) => setVisualStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none">
-                {mexStyles.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            
-            <div className="space-y-2 lg:col-span-1">
-              <label className="text-sm font-medium text-slate-300">DuraciÒÂ³n/Escena</label>
-              <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
-                <option value="5 Segundos">5 Segundos</option>
-                <option value="10 Segundos">10 Segundos</option>
-                <option value="15 Segundos">15 Segundos</option>
-              </select>
-            </div>
-            <div className="space-y-2 lg:col-span-1">
-              <label className="text-sm font-medium text-slate-300">Cantidad de Escenas</label>
-              <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
-                <input type="range" min="3" max="15" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-red-500" />
-                <span className="text-red-400 font-bold min-w-[2ch]">{sceneCount}</span>
-              </div>
             </div>
           </div>
-
-          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-red-600 hover:bg-red-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
-            {isGeneratingIdeas ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Generar Ideas Mexicanas
+          
+          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-red-600 hover:bg-red-500 text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50">
+            {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Buscando contrincantes...</> : <><Wand2 className="w-5 h-5" /> Generar Ideas de Batalla</>}
           </button>
-
-          {ideas && (
-            <div className="mt-8 space-y-4 animate-in fade-in">
-              <h3 className="text-lg font-semibold text-red-300 mb-2">Selecciona la situaciÒÂ³n:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {ideas.map((idea, idx) => (
-                  <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-red-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
-                    <p className="font-bold text-red-400 mb-1">{idea.title}</p>
-                    <p className="text-sm text-slate-300 mb-2 italic">&quot;{idea.title}&quot;</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* PASO 2 */}
@@ -355,8 +285,8 @@ const handleCopyAll = () => {
               <div className="space-y-4">
                 <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-red-500 outline-none resize-none leading-relaxed" />
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo mÒÂ¡s exagerado y chistoso, metiendo mÒÂ¡s palabras mexicanas como gÒÂ¼ey, nmms, chale.")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> MÒÂ¡s Mexicano</button>
-                  <button onClick={() => improveScript("Haz que termine en un grito dramÒÂ¡tico o regaÒÂ±o de la mamÒÂ¡ (la chancla).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Chancla</button>
+                  <button onClick={() => improveScript("Hazlo más brutal y añade detalles sangrientos (sin romper reglas).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más Brutal</button>
+                  <button onClick={() => improveScript("Añade estadísticas científicas precisas (fuerza de mordida en PSI, peso, velocidad).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Más Científico</button>
                 </div>
               </div>
             )}

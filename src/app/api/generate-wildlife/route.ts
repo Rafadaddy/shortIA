@@ -98,7 +98,7 @@ Responde ÚNICAMENTE con JSON:
       const { scene_narration } = body;
       const prompt = `Crea un MEJOR prompt de imagen para Midjourney v6 basado en esta narración: "${scene_narration}".
 National Geographic cinematográfico, vida salvaje, ultra realista, 8K. (En inglés).
-Responde ÚNICAMENTE con JSON: { "prompt": "el nuevo prompt en ingles..." }`;
+Responde ÚNICAMENTE con JSON: { "prompt": "el nuevo prompt en inglés..." }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
       return NextResponse.json(JSON.parse(response));
     }
