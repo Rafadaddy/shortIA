@@ -90,6 +90,8 @@ export default function CasasMexicanasPage() {
   
   const [regeneratingScene, setRegeneratingScene] = useState<number | null>(null);
   const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
+  const [generatedImages, setGeneratedImages] = useState<Record<number, string>>({});
+  const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
   const generateIdeas = async () => {
     if (!topic) return;
@@ -186,6 +188,27 @@ export default function CasasMexicanasPage() {
     } finally {
       setRegeneratingScene(null);
       setRegeneratingType(null);
+    }
+  };
+
+  
+  const handleGenerateImage = async (sceneIndex: number, prompt: string) => {
+    if (generatingImageFor !== null) return;
+    setGeneratingImageFor(sceneIndex);
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, aspectRatio: "9:16" })
+      });
+      if (!res.ok) throw new Error("Error generating image");
+      const json = await res.json();
+      setGeneratedImages(prev => ({ ...prev, [sceneIndex]: json.imageBase64 }));
+      showToast("Imagen generada con éxito", "success");
+    } catch (error) {
+      showToast("Error al generar la imagen", "error");
+    } finally {
+      setGeneratingImageFor(null);
     }
   };
 
@@ -372,7 +395,8 @@ export default function CasasMexicanasPage() {
                       <p className="text-slate-300 text-sm mt-1">{scene.visual_concept}</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative">
+                      
+                      <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative flex flex-col">
                         <div className="flex justify-between items-center mb-3">
                           <span className="text-xs text-blue-400 uppercase flex items-center gap-1 font-bold"><ImageIcon className="w-3.5 h-3.5" /> Image Prompt</span>
                           <div className="flex gap-1.5">
@@ -384,8 +408,23 @@ export default function CasasMexicanasPage() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.image_prompt}</p>
+                        <p className="text-xs text-slate-400 font-mono leading-relaxed mb-4">{scene.image_prompt}</p>
+                        
+                        {/* GENERATED IMAGE SECTION */}
+                        <div className="mt-auto pt-4 border-t border-slate-800">
+                          {generatedImages[idx] ? (
+                            <div className="relative rounded-lg overflow-hidden border border-slate-700 aspect-[9/16] bg-slate-950 flex items-center justify-center">
+                              <img src={`data:image/jpeg;base64,${generatedImages[idx]}`} alt="Generated scene" className="w-full h-full object-cover" />
+                              <a href={`data:image/jpeg;base64,${generatedImages[idx]}`} download={`escena_${scene.scene_number}.jpg`} className="absolute bottom-2 right-2 bg-black/70 backdrop-blur text-white p-2 rounded-lg hover:bg-black transition-colors text-xs font-bold">Descargar</a>
+                            </div>
+                          ) : (
+                            <button onClick={() => handleGenerateImage(idx, scene.image_prompt)} disabled={generatingImageFor !== null} className="w-full bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50">
+                              {generatingImageFor === idx ? <><Loader2 className="w-4 h-4 animate-spin" /> Dibujando...</> : <><ImageIcon className="w-4 h-4" /> Generar Imagen con Google</>}
+                            </button>
+                          )}
+                        </div>
                       </div>
+
                       <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative">
                         <div className="flex justify-between items-center mb-3">
                           <span className="text-xs text-green-400 uppercase flex items-center gap-1 font-bold"><Sparkles className="w-3.5 h-3.5" /> Animation Prompt</span>
