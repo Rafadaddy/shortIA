@@ -58,7 +58,7 @@ export default function TimelinePage() {
 
   const handleGenerateScript = async (selectedTopic?: string) => {
     const finalTopic = selectedTopic || topic;
-    if (!finalTopic) return showToast("Ingresa un tema primero", "error");
+    // if (!finalTopic) return showToast("Ingresa un tema primero", "error");
     
     setIsGeneratingScript(true);
     setData(null);
@@ -203,7 +203,7 @@ export default function TimelinePage() {
               </button>
               <button
                 onClick={() => handleGenerateScript()}
-                disabled={isGeneratingScript || isGeneratingImages || !topic}
+                disabled={isGeneratingScript || isGeneratingImages}
                 className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
               >
                 {isGeneratingScript ? <FileText className="w-4 h-4 animate-pulse" /> : <FileText className="w-4 h-4" />}

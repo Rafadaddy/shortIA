@@ -29,10 +29,10 @@ const illustrationNiches = [
 ];
 
 export default function IlustracionesPage() {
-  const [niche, setNiche] = useState(illustrationNiches[0]);
+  const [niche, setNiche] = useState("");
   const [idea, setIdea] = useState("");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
-  const [visualStyle, setVisualStyle] = useState("Cinemático Oscuro (Motivación)");
+  const [visualStyle, setVisualStyle] = useState("");
   const [textSurface, setTextSurface] = useState("Integrado (Por Defecto)");
   
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
@@ -139,32 +139,35 @@ export default function IlustracionesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 ml-1">Nicho / Temática</label>
-              <select
+              <input
+                type="text"
                 value={niche}
                 onChange={(e) => setNiche(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-              >
-                {illustrationNiches.map(n => <option key={n} value={n}>{n}</option>)}
-              </select>
+                placeholder="Ej. Motivación, Escribe el tuyo o déjalo en blanco"
+                list="niche-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+              />
+              <datalist id="niche-list">
+                <option value="🎲 Aleatorio / Sorpréndeme" />
+                <option value="✨ Tema Libre (Simplemente borra esto y escribe el tuyo)" />
+                {illustrationNiches.map(n => <option key={n} value={n} />)}
+              </datalist>
             </div>
             
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300 ml-1">Estilo Visual</label>
-              <select
+              <input
+                type="text"
                 value={visualStyle}
                 onChange={(e) => setVisualStyle(e.target.value)}
-                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-              >
-                <option value="Cinemático Oscuro (Motivación)">Cinemático Oscuro (Motivación)</option>
-                <option value="Elegante B&W (Mafia/Luxury)">Elegante B&W (Mafia/Luxury)</option>
-                <option value="Personaje 3D Gracioso">Personaje 3D Gracioso (Animales/Memes)</option>
-                <option value="3D Pixar">3D Pixar (Emotivo/Lindo)</option>
-                <option value="Aesthetic Tierno (Lofi/Pastel)">Aesthetic Tierno (Lofi/Pastel)</option>
-                <option value="Minimalista Elegante">Minimalista Elegante</option>
-                <option value="Animación 2D (Retro)">Animación 2D (Retro)</option>
-                <option value="Lápiz (Sketch Tradicional)">Lápiz (Sketch Tradicional)</option>
-                <option value="Mural Urbano (Street Art)">Mural Urbano (Street Art)</option>
-              </select>
+                placeholder="Elige o escribe tu propio estilo..."
+                list="style-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
+              />
+              <datalist id="style-list">
+                <option value="Libre / Cualquier Estilo" />
+                <option value="Cinemático Oscuro (Motivación)" />
+                <option value="Elegante B&W (Mafia/Luxury)" />
+                <option value="Personaje 3D Gracioso" />
+              </datalist>
             </div>
           </div>
 

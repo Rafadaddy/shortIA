@@ -80,7 +80,7 @@ export default function MotivationalVideos() {
   };
 
   const generateIdeas = async () => {
-    if (!niche) return;
+    // if (!niche) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
     setSelectedIdea(null);
@@ -286,10 +286,18 @@ export default function MotivationalVideos() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Nicho / TemÃ¡tica</label>
-              <select value={niche} onChange={(e) => setNiche(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
-                <option value="">Selecciona un nicho...</option>
-                {motivationalNiches.map(n => <option key={n} value={n}>{n}</option>)}
-              </select>
+              <input
+                type="text"
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                placeholder="Ej. Superación, Escribe el tuyo o déjalo en blanco"
+                list="niche-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200"
+              />
+              <datalist id="niche-list">
+                <option value="🎲 Aleatorio / Sorpréndeme" />
+                <option value="✨ Tema Libre (Borra esto y escribe el tuyo)" />
+                {motivationalNiches.map(n => <option key={n} value={n} />)}
+              </datalist>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Tono Emocional</label>
@@ -312,7 +320,7 @@ export default function MotivationalVideos() {
             </div>
           </div>
 
-          <button onClick={generateIdeas} disabled={!niche || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Generando ideas...</> : <><Wand2 className="w-5 h-5" /> Generar 8 Ideas Virales</>}
           </button>
 

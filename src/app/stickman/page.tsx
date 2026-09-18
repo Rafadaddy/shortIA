@@ -45,7 +45,7 @@ export default function StickmanVideoPage() {
   const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
 
   const generateIdeas = async () => {
-    if (!topic) return;
+    // if (!topic) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
     setSelectedIdea(null);
@@ -215,7 +215,7 @@ export default function StickmanVideoPage() {
             </div>
           </div>
 
-          <button onClick={generateIdeas} disabled={!topic || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-purple-600 hover:bg-purple-500 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-purple-600 hover:bg-purple-500 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Pensando ideas...</> : <><Wand2 className="w-5 h-5" /> Generar 8 Ideas Virales</>}
           </button>
 

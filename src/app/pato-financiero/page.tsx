@@ -60,7 +60,7 @@ const duckStyles = [
 ];
 
 export default function PatoFinancieroPage() {
-  const [topic, setTopic] = useState(duckTopics[0]);
+  const [topic, setTopic] = useState("");
   const [tone, setTone] = useState(duckTones[0]);
   const [visualStyle, setVisualStyle] = useState(duckStyles[0]);
   const [sceneCount, setSceneCount] = useState<number>(8);
@@ -83,7 +83,7 @@ export default function PatoFinancieroPage() {
   const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
 
   const generateIdeas = async () => {
-    if (!topic) return;
+    // if (!topic) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
     setSelectedIdea(null);
@@ -219,9 +219,18 @@ export default function PatoFinancieroPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Tema Financiero</label>
-              <select value={topic} onChange={(e) => setTopic(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-emerald-500 outline-none">
-                {duckTopics.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <input
+                type="text"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Ej. Ahorro, Escribe el tuyo o déjalo en blanco"
+                list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-emerald-500 outline-none"
+              />
+              <datalist id="topic-list">
+                <option value="🎲 Aleatorio / Sorpréndeme" />
+                <option value="✨ Tema Libre (Borra esto y escribe el tuyo)" />
+                {duckTopics.map(n => <option key={n} value={n} />)}
+              </datalist>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Tono del Pato</label>
@@ -253,7 +262,7 @@ export default function PatoFinancieroPage() {
             </div>
           </div>
 
-          <button onClick={generateIdeas} disabled={!topic || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
+          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {isGeneratingIdeas ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Generar Ideas de "{topic}"
           </button>
 

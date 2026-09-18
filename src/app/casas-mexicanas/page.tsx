@@ -68,7 +68,7 @@ const mexStyles = [
 ];
 
 export default function CasasMexicanasPage() {
-  const [topic, setTopic] = useState(mexTopics[0]);
+  const [topic, setTopic] = useState("");
   const [protagonist, setProtagonist] = useState(mexProtagonists[0]);
   const [tone, setTone] = useState(mexTones[0]);
   const [visualStyle, setVisualStyle] = useState(mexStyles[0]);
@@ -271,11 +271,11 @@ const handleCopyAll = () => {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="Ej. Visitas, Escribe el tuyo o déjalo en blanco"
-                list="topic-list"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-orange-500 outline-none"
+                list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-orange-500 outline-none"
               />
               <datalist id="topic-list">
                 <option value="🎲 Aleatorio / Sorpréndeme" />
+                <option value="✨ Tema Libre (Borra esto y escribe el tuyo)" />
                 {mexTopics.map(n => <option key={n} value={n} />)}
               </datalist>
             </div>

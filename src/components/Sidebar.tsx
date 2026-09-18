@@ -66,11 +66,7 @@ export function Sidebar() {
           <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mt-6 mb-2">
             Recursos
           </div>
-          <Link href="/catalogo-estilos" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
-            <Palette className="w-5 h-5 text-purple-400" />
-            Catálogo Estilos
-          </Link>
-          <Link href="/configuracion" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                    <Link href="/configuracion" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <Settings className="w-5 h-5 text-slate-400" />
             Configuración
           </Link>
@@ -127,11 +123,7 @@ export function Sidebar() {
           <Flame className="w-5 h-5" />
           <span className="text-[10px] font-medium">Motivación</span>
         </Link>
-        <Link href="/catalogo-estilos" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-purple-400 active:text-purple-400 min-w-[4rem] flex-shrink-0">
-          <Palette className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Estilos</span>
-        </Link>
-        <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-[4rem] flex-shrink-0">
+                <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-[4rem] flex-shrink-0">
           <Settings className="w-5 h-5" />
           <span className="text-[10px] font-medium">Ajustes</span>
         </Link>
