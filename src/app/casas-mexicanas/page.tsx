@@ -94,7 +94,7 @@ export default function CasasMexicanasPage() {
   const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
   const generateIdeas = async () => {
-    if (!topic) return;
+    // if (!topic) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
     setSelectedIdea(null);
@@ -192,27 +192,42 @@ export default function CasasMexicanasPage() {
   };
 
   
+  
   const handleGenerateImage = async (sceneIndex: number, prompt: string) => {
     if (generatingImageFor !== null) return;
     setGeneratingImageFor(sceneIndex);
     try {
+      let clientApiKey = "";
+      try {
+        const saved = localStorage.getItem("ai-studio-settings");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const google = parsed.providers?.find((p: { id: string; apiKey?: string }) => p.id === "google");
+          if (google && google.apiKey) {
+            clientApiKey = google.apiKey;
+          }
+        }
+      } catch (e) {}
+
       const res = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, aspectRatio: "9:16" })
+        body: JSON.stringify({ prompt, aspectRatio: "9:16", clientApiKey })
       });
-      if (!res.ok) throw new Error("Error generating image");
+      
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generating image");
+      
       setGeneratedImages(prev => ({ ...prev, [sceneIndex]: json.imageBase64 }));
       showToast("Imagen generada con éxito", "success");
-    } catch (error) {
-      showToast("Error al generar la imagen", "error");
+    } catch (error: unknown) {
+      console.error(error);
+      showToast((error instanceof Error ? error.message : "Error al generar la imagen"), "error");
     } finally {
       setGeneratingImageFor(null);
     }
   };
-
-  const handleCopyAll = () => {
+const handleCopyAll = () => {
     if (!data) return;
     let text = `🎥 TÍTULO: ${data.title}\n\n`;
     text += `🖼️ MINIATURA:\nTexto: ${data.thumbnail.text}\nPrompt: ${data.thumbnail.image_prompt}\n\n---\n\n`;
@@ -251,9 +266,18 @@ export default function CasasMexicanasPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Categoría (Tema)</label>
-              <select value={topic} onChange={(e) => setTopic(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-orange-500 outline-none">
-                {mexTopics.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <input
+                type="text"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Ej. Visitas, Escribe el tuyo o déjalo en blanco"
+                list="topic-list"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-orange-500 outline-none"
+              />
+              <datalist id="topic-list">
+                <option value="🎲 Aleatorio / Sorpréndeme" />
+                {mexTopics.map(n => <option key={n} value={n} />)}
+              </datalist>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Protagonista</label>
@@ -291,7 +315,7 @@ export default function CasasMexicanasPage() {
             </div>
           </div>
 
-          <button onClick={generateIdeas} disabled={!topic || isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-orange-600 hover:bg-orange-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
+          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-orange-600 hover:bg-orange-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
             {isGeneratingIdeas ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Generar Ideas Mexicanas
           </button>
 
@@ -451,3 +475,4 @@ export default function CasasMexicanasPage() {
     </main>
   );
 }
+
