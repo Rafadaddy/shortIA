@@ -40,6 +40,14 @@ const VISUAL_STYLES = [
   "Brutalista (Tipografía gigante, blanco y negro)"
 ];
 
+const FORMATS = [
+  "Vertical (9:16)",
+  "Cuadrado (1:1)",
+  "Horizontal (16:9)"
+];
+
+const COUNTS = [5, 7, 10, 12];
+
 interface Idea {
   title: string;
   description: string;
@@ -50,6 +58,7 @@ interface ListItem {
   emoji: string;
   label: string;
   text: string;
+  image_prompt?: string;
 }
 
 interface InfographicData {
@@ -67,6 +76,8 @@ export default function ListasViralesPage() {
   const [niche, setNiche] = useState(NICHES[0]);
   const [tone, setTone] = useState(TONES[0]);
   const [visualStyle, setVisualStyle] = useState(VISUAL_STYLES[0]);
+  const [format, setFormat] = useState(FORMATS[0]);
+  const [itemCount, setItemCount] = useState(COUNTS[2]); // Default to 10
 
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -108,7 +119,13 @@ export default function ListasViralesPage() {
     setData(null);
     setGeneratedImage(null);
     try {
-      const res = await aiFetch("/api/generate-infographic", { action: "list", selectedIdea: idea, visualStyle });
+      const res = await aiFetch("/api/generate-infographic", { 
+        action: "list", 
+        selectedIdea: idea, 
+        visualStyle,
+        format,
+        itemCount 
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error del servidor");
       if (!json.items) throw new Error("La IA no devolvió la lista correctamente");
@@ -155,6 +172,15 @@ export default function ListasViralesPage() {
     handleCopy(text, "all");
   };
 
+  const handleCopyAllPrompts = () => {
+    if (!data) return;
+    let text = `--- PORTADA ---\n${data.image_prompt}\n\n`;
+    data.items.forEach((item) => {
+      text += `--- PUNTO ${item.num} ---\n${item.image_prompt || ""}\n\n`;
+    });
+    handleCopy(text, "all_prompts");
+  };
+
   return (
     <main className="min-h-screen bg-[#0a0a0c] pt-20 pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -194,6 +220,20 @@ export default function ListasViralesPage() {
               <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Estilo Visual (Poster)</label>
               <select value={visualStyle} onChange={e => setVisualStyle(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
                 {VISUAL_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Formato de Imagen</label>
+              <select value={format} onChange={e => setFormat(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                {FORMATS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Cantidad de Puntos</label>
+              <select value={itemCount} onChange={e => setItemCount(Number(e.target.value))} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                {COUNTS.map(c => <option key={c} value={c}>{c} Puntos</option>)}
               </select>
             </div>
           </div>
@@ -243,16 +283,24 @@ export default function ListasViralesPage() {
 
             {/* Info general */}
             <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl">
-              <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <ListOrdered className="w-5 h-5 text-emerald-400" /> Datos de la Lista
                 </h2>
-                <button
-                  onClick={handleCopyAll}
-                  className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-emerald-600/40 transition-colors"
-                >
-                  {copiedStates["all"] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCopyAllPrompts}
+                    className="flex items-center gap-2 bg-blue-600/20 text-blue-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-blue-600/40 transition-colors border border-blue-500/30"
+                  >
+                    {copiedStates["all_prompts"] ? <><Check className="w-4 h-4" /> Prompts Copiados</> : <><ImageIcon className="w-4 h-4" /> Copiar Todos los Prompts</>}
+                  </button>
+                  <button
+                    onClick={handleCopyAll}
+                    className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-emerald-600/40 transition-colors"
+                  >
+                    {copiedStates["all"] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -305,12 +353,32 @@ export default function ListasViralesPage() {
 
               <div className="space-y-4">
                 {data.items.map((item, idx) => (
-                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex gap-3">
-                    <div className="text-2xl">{item.emoji}</div>
-                    <div className="flex-1">
-                      <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
-                      <div className="text-slate-300 text-sm mt-1">{item.text}</div>
+                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">{item.emoji}</div>
+                      <div className="flex-1">
+                        <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
+                        <div className="text-slate-300 text-sm mt-1">{item.text}</div>
+                      </div>
                     </div>
+
+                    {item.image_prompt && (
+                      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex justify-between items-start gap-3 mt-2">
+                        <div className="flex-1">
+                          <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider block mb-1">
+                            Prompt Imagen Punto #{item.num}
+                          </span>
+                          <p className="text-xs text-slate-400 font-mono leading-relaxed">{item.image_prompt}</p>
+                        </div>
+                        <button
+                          onClick={() => handleCopy(item.image_prompt!, `item_prompt_${idx}`)}
+                          className="shrink-0 bg-slate-800 text-blue-300 p-2 rounded-lg hover:bg-slate-700 transition-colors"
+                          title="Copiar prompt de este punto"
+                        >
+                          {copiedStates[`item_prompt_${idx}`] ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
