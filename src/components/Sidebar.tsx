@@ -36,7 +36,7 @@ export function Sidebar() {
           </Link>
           <Link href="/timeline" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <History className="w-5 h-5 text-emerald-400" />
-            LÃ­neas de Tiempo
+            Líneas de Tiempo
           </Link>
           <Link href="/faceless-youtube" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <PlaySquare className="w-5 h-5 text-cyan-400" />
@@ -80,7 +80,7 @@ export function Sidebar() {
           </div>
                     <Link href="/configuracion" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <Settings className="w-5 h-5 text-slate-400" />
-            ConfiguraciÃ³n
+            Configuración
           </Link>
 
         </nav>
@@ -97,11 +97,11 @@ export function Sidebar() {
         </Link>
         <Link href="/ilustraciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <ImageIcon className="w-5 h-5" />
-          <span className="text-[10px] font-medium">ImÃ¡genes</span>
+          <span className="text-[10px] font-medium">Imágenes</span>
         </Link>
         <Link href="/historietas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
           <MessageSquare className="w-5 h-5" />
-          <span className="text-[10px] font-medium">CÃ³mics</span>
+          <span className="text-[10px] font-medium">Cómics</span>
         </Link>
         <Link href="/conversaciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <MessageCircle className="w-5 h-5" />
@@ -109,7 +109,7 @@ export function Sidebar() {
         </Link>
         <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <History className="w-5 h-5" />
-          <span className="text-[10px] font-medium">LÃ­neas</span>
+          <span className="text-[10px] font-medium">Líneas</span>
         </Link>
         <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 min-w-[4rem] flex-shrink-0">
           <PlaySquare className="w-5 h-5" />
@@ -145,7 +145,7 @@ export function Sidebar() {
         </Link>
         <Link href="/videos-motivacionales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
           <Flame className="w-5 h-5" />
-          <span className="text-[10px] font-medium">MotivaciÃ³n</span>
+          <span className="text-[10px] font-medium">Motivación</span>
         </Link>
                 <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-[4rem] flex-shrink-0">
           <Settings className="w-5 h-5" />

@@ -9,18 +9,18 @@ import { aiFetch } from "@/lib/ai-fetch";
 const NICHES = [
   "Ahorro de Dinero y Finanzas",
   "Hacks del Hogar (Ahorrar luz, agua, gas)",
-  "PsicologÃ­a Oscura y ManipulaciÃ³n",
-  "SeducciÃ³n y Relaciones",
-  "Desarrollo Personal y HÃ¡bitos",
+  "Psicología Oscura y Manipulación",
+  "Seducción y Relaciones",
+  "Desarrollo Personal y Hábitos",
   "Productividad y Trucos de IA",
   "Salud, Biohacking y Fitness"
 ];
 
 const TONES = [
-  "PolÃ©mico y Controversial",
-  "PrÃ¡ctico y Directo al Grano",
+  "Polémico y Controversial",
+  "Práctico y Directo al Grano",
   "Misterioso (Estilo Sigma)",
-  "AcadÃ©mico / Intelectual"
+  "Académico / Intelectual"
 ];
 
 interface Idea {
@@ -95,7 +95,7 @@ export default function ListasViralesPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error");
       setData(json);
-      showToast("Lista generada con Ã©xito", "success");
+      showToast("Lista generada con éxito", "success");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Error al generar lista";
       showToast(msg, "error");
@@ -126,8 +126,8 @@ export default function ListasViralesPage() {
             <ListOrdered className="w-8 h-8 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Listas InfogrÃ¡ficas (Virales)</h1>
-            <p className="text-emerald-400/80 font-medium mt-1">Crea listas de retenciÃ³n infinita para TikTok y Reels.</p>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Listas Infográficas (Virales)</h1>
+            <p className="text-emerald-400/80 font-medium mt-1">Crea listas de retención infinita para TikTok y Reels.</p>
           </div>
         </div>
 
@@ -135,12 +135,12 @@ export default function ListasViralesPage() {
         <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-2 mb-6">
             <div className="bg-emerald-500/20 text-emerald-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">ConfiguraciÃ³n del Nicho</h2>
+            <h2 className="text-xl font-bold text-white">Configuración del Nicho</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">TemÃ¡tica / Nicho</label>
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Temática / Nicho</label>
               <select value={niche} onChange={e => setNiche(e.target.value)} className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
                 {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
@@ -158,7 +158,7 @@ export default function ListasViralesPage() {
             disabled={isGeneratingIdeas}
             className="w-full py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50"
           >
-            {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Buscando ganchos virales...</> : <><Sparkles className="w-5 h-5" /> Generar TÃ­tulos Virales</>}
+            {isGeneratingIdeas ? <><Loader2 className="w-5 h-5 animate-spin" /> Buscando ganchos virales...</> : <><Sparkles className="w-5 h-5" /> Generar Títulos Virales</>}
           </button>
         </div>
 
@@ -196,7 +196,7 @@ export default function ListasViralesPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
-              {/* CÃ“DIGO Y TEXTO COPIABLE */}
+              {/* CÓDIGO Y TEXTO COPIABLE */}
               <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl">
                 <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2"><ListOrdered className="w-5 h-5 text-emerald-400" /> Datos de la Lista</h2>
@@ -207,7 +207,7 @@ export default function ListasViralesPage() {
                 
                 <div className="space-y-6">
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                    <span className="text-xs font-bold text-emerald-500 tracking-wider">HOOK (TÃTULO PRINCIPAL)</span>
+                    <span className="text-xs font-bold text-emerald-500 tracking-wider">HOOK (TÍTULO PRINCIPAL)</span>
                     <h3 className="text-xl font-bold text-white mt-1">{data.title}</h3>
                   </div>
                   
@@ -238,7 +238,7 @@ export default function ListasViralesPage() {
                 </div>
               </div>
 
-              {/* PREVISUALIZACIÃ“N ESTILO VIRAL */}
+              {/* PREVISUALIZACIÓN ESTILO VIRAL */}
               <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl flex flex-col items-center">
                 <div className="flex justify-between items-center w-full mb-6">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2"><Smartphone className="w-5 h-5 text-emerald-400" /> Preview Visual (TikTok)</h2>
@@ -281,7 +281,7 @@ export default function ListasViralesPage() {
                     
                     {data.items.length > 6 && (
                       <div className="text-center mt-2 pt-2 border-t border-white/10">
-                        <span className="text-[8px] text-emerald-400/80">+{data.items.length - 6} puntos mÃ¡s...</span>
+                        <span className="text-[8px] text-emerald-400/80">+{data.items.length - 6} puntos más...</span>
                       </div>
                     )}
                   </div>
@@ -303,7 +303,7 @@ export default function ListasViralesPage() {
                 </div>
 
                 <div className="mt-6 text-center">
-                  <p className="text-sm text-slate-400">Usa este diseÃ±o como referencia visual para montarlo en Canva o Photoshop. La clave es el fondo oscuro, texto blanco y detalles esmeralda.</p>
+                  <p className="text-sm text-slate-400">Usa este diseño como referencia visual para montarlo en Canva o Photoshop. La clave es el fondo oscuro, texto blanco y detalles esmeralda.</p>
                 </div>
               </div>
             </div>
