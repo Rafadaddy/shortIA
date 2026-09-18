@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ListOrdered, Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign, Tv, Home } from "lucide-react";
+import { Swords, ListOrdered, Sparkles, BookOpen, Image as ImageIcon, MessageSquare, History, PlaySquare, MessageCircle, Flame, Palette, Settings, DollarSign, Tv, Home } from "lucide-react";
 
 export function Sidebar() {
   return (
@@ -58,7 +58,15 @@ export function Sidebar() {
             <PlaySquare className="w-5 h-5 text-emerald-400" />
             Stickman YouTube
           </Link>
-                    <Link href="/listas-virales" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                              <Link href="/naturaleza-salvaje" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Swords className="w-5 h-5 text-red-400" />
+            Nat. Salvaje
+          </Link>
+                  <Link href="/naturaleza-salvaje" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-red-400 active:text-red-400 min-w-[4rem] flex-shrink-0">
+          <Swords className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Salvaje</span>
+        </Link>
+        <Link href="/listas-virales" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <ListOrdered className="w-5 h-5 text-emerald-400" />
             Listas Virales
           </Link>
@@ -123,7 +131,15 @@ export function Sidebar() {
           <PlaySquare className="w-5 h-5" />
           <span className="text-[10px] font-medium">Stickman</span>
         </Link>
-                <Link href="/listas-virales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
+                          <Link href="/naturaleza-salvaje" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <Swords className="w-5 h-5 text-red-400" />
+            Nat. Salvaje
+          </Link>
+                  <Link href="/naturaleza-salvaje" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-red-400 active:text-red-400 min-w-[4rem] flex-shrink-0">
+          <Swords className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Salvaje</span>
+        </Link>
+        <Link href="/listas-virales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <ListOrdered className="w-5 h-5" />
           <span className="text-[10px] font-medium">Listas</span>
         </Link>
@@ -139,6 +155,7 @@ export function Sidebar() {
     </>
   );
 }
+
 
 
 
