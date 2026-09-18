@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Sparkles, Copy, Check, Image as ImageIcon, Loader2, RefreshCw, Wand2, Type, Skull, Swords, Play } from "lucide-react";
+import { Sparkles, Copy, Check, Image as ImageIcon, Loader2, RefreshCw, Wand2, Type, Skull, Swords, Play, Mic } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
@@ -216,24 +216,32 @@ export default function NaturalezaSalvajePage() {
       setGeneratingImageFor(null);
     }
   };
-const handleCopyAll = () => {
+  const handleCopyVoiceover = () => {
+    if (!data) return;
+    let text = "";
+    data.scenes.forEach((s) => {
+      text += `${s.narration}\n\n`;
+    });
+    handleCopy(text.trim(), "voiceover");
+    showToast("Locución limpia copiada", "success");
+  };
+
+  const handleCopyTechnical = () => {
     if (!data) return;
     let text = `🎬 TÍTULO: ${data.title}\n`;
     text += `🏆 VEREDICTO: ${data.winner_stats}\n`;
     text += `🎵 MÚSICA: ${data.music}\n\n`;
     data.scenes.forEach((s) => {
       text += `⏱️ [${s.timestamp}] ESCENA ${s.scene_number}\n`;
-      text += `🎙️ Narración: ${s.narration}\n`;
-      text += `🔤 Texto: ${s.text_overlay}\n`;
+      text += `🔤 Texto en Pantalla: ${s.text_overlay}\n`;
       text += `🎥 Cámara: ${s.camera_movement}\n`;
       text += `🔊 Sonido: ${s.audio_cues}\n`;
-      text += `👁️ Visual: ${s.visual_concept}\n`;
-      text += `📸 Prompt Imagen: ${s.image_prompt}\n\n`;
+      text += `👁️ Visual: ${s.visual_concept}\n\n`;
     });
-    text += `\n📌 CTA: ${data.cta}\n`;
+    text += `📌 CTA: ${data.cta}\n`;
     if (data.hashtags) text += `🏷️ Hashtags: ${data.hashtags.join(" ")}\n`;
-    handleCopy(text, "all");
-    showToast("Guion completo copiado", "success");
+    handleCopy(text, "technical");
+    showToast("Datos técnicos copiados", "success");
   };
 
   const handleCopyImagePrompts = () => {
@@ -394,8 +402,11 @@ const handleCopyAll = () => {
                   <button onClick={handleCopyAnimationPrompts} className="flex items-center gap-2 bg-slate-800 text-slate-300 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-slate-700 transition-colors">
                     {copiedStates['animation_prompts'] ? <><Check className="w-4 h-4" /> Copiados</> : <><Play className="w-4 h-4" /> Prompts Video</>}
                   </button>
-                  <button onClick={handleCopyAll} className="flex items-center gap-2 bg-red-600/20 text-red-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-red-600/40 transition-colors">
-                    {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado Todo</> : <><Copy className="w-4 h-4" /> Copiar Guion</>}
+                  <button onClick={handleCopyVoiceover} className="flex items-center gap-2 bg-red-600/20 text-red-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-red-600/40 transition-colors">
+                    {copiedStates['voiceover'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Mic className="w-4 h-4" /> Copiar Locución (Limpia)</>}
+                  </button>
+                  <button onClick={handleCopyTechnical} className="flex items-center gap-2 bg-slate-800 text-slate-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-slate-700 transition-colors border border-slate-700">
+                    {copiedStates['technical'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Detalles Técnicos</>}
                   </button>
                 </div>
               </div>
