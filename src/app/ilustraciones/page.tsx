@@ -15,24 +15,51 @@ interface IllustrationData {
 }
 
 const illustrationNiches = [
-  "Psicología Oscura y Verdades Crudas",
-  "Mentes Millonarias y Estoicismo",
-  "Métodos para ser Millonario y Riqueza",
-  "Emprendimiento y Cómo Crear un Negocio",
-  "Finanzas Personales y Cómo Ahorrar",
-  "Seducción y Psicología del Atractivo",
-  "¿Qué Pasaría Si...? / Curiosidad Surrealista",
-  "Humor Sarcástico de Vida Adulta",
-  "Amor Tierno y Relaciones Random",
-  "Desamor, Sanación y Soltar (Sad Aesthetic)",
-  "Espiritualidad y Ley de Atracción"
+  "🎲 Aleatorio / Sorpréndeme",
+  "🧠 Psicología Oscura y Verdades Crudas",
+  "🦁 Mentes Millonarias y Estoicismo",
+  "💰 Métodos para ser Millonario y Riqueza",
+  "🚀 Emprendimiento y Cómo Crear un Negocio",
+  "📈 Finanzas Personales y Cómo Ahorrar",
+  "🔥 Seducción y Psicología del Atractivo",
+  "🌀 ¿Qué Pasaría Si...? / Curiosidad Surrealista",
+  "☕ Humor Sarcástico de Vida Adulta",
+  "❤️ Amor Tierno y Relaciones Random",
+  "💔 Desamor, Sanación y Soltar (Sad Aesthetic)",
+  "✨ Espiritualidad y Ley de Atracción",
+  "✏️ Escribir mi propio nicho personalizado..."
+];
+
+const QUICK_NICHES = [
+  { label: "🧠 Psicología", value: "🧠 Psicología Oscura y Verdades Crudas" },
+  { label: "🦁 Estoicismo", value: "🦁 Mentes Millonarias y Estoicismo" },
+  { label: "💰 Finanzas", value: "📈 Finanzas Personales y Cómo Ahorrar" },
+  { label: "🔥 Seducción", value: "🔥 Seducción y Psicología del Atractivo" },
+  { label: "💔 Desamor", value: "💔 Desamor, Sanación y Soltar (Sad Aesthetic)" },
+  { label: "🎲 Sorpréndeme", value: "🎲 Aleatorio / Sorpréndeme" },
+];
+
+const visualStylesList = [
+  "Libre / Que la IA decida",
+  "Cinemático Oscuro (Motivación / Hyperrealist)",
+  "Elegante B&W (Mafia / Luxury / Old Money)",
+  "Personaje 3D Pixar / Cartoon Carismático",
+  "Cyberpunk Neón (Glow, Luces de Neón)",
+  "Fotografía Vintage 90s / Retro Film Grain",
+  "Minimalista Vectorial / Ilustración Flat",
+  "Pintura al Óleo Clásica / Renacentista",
+  "✏️ Escribir mi propio estilo personalizado..."
 ];
 
 export default function IlustracionesPage() {
-  const [niche, setNiche] = useState("");
+  const [selectedNicheOption, setSelectedNicheOption] = useState(illustrationNiches[0]);
+  const [customNiche, setCustomNiche] = useState("");
+
+  const [selectedStyleOption, setSelectedStyleOption] = useState(visualStylesList[0]);
+  const [customStyle, setCustomStyle] = useState("");
+
   const [idea, setIdea] = useState("");
   const [imageFormat, setImageFormat] = useState("Vertical (9:16)");
-  const [visualStyle, setVisualStyle] = useState("");
   const [textSurface, setTextSurface] = useState("Integrado (Por Defecto)");
   
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
@@ -45,6 +72,20 @@ export default function IlustracionesPage() {
   const { showToast } = useToast();
   const [regenerating, setRegenerating] = useState(false);
 
+  const getEffectiveNiche = () => {
+    if (selectedNicheOption === "✏️ Escribir mi propio nicho personalizado...") {
+      return customNiche.trim() || "Motivación y Reflexión";
+    }
+    return selectedNicheOption;
+  };
+
+  const getEffectiveStyle = () => {
+    if (selectedStyleOption === "✏️ Escribir mi propio estilo personalizado...") {
+      return customStyle.trim() || "Cinemático";
+    }
+    return selectedStyleOption;
+  };
+
   const handleGenerateTitles = async () => {
     setIsGeneratingTitles(true);
     setTitles(null);
@@ -52,7 +93,7 @@ export default function IlustracionesPage() {
 
     try {
       const res = await aiFetch("/api/generate-illustration", { 
-        niche, 
+        niche: getEffectiveNiche(), 
         idea, 
         mode: "titles" 
       });
@@ -73,15 +114,15 @@ export default function IlustracionesPage() {
   const handleGenerateIllustration = async (selectedTitle: string) => {
     setIsGenerating(true);
     setData(null);
-    setIdea(selectedTitle); // La idea seleccionada se convierte en el tema
-    setTitles(null); // Ocultar títulos
+    setIdea(selectedTitle);
+    setTitles(null);
 
     try {
       const res = await aiFetch("/api/generate-illustration", { 
-        niche, 
+        niche: getEffectiveNiche(), 
         idea: selectedTitle, 
         format: imageFormat, 
-        style: visualStyle, 
+        style: getEffectiveStyle(), 
         textSurface,
         mode: "image"
       });
@@ -102,8 +143,8 @@ export default function IlustracionesPage() {
     try {
       const res = await aiFetch("/api/generate-illustration", {
         mode: "single_prompt",
-        niche,
-        style: visualStyle,
+        niche: getEffectiveNiche(),
+        style: getEffectiveStyle(),
         format: imageFormat,
         textSurface,
         suggested_phrase: data.suggested_phrase,
@@ -137,37 +178,73 @@ export default function IlustracionesPage() {
 
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Nicho / Temática</label>
-              <input
-                type="text"
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                placeholder="Ej. Motivación, Escribe el tuyo o déjalo en blanco"
-                list="niche-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-              />
-              <datalist id="niche-list">
-                <option value="🎲 Aleatorio / Sorpréndeme" />
-                <option value="✨ Tema Libre (Simplemente borra esto y escribe el tuyo)" />
-                {illustrationNiches.map(n => <option key={n} value={n} />)}
-              </datalist>
+            <div className="space-y-2.5">
+              <label className="text-sm font-semibold text-slate-300 ml-1 flex items-center justify-between">
+                <span>Nicho / Temática</span>
+                <span className="text-xs text-pink-400/80 font-normal">Despliega para elegir</span>
+              </label>
+              <select
+                value={selectedNicheOption}
+                onChange={(e) => setSelectedNicheOption(e.target.value)}
+                className="w-full bg-slate-950/70 border border-slate-700/60 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all text-sm font-medium"
+              >
+                {illustrationNiches.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+
+              {selectedNicheOption === "✏️ Escribir mi propio nicho personalizado..." && (
+                <input
+                  type="text"
+                  value={customNiche}
+                  onChange={(e) => setCustomNiche(e.target.value)}
+                  placeholder="Escribe tu nicho o temática personalizada..."
+                  className="w-full bg-slate-950/90 border border-pink-500/50 rounded-xl py-2.5 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all text-sm animate-in fade-in"
+                  autoFocus
+                />
+              )}
+
+              {/* Accesos rápidos */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider self-center mr-1">Rápidos:</span>
+                {QUICK_NICHES.map((chip) => (
+                  <button
+                    type="button"
+                    key={chip.label}
+                    onClick={() => setSelectedNicheOption(chip.value)}
+                    className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                      selectedNicheOption === chip.value
+                        ? "bg-pink-500/20 text-pink-300 border-pink-500/50 font-bold"
+                        : "bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-300"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Estilo Visual</label>
-              <input
-                type="text"
-                value={visualStyle}
-                onChange={(e) => setVisualStyle(e.target.value)}
-                placeholder="Elige o escribe tu propio estilo..."
-                list="style-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none"
-              />
-              <datalist id="style-list">
-                <option value="Libre / Cualquier Estilo" />
-                <option value="Cinemático Oscuro (Motivación)" />
-                <option value="Elegante B&W (Mafia/Luxury)" />
-                <option value="Personaje 3D Gracioso" />
-              </datalist>
+            <div className="space-y-2.5">
+              <label className="text-sm font-semibold text-slate-300 ml-1 flex items-center justify-between">
+                <span>Estilo Visual</span>
+                <span className="text-xs text-pink-400/80 font-normal">Estilo del arte</span>
+              </label>
+              <select
+                value={selectedStyleOption}
+                onChange={(e) => setSelectedStyleOption(e.target.value)}
+                className="w-full bg-slate-950/70 border border-slate-700/60 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all text-sm font-medium"
+              >
+                {visualStylesList.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+
+              {selectedStyleOption === "✏️ Escribir mi propio estilo personalizado..." && (
+                <input
+                  type="text"
+                  value={customStyle}
+                  onChange={(e) => setCustomStyle(e.target.value)}
+                  placeholder="Ej. Cyberpunk vintage con luces rojas..."
+                  className="w-full bg-slate-950/90 border border-pink-500/50 rounded-xl py-2.5 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all text-sm animate-in fade-in"
+                  autoFocus
+                />
+              )}
             </div>
           </div>
 
