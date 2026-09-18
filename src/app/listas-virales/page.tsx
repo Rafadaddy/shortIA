@@ -99,7 +99,7 @@ export default function ListasViralesPage() {
     setSelectedIdea(null);
     setData(null);
     try {
-      const res = await aiFetch("/api/generate-infographic", { action: "ideas", niche, tone });
+      const res = await aiFetch("/api/generate-infographic", { action: "ideas", niche, tone, itemCount });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error del servidor");
       if (!json.ideas || json.ideas.length === 0) throw new Error("La IA no devolvió ideas");
@@ -256,7 +256,7 @@ export default function ListasViralesPage() {
               <div className="bg-emerald-500/20 text-emerald-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
               <h2 className="text-xl font-bold text-white">Selecciona tu Gancho</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {ideas.map((idea, idx) => (
                 <button
                   key={idx}
