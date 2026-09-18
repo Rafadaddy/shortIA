@@ -92,6 +92,19 @@ export async function generateChatCompletion(
         return response.choices?.[0]?.message?.content || "{}";
       }
 
+            case "nvidia": {
+        const nvidiaOpenai = new OpenAI({
+          apiKey,
+          baseURL: "https://integrate.api.nvidia.com/v1",
+        });
+        const completion = await nvidiaOpenai.chat.completions.create({
+          messages,
+          model,
+          temperature,
+        });
+        return completion.choices[0]?.message?.content || "{}";
+      }
+
       case "deepseek": {
         const deepseekOpenai = new OpenAI({
           apiKey,
@@ -146,3 +159,4 @@ export async function generateChatCompletion(
     throw new Error(`Error from ${providerId}: ${errMsg}`);
   }
 }
+

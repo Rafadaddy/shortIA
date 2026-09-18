@@ -29,7 +29,25 @@ export async function chatCompletion(
     }
   }
 
-  // PRIORIDAD 2: Usar GEMINI Key del servidor (process.env.GEMINI_API_KEY) con soporte para multiples llaves
+  
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  console.log("[API-Helpers] NVIDIA_API_KEY from env:", nvidiaKey ? "EXISTS" : "NOT FOUND");
+
+  // PRIORIDAD 2: Usar NVIDIA si está configurado (Máxima velocidad e inteligencia)
+  if (nvidiaKey) {
+    console.log(`[API-Helpers] Fallback a API key NVIDIA del servidor`);
+    try {
+      return await generateChatCompletion(
+        { providerId: "nvidia", apiKey: nvidiaKey, model: "meta/llama-3.2-90b-vision-instruct" },
+        [{ role: "user", content: prompt }],
+        { temperature: options?.temperature, jsonMode: false }
+      );
+    } catch (error: unknown) {
+      console.error(`[API-Helpers] NVIDIA falló, pasando a Gemini...`);
+    }
+  }
+
+  // PRIORIDAD 3: Usar GEMINI Key del servidor (process.env.GEMINI_API_KEY) con soporte para multiples llaves
   if (geminiKey) {
     const keys = geminiKey.split(',').map(k => k.trim()).filter(Boolean);
     console.log(`[API-Helpers] Fallback a API key GEMINI del servidor (${keys.length} llaves detectadas)`);
@@ -101,3 +119,4 @@ export async function generateImageWithGemini(
   
   throw new Error("No se pudo generar la imagen con Gemini");
 }
+
