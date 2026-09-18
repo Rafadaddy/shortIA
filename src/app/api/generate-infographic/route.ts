@@ -34,19 +34,19 @@ export async function POST(req: NextRequest) {
         "3. El ultimo item debe ser el mas polemico o sorprendente.",
         "4. El campo label debe tener de 3 a 6 palabras maximo.",
         "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
-        "6. Para cada item genera un image_prompt en ENGLISH para Midjourney/DALL-E. Maximo 30 palabras, estilo viral dark infographic.",
+        "6. Genera un UNICO image_prompt general en ENGLISH para Midjourney/DALL-E. Debe describir un poster infografico vertical (9:16) con fondo oscuro y espacio para texto.",
         "",
         "Responde SOLO con JSON valido, sin texto adicional, con esta estructura:",
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
+          image_prompt: "viral dark infographic poster, bold text layout, [concept], TikTok 9:16 format",
           items: [{
             num: "01",
             emoji: "emoji",
             label: "Titulo corto 3-6 palabras",
-            text: "Descripcion practica max 15 palabras.",
-            image_prompt: "viral dark infographic, bold white text, [concept], TikTok 9:16"
+            text: "Descripcion practica max 15 palabras."
           }],
           cta: "Call to action especifico",
           hashtags: ["#Tag1", "#Tag2", "#Tag3"],

@@ -39,13 +39,13 @@ interface ListItem {
   emoji: string;
   label: string;
   text: string;
-  image_prompt?: string;
 }
 
 interface InfographicData {
   title: string;
   category: string;
   subhook: string;
+  image_prompt?: string;
   items: ListItem[];
   cta: string;
   hashtags?: string[];
@@ -238,40 +238,39 @@ export default function ListasViralesPage() {
             {/* Items con prompts */}
             <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl">
               <div className="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4">
-                <ImageIcon className="w-5 h-5 text-blue-400" />
-                <h2 className="text-xl font-bold text-white">Puntos + Prompts de Imagen</h2>
-                <span className="ml-auto text-xs text-slate-500">Copia cada prompt para Midjourney / DALL-E / Gemini</span>
+                <ListOrdered className="w-5 h-5 text-emerald-400" />
+                <h2 className="text-xl font-bold text-white">Contenido de la Lista</h2>
               </div>
+
+              {/* Single Image Prompt para todo el poster */}
+              {data.image_prompt && (
+                <div className="mb-8 border border-blue-500/30 bg-blue-500/5 rounded-2xl p-5">
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 uppercase tracking-wider mb-2">
+                        <ImageIcon className="w-4 h-4" /> Prompt para Poster de Fondo
+                      </h3>
+                      <p className="text-slate-300 text-sm font-mono leading-relaxed">{data.image_prompt}</p>
+                      <p className="text-xs text-slate-500 mt-2">Copia este prompt en Midjourney/DALL-E para crear la imagen de fondo donde escribirás la lista.</p>
+                    </div>
+                    <button
+                      onClick={() => handleCopy(data.image_prompt!, "global_img")}
+                      className="shrink-0 bg-blue-600/20 text-blue-400 p-3 rounded-xl hover:bg-blue-600/40 transition-colors"
+                    >
+                      {copiedStates["global_img"] ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-4">
                 {data.items.map((item, idx) => (
-                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
-                    {/* Punto */}
-                    <div className="flex gap-3 p-4">
-                      <div className="text-2xl">{item.emoji}</div>
-                      <div className="flex-1">
-                        <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
-                        <div className="text-slate-300 text-sm mt-1">{item.text}</div>
-                      </div>
+                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex gap-3">
+                    <div className="text-2xl">{item.emoji}</div>
+                    <div className="flex-1">
+                      <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
+                      <div className="text-slate-300 text-sm mt-1">{item.text}</div>
                     </div>
-
-                    {/* Prompt de imagen */}
-                    {item.image_prompt && (
-                      <div className="border-t border-slate-800 bg-slate-900/60 p-4">
-                        <div className="flex justify-between items-start gap-3">
-                          <div className="flex-1">
-                            <span className="text-xs font-bold text-blue-400 tracking-wider uppercase">🖼 Prompt Imagen</span>
-                            <p className="text-slate-400 text-xs font-mono mt-1 leading-relaxed">{item.image_prompt}</p>
-                          </div>
-                          <button
-                            onClick={() => handleCopy(item.image_prompt!, `img_${idx}`)}
-                            className="shrink-0 bg-blue-600/20 text-blue-400 p-2 rounded-lg hover:bg-blue-600/40 transition-colors"
-                          >
-                            {copiedStates[`img_${idx}`] ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
