@@ -33,7 +33,7 @@ export async function chatCompletion(
   const nvidiaKey = process.env.NVIDIA_API_KEY;
   console.log("[API-Helpers] NVIDIA_API_KEY from env:", nvidiaKey ? "EXISTS" : "NOT FOUND");
 
-  // PRIORIDAD 2: Usar NVIDIA si está configurado (Máxima velocidad e inteligencia)
+  // PRIORIDAD 2: Usar NVIDIA si estï¿½ configurado (Mï¿½xima velocidad e inteligencia)
   if (nvidiaKey) {
     console.log(`[API-Helpers] Fallback a API key NVIDIA del servidor`);
     try {
@@ -43,7 +43,7 @@ export async function chatCompletion(
         { temperature: options?.temperature, jsonMode: false }
       );
     } catch (error: unknown) {
-      console.error(`[API-Helpers] NVIDIA falló, pasando a Gemini...`);
+      console.error(`[API-Helpers] NVIDIA fallï¿½, pasando a Gemini...`);
     }
   }
 
