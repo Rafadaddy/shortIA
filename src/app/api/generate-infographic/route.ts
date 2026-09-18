@@ -27,16 +27,16 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
     }
 
     if (action === "list") {
-      const prompt = `Eres un experto creador de contenido viral especializado en "listicles" para videos verticales (TikTok/Reels).
+      const prompt = `Eres un experto creador de contenido viral especializado en "listicles" para videos verticales (TikTok/Reels) y también en prompts de IA para imágenes.
 Crea el contenido exacto para un video "Infographic Listicle" estático basado en este título: "${selectedIdea.title}".
 
 REGLAS ESTRICTAS DE VIRALIDAD:
 1. Genera entre 7 y 12 puntos (ideal para que la gente tarde en leerlo y el video haga loop).
 2. Los primeros 3 items deben ser extremadamente fuertes y de alto valor.
-3. El último item (o el penúltimo) debe ser el más polémico, memorable o sorprendente (para generar comentarios).
+3. El último item debe ser el más polémico, memorable o sorprendente (para generar comentarios).
 4. El Título del item (label) debe tener de 3 a 6 palabras máximo.
 5. La descripción práctica (text) debe ser concreta y aportar valor tangible (máximo 15 palabras).
-6. Usa lenguaje simple, directo, conversacional y evita jerga compleja.
+6. Para cada item, genera un "image_prompt" en INGLÉS para crear una imagen estilo infografía viral en Midjourney/DALL-E. El prompt debe describir un visual impactante, oscuro, moderno, con texto overlay. Máximo 30 palabras.
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más:
 {
@@ -48,7 +48,8 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más
       "num": "01",
       "emoji": "💡",
       "label": "Título Corto (3-6 palabras)",
-      "text": "Beneficio concreto o explicación (máx 15 palabras)."
+      "text": "Beneficio concreto o explicación (máx 15 palabras).",
+      "image_prompt": "viral infographic dark background, bold white text overlay, [visual concept], TikTok style, neon accents, 9:16 vertical"
     }
   ],
   "cta": "Call to action específico (comenta/comparte/guarda)",
