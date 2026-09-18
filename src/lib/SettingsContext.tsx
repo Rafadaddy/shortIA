@@ -21,6 +21,17 @@ interface SettingsData {
 
 const defaultProviders: AIProvider[] = [
   {
+    id: "nvidia",
+    name: "NVIDIA (NIM)",
+    icon: "??",
+    color: "text-green-500",
+    models: ["meta/llama-3.2-90b-vision-instruct", "meta/llama-3.2-11b-vision-instruct", "meta/llama-3.3-70b-instruct"],
+    apiKeyUrl: "https://build.nvidia.com/",
+    enabled: false,
+    apiKey: "",
+    selectedModel: "meta/llama-3.2-90b-vision-instruct",
+  },
+  {
     id: "groq",
     name: "Groq",
     icon: "⚡",
@@ -182,3 +193,4 @@ export function useSettings() {
   if (!context) throw new Error("useSettings must be used within SettingsProvider");
   return context;
 }
+
