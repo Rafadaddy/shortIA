@@ -32,38 +32,38 @@ interface WildlifeData {
 }
 
 const mexTopics = [
-  "ECONOMÃA (La tanda, Coppel, el recibo CFE)",
+  "ECONOMÃƒÂA (La tanda, Coppel, el recibo CFE)",
   "LA FAMILIA EXTENSA (Suegra, arrimados, el terreno)",
   "DRAMA Y CONFLICTOS (La chancla, la tele, chismes)",
-  "FIESTAS Y COMIDA (Tamales, 15 aÃ±os endeudados)",
-  "PROBLEMAS FÃSICOS DE CASA (El boiler, tinaco, goteras)",
+  "FIESTAS Y COMIDA (Tamales, 15 aÃƒÂ±os endeudados)",
+  "PROBLEMAS FÃƒÂSICOS DE CASA (El boiler, tinaco, goteras)",
   "AMOR Y VECINDAD (La vecina chismosa, el de los fierros)",
   "SOLUCIONES A LA MEXICANA (VapoRub, cinta y alambre)"
 ];
 
 const mexProtagonists = [
-  "MamÃ¡ luchona (con la chancla en mano)",
-  "PapÃ¡ proveedor (el que apaga todas las luces)",
-  "Abuela sabia (la dueÃ±a de los terrenos)",
+  "MamÃƒÂ¡ luchona (con la chancla en mano)",
+  "PapÃƒÂ¡ proveedor (el que apaga todas las luces)",
+  "Abuela sabia (la dueÃƒÂ±a de los terrenos)",
   "Hija/o adolescente (sufriendo las reglas)",
   "Hijo NINI (el mantenido de la casa)",
   "La Suegra metiche",
-  "El CuÃ±ado arrimado"
+  "El CuÃƒÂ±ado arrimado"
 ];
 
 const mexTones = [
   "Comedia (Absurdo y gracioso)",
   "Drama que hace llorar (Novelesco)",
   "Nostalgia (Recordando la infancia)",
-  "Terror de mamÃ¡ enojada",
-  "Motivacional (EchÃ¡ndole ganas)"
+  "Terror de mamÃƒÂ¡ enojada",
+  "Motivacional (EchÃƒÂ¡ndole ganas)"
 ];
 
 const mexStyles = [
-  "POV TikTok Casero (CÃ¡mara celular realista)",
+  "POV TikTok Casero (CÃƒÂ¡mara celular realista)",
   "Casa de Infonavit (Luz de foco ahorrador)",
-  "CinematogrÃ¡fico Exagerado (La Rosa de Guadalupe)",
-  "EstÃ©tica Vintage Mexicana (Foto 90s)"
+  "CinematogrÃƒÂ¡fico Exagerado (La Rosa de Guadalupe)",
+  "EstÃƒÂ©tica Vintage Mexicana (Foto 90s)"
 ];
 
 export default function CasasMexicanasPage() {
@@ -74,8 +74,8 @@ export default function CasasMexicanasPage() {
   const [sceneCount, setSceneCount] = useState<number>(8);
   const [duration, setDuration] = useState("10 Segundos");
 
-  const [ideas, setIdeas] = useState<MexIdea[] | null>(null);
-  const [selectedIdea, setSelectedIdea] = useState<MexIdea | null>(null);
+  const [ideas, setIdeas] = useState<WildlifeIdea[] | null>(null);
+  const [selectedIdea, setSelectedIdea] = useState<WildlifeIdea | null>(null);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
 
   const [scriptText, setScriptText] = useState("");
@@ -111,12 +111,12 @@ export default function CasasMexicanasPage() {
     }
   };
 
-  const selectIdeaAndGenerateScript = async (idea: MexIdea) => {
+  const selectIdeaAndGenerateScript = async (idea: WildlifeIdea) => {
     setSelectedIdea(idea);
     setIsGeneratingScript(true);
     setData(null);
     try {
-      const res = await aiFetch("/api/generate-wildlife", { mode: "script_only", idea: idea.hook, tone, protagonist, topic, sceneCount, duration });
+      const res = await aiFetch("/api/generate-wildlife", { mode: "script_only", selectedIdea: idea, tone, protagonist, topic, sceneCount, duration });
       if (!res.ok) throw new Error("Error");
       const json = await res.json();
       setScriptText(json.script);
@@ -218,7 +218,7 @@ export default function CasasMexicanasPage() {
       if (!res.ok) throw new Error(json.error || "Error generating image");
       
       setGeneratedImages(prev => ({ ...prev, [sceneIndex]: json.imageBase64 }));
-      showToast("Imagen generada con Ã©xito", "success");
+      showToast("Imagen generada con ÃƒÂ©xito", "success");
     } catch (error: unknown) {
       console.error(error);
       showToast((error instanceof Error ? error.message : "Error al generar la imagen"), "error");
@@ -228,15 +228,20 @@ export default function CasasMexicanasPage() {
   };
 const handleCopyAll = () => {
     if (!data) return;
-    let text = `ðŸŽ¥ TÃTULO: ${data.title}\n\n`;
-    text += `ðŸ–¼ï¸ MINIATURA:\nTexto: ${data.thumbnail.text}\nPrompt: ${data.thumbnail.image_prompt}\n\n---\n\n`;
+    let text = `🎬 TÍTULO: ${data.title}\n`;
+    text += `🏆 VEREDICTO: ${data.winner_stats}\n`;
+    text += `🎵 MÚSICA: ${data.music}\n\n`;
     data.scenes.forEach((s) => {
-      text += `ðŸŽ¬ ESCENA ${s.scene_number}\n`;
-      text += `ðŸ—£ï¸ NarraciÃ³n: ${s.narration}\n`;
-      text += `ðŸ‘ï¸ Visual: ${s.visual_concept}\n`;
-      text += `ðŸŽ¨ Prompt Imagen: ${s.image_prompt}\n`;
-      text += `âœ¨ Prompt AnimaciÃ³n: ${s.animation_prompt}\n\n`;
+      text += `⏱️ [${s.timestamp}] ESCENA ${s.scene_number}\n`;
+      text += `🎙️ Narración: ${s.narration}\n`;
+      text += `🔤 Texto: ${s.text_overlay}\n`;
+      text += `🎥 Cámara: ${s.camera_movement}\n`;
+      text += `🔊 Sonido: ${s.audio_cues}\n`;
+      text += `👁️ Visual: ${s.visual_concept}\n`;
+      text += `📸 Prompt Imagen: ${s.image_prompt}\n\n`;
     });
+    text += `\n📌 CTA: ${data.cta}\n`;
+    if (data.hashtags) text += `🏷️ Hashtags: ${data.hashtags.join(" ")}\n`;
     handleCopy(text, "all");
     showToast("Guion completo copiado", "success");
   };
@@ -259,22 +264,22 @@ const handleCopyAll = () => {
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">ConfiguraciÃ³n del Guion</h2>
+            <h2 className="text-xl font-bold text-white">ConfiguraciÃƒÂ³n del Guion</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">CategorÃ­a (Tema)</label>
+              <label className="text-sm font-medium text-slate-300">CategorÃƒÂ­a (Tema)</label>
               <input
                 type="text"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="Ej. Visitas, Escribe el tuyo o dÃ©jalo en blanco"
+                placeholder="Ej. Visitas, Escribe el tuyo o dÃƒÂ©jalo en blanco"
                 list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
               />
               <datalist id="topic-list">
-                <option value="ðŸŽ² Aleatorio / SorprÃ©ndeme" />
-                <option value="âœ¨ Tema Libre (Borra esto y escribe el tuyo)" />
+                <option value="Ã°Å¸Å½Â² Aleatorio / SorprÃƒÂ©ndeme" />
+                <option value="Ã¢Å“Â¨ Tema Libre (Borra esto y escribe el tuyo)" />
                 {mexTopics.map(n => <option key={n} value={n} />)}
               </datalist>
             </div>
@@ -291,14 +296,14 @@ const handleCopyAll = () => {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">EstÃ©tica Visual</label>
+              <label className="text-sm font-medium text-slate-300">EstÃƒÂ©tica Visual</label>
               <select value={visualStyle} onChange={(e) => setVisualStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none">
                 {mexStyles.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             
             <div className="space-y-2 lg:col-span-1">
-              <label className="text-sm font-medium text-slate-300">DuraciÃ³n/Escena</label>
+              <label className="text-sm font-medium text-slate-300">DuraciÃƒÂ³n/Escena</label>
               <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
                 <option value="5 Segundos">5 Segundos</option>
                 <option value="10 Segundos">10 Segundos</option>
@@ -320,12 +325,12 @@ const handleCopyAll = () => {
 
           {ideas && (
             <div className="mt-8 space-y-4 animate-in fade-in">
-              <h3 className="text-lg font-semibold text-red-300 mb-2">Selecciona la situaciÃ³n:</h3>
+              <h3 className="text-lg font-semibold text-red-300 mb-2">Selecciona la situaciÃƒÂ³n:</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {ideas.map((idea, idx) => (
                   <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-red-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
                     <p className="font-bold text-red-400 mb-1">{idea.title}</p>
-                    <p className="text-sm text-slate-300 mb-2 italic">&quot;{idea.hook}&quot;</p>
+                    <p className="text-sm text-slate-300 mb-2 italic">&quot;{idea.title}&quot;</p>
                   </button>
                 ))}
               </div>
@@ -338,7 +343,7 @@ const handleCopyAll = () => {
           <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
             <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
               <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
-              <h2 className="text-xl font-bold text-white">EdiciÃ³n del Guion Mexicano</h2>
+              <h2 className="text-xl font-bold text-white">EdiciÃƒÂ³n del Guion Mexicano</h2>
             </div>
             
             {isGeneratingScript && !scriptText ? (
@@ -350,8 +355,8 @@ const handleCopyAll = () => {
               <div className="space-y-4">
                 <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-red-500 outline-none resize-none leading-relaxed" />
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo mÃ¡s exagerado y chistoso, metiendo mÃ¡s palabras mexicanas como gÃ¼ey, nmms, chale.")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> MÃ¡s Mexicano</button>
-                  <button onClick={() => improveScript("Haz que termine en un grito dramÃ¡tico o regaÃ±o de la mamÃ¡ (la chancla).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Chancla</button>
+                  <button onClick={() => improveScript("Hazlo mÃƒÂ¡s exagerado y chistoso, metiendo mÃƒÂ¡s palabras mexicanas como gÃƒÂ¼ey, nmms, chale.")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> MÃƒÂ¡s Mexicano</button>
+                  <button onClick={() => improveScript("Haz que termine en un grito dramÃƒÂ¡tico o regaÃƒÂ±o de la mamÃƒÂ¡ (la chancla).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Chancla</button>
                 </div>
               </div>
             )}
@@ -385,21 +390,6 @@ const handleCopyAll = () => {
                 </button>
               </div>
 
-              {/* Thumbnail */}
-              <div className="bg-slate-950 p-6 rounded-2xl border border-red-500/30 mb-8 relative">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ImageIcon className="w-5 h-5 text-red-400" /> Idea de Miniatura</h3>
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-xs font-bold text-red-400 uppercase">Texto Sugerido:</span>
-                    <p className="text-white font-bold text-lg mt-1">{data.thumbnail.text}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-red-400 uppercase">Prompt de Imagen:</span>
-                    <p className="text-slate-300 font-mono text-sm mt-1">{data.thumbnail.image_prompt}</p>
-                  </div>
-                </div>
-              </div>
-
               {/* Scenes */}
               <div className="space-y-6">
                 {data.scenes.map((scene, idx) => (
@@ -413,30 +403,30 @@ const handleCopyAll = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                       <div className="space-y-4">
                         <div className="relative pr-12">
-                          <span className="text-xs font-semibold text-slate-500 uppercase">🎙️ Narración</span>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">ðŸŽ™ï¸ NarraciÃ³n</span>
                           <p className="text-red-200/90 text-sm mt-1 italic leading-relaxed">&quot;{scene.narration}&quot;</p>
                           <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
                             {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
                         </div>
                         <div>
-                          <span className="text-xs font-semibold text-slate-500 uppercase">🔤 Texto en Pantalla</span>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">ðŸ”¤ Texto en Pantalla</span>
                           <p className="text-yellow-400 font-black text-sm mt-1 tracking-wide">{scene.text_overlay}</p>
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div>
-                          <span className="text-xs font-semibold text-slate-500 uppercase">🎥 Cámara y Movimiento</span>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">ðŸŽ¥ CÃ¡mara y Movimiento</span>
                           <p className="text-slate-300 text-sm mt-1 bg-slate-900/50 p-2 rounded-md border border-slate-800/50">{scene.camera_movement}</p>
                         </div>
                         <div>
-                          <span className="text-xs font-semibold text-slate-500 uppercase">🔊 Diseño Sonoro</span>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">ðŸ”Š DiseÃ±o Sonoro</span>
                           <p className="text-blue-300 text-sm mt-1 bg-slate-900/50 p-2 rounded-md border border-slate-800/50">{scene.audio_cues}</p>
                         </div>
                       </div>
                     </div>
                     <div className="mb-4">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">👁️ Visual Concept</span>
+                      <span className="text-xs font-semibold text-slate-500 uppercase">ðŸ‘ï¸ Visual Concept</span>
                       <p className="text-slate-400 text-sm mt-1">{scene.visual_concept}</p>
                     </div>
                     
@@ -497,5 +487,8 @@ const handleCopyAll = () => {
     </main>
   );
 }
+
+
+
 
 
