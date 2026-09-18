@@ -41,6 +41,8 @@ interface InfographicData {
   subhook: string;
   items: ListItem[];
   cta: string;
+  hashtags?: string[];
+  music?: string;
 }
 
 export default function ListasViralesPage() {
@@ -228,8 +230,10 @@ export default function ListasViralesPage() {
                   </div>
 
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                    <span className="text-xs font-bold text-emerald-500 tracking-wider">CALL TO ACTION (CIERRE)</span>
-                    <p className="text-slate-300 mt-1">{data.cta}</p>
+                    <span className="text-xs font-bold text-emerald-500 tracking-wider">CALL TO ACTION E INFORMACIÓN</span>
+                    <p className="text-slate-300 mt-2 font-medium">CTA: {data.cta}</p>
+                    {data.hashtags && <p className="text-emerald-400 mt-2 text-sm">{data.hashtags.join(" ")}</p>}
+                    {data.music && <p className="text-slate-400 mt-2 text-sm italic">?? {data.music}</p>}
                   </div>
                 </div>
               </div>
@@ -310,5 +314,6 @@ export default function ListasViralesPage() {
     </main>
   );
 }
+
 
 

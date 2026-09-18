@@ -7,16 +7,17 @@ export async function POST(req: NextRequest) {
     const { action, niche, tone, selectedIdea } = body;
 
     if (action === "ideas") {
-      const prompt = `Actúa como un experto en viralidad de TikTok y Reels (especialista en Infographic Listicles estáticos).
+      const prompt = `Actúa como un experto creador de contenido viral especializado en "listicles" (listas numeradas) para redes sociales.
 El usuario quiere crear un video de lista (listicle) para el nicho: "${niche}" con un tono "${tone}".
 Genera 3 ideas de títulos (hooks) ultra-virales. Los títulos deben empezar con un número (ej. "7 Formas de...", "10 Hábitos que...").
+Aplica estrategias psicológicas: usa variaciones como "Los Mejores", "Errores", "Razones", "Señales", o "Cosas que no sabías".
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
 {
   "ideas": [
     {
       "title": "TÍTULO GANCHERO",
-      "description": "Breve descripción de qué tratará la lista y por qué se hará viral"
+      "description": "Breve descripción del valor y por qué se hará viral"
     }
   ]
 }`;
@@ -25,29 +26,33 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
     }
 
     if (action === "list") {
-      const prompt = `Actúa como un experto en retención de TikTok y psicología humana.
+      const prompt = `Eres un experto creador de contenido viral especializado en "listicles" para videos verticales (TikTok/Reels).
 Crea el contenido exacto para un video "Infographic Listicle" estático basado en este título: "${selectedIdea.title}".
-Reglas estrictas basadas en la retención algorítmica:
-1. Genera exactamente entre 7 y 10 puntos (ideal para que la gente tarde entre 15 y 20 segundos en leerlo y el video haga loop).
-2. Cada punto debe ser corto, impactante y directo al grano.
-3. El punto #7 (o el penúltimo) debe ser el más polémico, profundo o reflexivo (esto incita a los comentarios).
-4. El "subhook" debe generar curiosidad (ej. "Lee el #7 dos veces", "Guarda esto para cuando te sientas perdido").
-5. El CTA final debe fomentar guardar o compartir el video.
 
-Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
+REGLAS ESTRICTAS DE VIRALIDAD:
+1. Genera entre 7 y 12 puntos (ideal para que la gente tarde en leerlo y el video haga loop).
+2. Los primeros 3 items deben ser extremadamente fuertes y de alto valor.
+3. El último item (o el penúltimo) debe ser el más polémico, memorable o sorprendente (para generar comentarios).
+4. El Título del item (label) debe tener de 3 a 6 palabras máximo.
+5. La descripción práctica (text) debe ser concreta y aportar valor tangible (máximo 15 palabras).
+6. Usa lenguaje simple, directo, conversacional y evita jerga compleja.
+
+Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más:
 {
   "title": "${selectedIdea.title}",
   "category": "Una o dos palabras en MAYÚSCULAS (ej. PSICOLOGÍA, FINANZAS, HACKS)",
-  "subhook": "Frase de curiosidad pequeña",
+  "subhook": "Frase de curiosidad pequeña (ej. 'Lee el último dos veces' o 'El #7 te salvará')",
   "items": [
     {
       "num": "01",
       "emoji": "🧠",
-      "label": "Concepto Corto",
-      "text": "Explicación de 5 a 9 palabras máximo."
+      "label": "Título Corto (3-6 palabras)",
+      "text": "Beneficio concreto o explicación (máx 15 palabras)."
     }
   ],
-  "cta": "Frase corta para que guarden el video"
+  "cta": "Call to action específico (comenta/comparte/guarda)",
+  "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4", "#Tag5"],
+  "music": "Sugerencia del tipo de música trending (ej. 'Upbeat motivacional', 'Phonk lofi')"
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.7 });
       return NextResponse.json(JSON.parse(response));
