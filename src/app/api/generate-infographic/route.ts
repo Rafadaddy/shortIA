@@ -22,7 +22,8 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta:
   ]
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(response));
+      const cleanJson = response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim();
+      return NextResponse.json(JSON.parse(cleanJson));
     }
 
     if (action === "list") {
@@ -45,7 +46,7 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más
   "items": [
     {
       "num": "01",
-      "emoji": "🧠",
+      "emoji": "💡",
       "label": "Título Corto (3-6 palabras)",
       "text": "Beneficio concreto o explicación (máx 15 palabras)."
     }
@@ -55,7 +56,8 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura exacta, y nada más
   "music": "Sugerencia del tipo de música trending (ej. 'Upbeat motivacional', 'Phonk lofi')"
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.7 });
-      return NextResponse.json(JSON.parse(response));
+      const cleanJson = response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim();
+      return NextResponse.json(JSON.parse(cleanJson));
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

@@ -23,7 +23,7 @@ El usuario quiere generar 3 ideas de batallas o encuentros épicos. Tono narrati
   ]
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(response));
+      return NextResponse.json(JSON.parse(response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim()));
     }
 
     if (action === "script_only") {
@@ -44,7 +44,7 @@ Responde ÚNICAMENTE con JSON:
   "script": "[0:00-0:03] GANCHO:\\nVOZ:...\\n\\n[0:03-0:08] ANIMAL A:\\nVOZ:..."
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(response));
+      return NextResponse.json(JSON.parse(response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim()));
     }
 
     if (action === "improve_script") {
@@ -53,7 +53,7 @@ GUION ACTUAL:
 ${customScript}
 Responde ÚNICAMENTE con JSON: { "script": "El nuevo guion..." }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(response));
+      return NextResponse.json(JSON.parse(response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim()));
     }
 
     if (action === "full_from_script") {
@@ -91,7 +91,7 @@ Responde ÚNICAMENTE con JSON:
   ]
 }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.7 });
-      return NextResponse.json(JSON.parse(response));
+      return NextResponse.json(JSON.parse(response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim()));
     }
 
     if (action === "single_prompt") {
@@ -100,7 +100,7 @@ Responde ÚNICAMENTE con JSON:
 National Geographic cinematográfico, vida salvaje, ultra realista, 8K. (En inglés).
 Responde ÚNICAMENTE con JSON: { "prompt": "el nuevo prompt en inglés..." }`;
       const response = await chatCompletion(body, prompt, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(response));
+      return NextResponse.json(JSON.parse(response.replace(/^[\s\S]*?```json\n?|```\s*$/g, '').trim()));
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
