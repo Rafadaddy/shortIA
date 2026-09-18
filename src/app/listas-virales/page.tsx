@@ -63,6 +63,9 @@ export default function ListasViralesPage() {
   const [isGeneratingList, setIsGeneratingList] = useState(false);
   const [data, setData] = useState<InfographicData | null>(null);
 
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const { handleCopy: copyToClipboard } = useCopyToClipboard();
   const { showToast } = useToast();
@@ -91,6 +94,7 @@ export default function ListasViralesPage() {
     setSelectedIdea(idea);
     setIsGeneratingList(true);
     setData(null);
+    setGeneratedImage(null);
     try {
       const res = await aiFetch("/api/generate-infographic", { action: "list", selectedIdea: idea });
       const json = await res.json();
@@ -103,6 +107,24 @@ export default function ListasViralesPage() {
       showToast(msg, "error");
     } finally {
       setIsGeneratingList(false);
+    }
+  };
+
+  const generateImage = async () => {
+    if (!data?.image_prompt) return;
+    setIsGeneratingImage(true);
+    setGeneratedImage(null);
+    try {
+      const res = await aiFetch("/api/generate-image", { prompt: data.image_prompt, aspectRatio: "9:16" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generando imagen");
+      setGeneratedImage(json.imageBase64);
+      showToast("¡Imagen generada!", "success");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Error al generar imagen";
+      showToast(msg, "error");
+    } finally {
+      setIsGeneratingImage(false);
     }
   };
 
@@ -274,6 +296,37 @@ export default function ListasViralesPage() {
                   </div>
                 ))}
               </div>
+              </div>
+
+              {data.image_prompt && (
+                <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col items-center gap-6">
+                  <button
+                    onClick={generateImage}
+                    disabled={isGeneratingImage}
+                    className="w-full max-w-sm py-4 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                  >
+                    {isGeneratingImage
+                      ? <><Loader2 className="w-5 h-5 animate-spin" /> Creando imagen...</>
+                      : <><ImageIcon className="w-5 h-5" /> Generar Imagen Ahora</>}
+                  </button>
+
+                  {generatedImage && (
+                    <div className="w-full max-w-sm space-y-4">
+                      <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 flex items-center justify-center shadow-2xl">
+                        <img src={`data:image/jpeg;base64,${generatedImage}`} alt="Lista viral generada" className="w-full h-auto object-cover" />
+                      </div>
+                      <a
+                        href={`data:image/jpeg;base64,${generatedImage}`}
+                        download="lista_viral_poster.jpg"
+                        className="w-full py-3 rounded-xl font-bold bg-emerald-700/40 text-emerald-300 border border-emerald-700/50 flex items-center justify-center gap-2 hover:bg-emerald-700/60 transition-colors text-sm"
+                      >
+                        Descargar Poster
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
             </div>
 
           </div>
