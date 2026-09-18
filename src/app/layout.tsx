@@ -36,7 +36,7 @@ export default function RootLayout({
         <SettingsProvider>
           <ToastProvider>
             <Sidebar />
-            <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+            <main className="flex-1 overflow-y-auto pb-20 md:pb-0 md:ml-64">
               {children}
             </main>
           </ToastProvider>
