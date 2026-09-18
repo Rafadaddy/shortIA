@@ -123,7 +123,7 @@ INSTRUCCIONES DE SALIDA:
 3. "image_prompt": EL PROMPT EN INGLÉS PARA GENERAR LA IMAGEN EN DALL-E 3 O MIDJOURNEY. 
 ESTRUCTURA ESTRICTA DEL PROMPT:
 "[Describe exactamente la escena principal y el sujeto integrando el ambiente, paleta y composición que elegiste]. ${styleInstruction} Integrated into the artwork, there is bold typography that perfectly reads: '[SUGGESTED_PHRASE_EN_ESPAÑOL]'. The text should be ${textSurfaceInstruction}. ${aspectRatioFlag}"
-4. "caption": Un pequeño texto para publicar junto a la imagen en redes sociales (pie de foto). Debe ser empático o motivacional (20-50 palabras). Usa emojis 🔥🚀. SIN etiquetas estructurales.
+4. "caption": Un pequeño texto para publicar junto a la imagen en redes sociales (pie de foto). Debe ser empático o motivacional (20-50 palabras). Usa emojis �¥�. SIN etiquetas estructurales.
 
 IMPORTANTE: El image_prompt DEBE estar en inglés, pero la FRASE que le pides que escriba ("...") DEBE ESTAR EN EL ESPAÑOL EXACTO que generaste en suggested_phrase.
 

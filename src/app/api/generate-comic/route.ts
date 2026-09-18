@@ -69,12 +69,12 @@ ACTÚA COMO GENERADOR DE CARRUSELES REFLEXIVOS PARA REDES SOCIALES.
 OBJETIVO: Crear contenido tipo carrusel de EXACTAMENTE ${panelCount} imágenes (diapositivas) con frases reflexivas/emocionales acompañadas de descripciones de imágenes visuales.
 
 REGLAS OBLIGATORIAS:
-1. 🥇 CADA GENERACIÓN DEBE SER UN TEMA COMPLETAMENTE DIFERENTE. NO repetir el mismo ángulo o concepto. NO solo cambiar palabras del mismo tema.
+1. �¥ CADA GENERACIÓN DEBE SER UN TEMA COMPLETAMENTE DIFERENTE. NO repetir el mismo ángulo o concepto. NO solo cambiar palabras del mismo tema.
    Ejemplo INCORRECTO: "Cómo enamorar a tu pareja" / "Formas de conquistar a tu amor" (Es lo mismo).
    Ejemplo CORRECTO: "Detalles que mantienen el amor vivo después de 10 años" / "Señales de que te extraña aunque no lo diga" (Temas diferentes).
-2. 🥇 USAR SIEMPRE UN SUB-TEMA ESPECÍFICO (no genérico) basado en el nicho: "${niche || 'Amor, Desamor, Familia, Motivación, o Amistad'}". ${idea ? `Idea específica: "${idea}"` : ''}
-3. 🥇 VARIAR ENTRE LAS DIFERENTES CATEGORÍAS (Amor de pareja, Desamor, Familia, Motivación/Crecimiento, Amistad). Rota entre ellas y usa subtemas únicos.
-4. 🥇 EL NÚMERO DE DIAPOSITIVAS DEBE SER EXACTAMENTE: ${panelCount}.
+2. �¥ USAR SIEMPRE UN SUB-TEMA ESPECÍFICO (no genérico) basado en el nicho: "${niche || 'Amor, Desamor, Familia, Motivación, o Amistad'}". ${idea ? `Idea específica: "${idea}"` : ''}
+3. �¥ VARIAR ENTRE LAS DIFERENTES CATEGORÍAS (Amor de pareja, Desamor, Familia, Motivación/Crecimiento, Amistad). Rota entre ellas y usa subtemas únicos.
+4. �¥ EL NÚMERO DE DIAPOSITIVAS DEBE SER EXACTAMENTE: ${panelCount}.
 
 ESTRUCTURA DEL CARRUSEL:
 

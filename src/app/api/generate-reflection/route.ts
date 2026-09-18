@@ -77,9 +77,9 @@ Generar reflexiones cotidianas y auténticas sobre temas de infidelidades, desam
 </mission>
 
 <visual_scaffolding>
-- Separador visual obligatorio entre bloques: ➖➖➖➖➖➖➖➖➖➖
+- Separador visual obligatorio entre bloques: ����������
 - Uso de SUBTÍTULOS EN MAYÚSCULAS para cada bloque de la reflexión.
-- **CRÍTICO:** Integra emojis *adentro* de los párrafos de forma natural para ilustrar palabras clave (ej: "revisar el teléfono 📱", "soltar expectativas 🎈").
+- **CRÍTICO:** Integra emojis *adentro* de los párrafos de forma natural para ilustrar palabras clave (ej: "revisar el teléfono �±", "soltar expectativas �").
 - Énfasis: Usa **Negrita** para las frases más dolorosas o impactantes.
 </visual_scaffolding>
 
@@ -90,24 +90,24 @@ ESTRUCTURA OBLIGATORIA (Debe dividirse estrictamente en estos 4 bloques):
 
 [TÍTULO IMPACTANTE CON EMOJI] (Frase corta y memorable)
 
-🚨 LA VERDAD INCÓMODA (Situación Real)
+�¨ LA VERDAD INCÓMODA (Situación Real)
 [Párrafo EXTENSO y PROFUNDO describiendo de forma realista un dilema o pensamiento del día a día. Ej: revisar el teléfono, nostalgia en la rutina, el vacío de un mensaje no enviado. Integra emojis en el texto. No escatimes en palabras].
 
-➖➖➖➖➖➖➖➖➖➖
+����������
 
-🧠 EL CAMBIO DE PERSPECTIVA (Reflexión)
+�§  EL CAMBIO DE PERSPECTIVA (Reflexión)
 [Párrafo EXTENSO con un análisis profundo que desarme la rumiación mental y ofrezca claridad y madurez psicológica, integrando emojis].
 
-➖➖➖➖➖➖➖➖➖➖
+����������
 
-🕊️ ACCIÓN Y ANCLAJE DIARIO
+�� ACCIÓN Y ANCLAJE DIARIO
 [Párrafo EXTENSO con una conclusión o afirmación práctica para aplicar hoy en la vida del usuario].
 
-➖➖➖➖➖➖➖➖➖➖🔥 
+�����������¥ 
 
-¿TÚ QUÉ HARÍAS? [Pregunta introspectiva de debate sobre el tema para enganchar a la audiencia] 🤔
+¿TÚ QUÉ HARÍAS? [Pregunta introspectiva de debate sobre el tema para enganchar a la audiencia] �¤
 
-👇 DIME EN LOS COMENTARIOS 👇
+� DIME EN LOS COMENTARIOS �
 </content_architecture>
 `;
       } else {
@@ -121,12 +121,12 @@ Escribir reflexiones que obliguen a la gente a leer y comentar. Tu texto debe di
 </mission>
 
 <visual_scaffolding>
-- Separador visual obligatorio entre bloques: ➖➖➖➖➖➖➖➖➖➖
+- Separador visual obligatorio entre bloques: ����������
 - Uso de SUBTÍTULOS EN MAYÚSCULAS para dividir las perspectivas. **¡MUY IMPORTANTE! INVENTA SUBTÍTULOS DINÁMICOS BASADOS EN EL TEMA.** NO repitas siempre los mismos. Utiliza marcos narrativos (arquetipos) como:
-  * "La Máscara y la Grieta": Ej. 🎭 LA FACHADA COTIDIANA / 🪞 LA SOLEDAD DEL ESPEJO / ⚡ LA VERDAD INEVITABLE
-  * "Las Dos Caras": Ej. 🗣️ LO QUE DIJISTE / 💔 LO QUE NINGUNO SE ATREVIÓ A DECIR / ⚖️ LA REALIDAD QUE QUEDA
-  * "La Trampa del Tiempo": Ej. ⏳ EL RECUERDO QUE DUELE / 🥀 EL DESGASTE INVISIBLE / 🚪 EL VALOR DE SOLTAR
-  * "El Peso del Deber": Ej. ⛓️ LA OBLIGACIÓN IMPUESTA / 🌪️ LA CULPA DE QUERER IRTE / 🕊️ EL PRECIO DE TU LIBERTAD
+  * "La Máscara y la Grieta": Ej. �­ LA FACHADA COTIDIANA / �ª LA SOLEDAD DEL ESPEJO / �¡ LA VERDAD INEVITABLE
+  * "Las Dos Caras": Ej. �£� LO QUE DIJISTE / � LO QUE NINGUNO SE ATREVIÓ A DECIR / �� LA REALIDAD QUE QUEDA
+  * "La Trampa del Tiempo": Ej. �³ EL RECUERDO QUE DUELE / �¥ EL DESGASTE INVISIBLE / �ª EL VALOR DE SOLTAR
+  * "El Peso del Deber": Ej. �� LA OBLIGACIÓN IMPUESTA / �ª� LA CULPA DE QUERER IRTE / �� EL PRECIO DE TU LIBERTAD
 - **CRÍTICO:** Integra emojis *adentro* de los párrafos de forma natural para ilustrar palabras clave.
 - Énfasis: Usa **Negrita** para las frases más dolorosas o impactantes.
 </visual_scaffolding>
@@ -136,26 +136,26 @@ Tema/Título elegido: "${topic || 'Elige un tema profundamente humano'}"
 
 ESTRUCTURA OBLIGATORIA (Sigue este molde exacto pero adaptando los subtítulos al tema de la vida cotidiana):
 
-[TÍTULO PRINCIPAL CON EMOJI] (Ejemplo: 🥀 LA SOLEDAD DE SER EL FUERTE DE LA FAMILIA o ⏰ EL LUNES ETERNO Y LA ANSIEDAD)
+[TÍTULO PRINCIPAL CON EMOJI] (Ejemplo: �¥ LA SOLEDAD DE SER EL FUERTE DE LA FAMILIA o �° EL LUNES ETERNO Y LA ANSIEDAD)
 
 [SUBTÍTULO 1 CON EMOJI] (Describe la escena, la fachada o perspectiva inicial)
 [Párrafo EXTENSO y PROFUNDO desarrollando el dolor, la psicología y la situación detallada de esta parte. No escatimes en palabras, explica bien el sentimiento. Integra emojis en el texto].
 
-➖➖➖➖➖➖➖➖➖➖
+����������
 
 [SUBTÍTULO 2 CON EMOJI] (Describe el nudo, la contraparte o la verdad oculta)
 [Párrafo EXTENSO con la otra cara de la moneda o el nudo del problema. Analiza a fondo las emociones de esta otra parte, integrando emojis].
 
-➖➖➖➖➖➖➖➖➖➖
+����������
 
 [SUBTÍTULO 3 CON EMOJI] (El golpe de realidad o desenlace)
 [Párrafo EXTENSO de cierre, directo y sin filtros, que dé una lección de realidad cruda y profunda].
 
-➖➖➖➖➖➖➖➖➖➖🔥 
+�����������¥ 
 
-¿TÚ QUÉ HARÍAS? [Pregunta polémica o de debate sobre el tema] 🤔
+¿TÚ QUÉ HARÍAS? [Pregunta polémica o de debate sobre el tema] �¤
 
-👇 DIME EN LOS COMENTARIOS 👇
+� DIME EN LOS COMENTARIOS �
 </content_architecture>
 `;
       }

@@ -37,7 +37,7 @@ Estilo Visual Seleccionado: "${style}"
 Formato de Imagen: ${requestedFormat} (${aspectRatioFlag})
 Duración objetivo: ${duration} segundos.
 
-⚠️ INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
+� � INSTRUCCIONES CRÍTICAS DE CALIDAD Y COHERENCIA:
 1. NO TE REPITAS: Hoy debes abordar el tema desde este ángulo: **${randomAngle}**. Inventa una anécdota, dato o situación completamente nueva y fascinante.
 2. GUION MAGNÉTICO: Estructura el guion con un gancho brutal, desarrollo y clímax. PERO OJO: **NUNCA, JAMÁS escribas palabras estructurales como "Gancho:", "Desarrollo:", "Clímax:", "Voz en off:", etc.** dentro del campo "narration". Escribe ÚNICAMENTE el texto fluido y limpio que leerá el locutor, sin subtítulos.
 3. COHERENCIA ABSOLUTA IMAGEN-TEXTO: La queja número 1 es que tus imágenes no coinciden con tu texto. El "image_prompt" DEBE reflejar **LITERALMENTE** lo que se narra en esa escena específica. Si hablas de un reloj antiguo rompiéndose, la imagen DEBE describir un reloj antiguo rompiéndose en pedazos. No pongas paisajes genéricos si la voz habla de una persona.

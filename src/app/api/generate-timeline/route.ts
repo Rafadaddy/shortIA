@@ -51,17 +51,17 @@ Genera prompts de imagen, video y metadata para visualizar la línea de tiempo d
 GUION:
 ${characterRef}
 
-🎯 PERSONAJE DE REFERENCIA (ESTILO OBLIGATORIO):
+�¯ PERSONAJE DE REFERENCIA (ESTILO OBLIGATORIO):
 - Figura humana hiperrealista 3D CGI
 - Piel transparente intacta similar al vidrio donde se ve el esqueleto completo
 - Exactamente 2 globos oculares realistas en las cuencas (mirando al frente)
 
-🎯 FONDO Y POSTURA (¡NUEVAS REGLAS!):
+�¯ FONDO Y POSTURA (¡NUEVAS REGLAS!):
 - El entorno (fondo) DEBE SER DINÁMICO Y ESTRICTAMENTE RELACIONADO A LA ESCENA. Si el texto habla de sal, el personaje está en una cocina o un salar. Si habla de insomnio, está en una cama o habitación oscura. Si habla de sol, está en un desierto. ¡CERO FONDOS MORADOS a menos que sea un vacío abstracto!
 - La postura DEBE SER DINÁMICA. El personaje puede estar de pie, acostado, cocinando, gateando o sentado, dependiendo de lo que pase en el guion.
 - La iluminación debe coincidir con el entorno.
 
-🎯 REGLA DE ACCIÓN: Cada paso muestra el deterioro progresivo. Muestra los efectos que menciona el guion en el personaje transparente.
+�¯ REGLA DE ACCIÓN: Cada paso muestra el deterioro progresivo. Muestra los efectos que menciona el guion en el personaje transparente.
 
 FORMATO DE IMAGEN (Ejemplo dinámico):
 "Hyper-realistic 3D CGI human figure with intact transparent glass-like skin over skeleton, exactly two eyeballs, [Postura: standing/laying/sitting], interacting with [Objeto relacionado], located in a [ENTORNO DINÁMICO: dark bedroom, modern kitchen, desert], [efectos físicos del guion], dramatic lighting. --ar 9:16"
@@ -69,7 +69,7 @@ FORMATO DE IMAGEN (Ejemplo dinámico):
 FORMATO DE VIDEO (Animación del movimiento en ese mismo entorno):
 "3-6 sec vertical: [misma descripción de personaje y entorno]. [Acción/Movimiento]. Camera [push-in/shake]."
 
-🚀 DATOS DE PUBLICACIÓN (OBLIGATORIOS):
+� DATOS DE PUBLICACIÓN (OBLIGATORIOS):
 - caption: Texto para redes (30-50 palabras)
 - hashtags: Array de 5 hashtags
 - music_recommendation: Qué tipo de música usar

@@ -143,7 +143,7 @@ REGLAS PARA LOS PROMPTS:
 - image_prompt: Prompt MUY DETALLADO en inglés (mínimo 30 palabras). [Sujeto] + [Entorno] + [Iluminación] + [Cámara] + [Calidad].
 - animation_prompt: Prompt en inglés para animar el video (Runway/Veo3).
 
-🚀 REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
+� REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
 - "caption": Texto para redes sociales (30-50 palabras).
 - "music_recommendation": Pista de fondo ideal.
 - "hashtags": Array de 5 a 8 hashtags.

@@ -79,9 +79,9 @@ CONTEXTO: ${themeInstruction}
 
 ESTILO VISUAL: "${requestedStyle}"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎭 FORMATO DE LA HISTORIETA — CONVERSACIÓN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+������������������������������������
+�­ FORMATO DE LA HISTORIETA � CONVERSACIÓN
+������������������������������������
 
 CADA VIÑETA es un intercambio de diálogos entre EL HOMBRE y LA MUJER.
 - La mujer generalmente inicia o responde con emoción
@@ -94,27 +94,27 @@ Viñeta 2: Él responde "Bien... y tú?"
 Viñeta 3: Ella dice "Ya me olvidaste, ¿verdad?"
 Viñeta 4: Él responde "No... aún no"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔥 REGLAS PARA DIÁLOGOS REALES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+������������������������������������
+�¥ REGLAS PARA DIÁLOGOS REALES
+������������������������������������
 
 Los diálogos deben sonar como una CONVERSACIÓN REAL entre dos personas:
 
-✅ BUENOS DIÁLOGOS (naturales, con emoción):
+� BUENOS DIÁLOGOS (naturales, con emoción):
 - "¿Cómo has estado?" / "Bien... y tú?"
 - "¿Ya me olvidaste?" / "No... aún no"
 - "Te vi con alguien... ¿es él?" / "No es lo que piensas"
 - "¿Por qué no me hablaste?" / "No sabía qué decirte"
 - "¿Aún me recuerdas?" / "Todos los días"
 
-❌ MALOS DIÁLOGOS (genéricos, aburridos):
+� MALOS DIÁLOGOS (genéricos, aburridos):
 - "La vida es difícil" / "Sí, lo es"
 - "Todo pasa por algo" / "Tienes razón"
 - "Debemos ser fuertes" / "Sí"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎬 ESTRUCTURA DE LA HISTORIA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+������������������������������������
+�¬ ESTRUCTURA DE LA HISTORIA
+������������������������������������
 
 La historia debe tener esta progresión:
 
@@ -124,9 +124,9 @@ La historia debe tener esta progresión:
 
 3. FINAL (Últimas 2 viñetas): La conversación llega a un punto de inflexión. Puede ser una verdad incómoda, una reconciliación, una despedida, o una reflexión que deja algo al lector.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ LO QUE DEBES LOGRAR
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+������������������������������������
+� LO QUE DEBES LOGRAR
+������������������������������������
 
 - Que el lector sienta que está ESCUCHANDO una conversación real
 - Progresión emocional: la conversación empieza en un punto y termina en otro
@@ -134,7 +134,7 @@ La historia debe tener esta progresión:
 - El final debe dejar ALGO: una verdad, un giro, una emoción que se queda
 - Los personajes deben ser CONSISTENTES: misma ropa, mismo estilo en TODAS las viñetas
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+������������������������������������
 
 CONSISTENCIA DE PERSONAJES (CRÍTICO):
 - EL HOMBRE: Siempre la misma apariencia en TODAS las viñetas. Describe UNA vez su apariencia y repítela EXACTAMENTE en cada image_prompt.
@@ -161,7 +161,7 @@ Responde SOLO con un JSON válido:
       "image_prompt": "..."
     }
   ],
-  "caption": "Pie de foto para redes (20-30 palabras) 🔥",
+  "caption": "Pie de foto para redes (20-30 palabras) �¥",
   "music_recommendation": "Tipo de música para acompañar"
 }
 `;
