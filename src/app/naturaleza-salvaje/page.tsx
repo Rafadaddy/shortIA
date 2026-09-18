@@ -31,6 +31,29 @@ interface WildlifeData {
   scenes: Scene[];
 }
 
+const animalsList = [
+  "León Africano",
+  "Tigre Siberiano",
+  "Oso Grizzly",
+  "Oso Polar",
+  "Gorila Espalda Plateada",
+  "Hipopótamo",
+  "Rinoceronte Negro",
+  "Cocodrilo del Nilo",
+  "Anaconda Verde",
+  "Dragón de Komodo",
+  "Jaguar",
+  "Lobo Gris (Alfa)",
+  "Hiena Manchada",
+  "Tiburón Blanco",
+  "Orca (Ballena Asesina)",
+  "Águila Harpía",
+  "Mamba Negra",
+  "Elefante Africano",
+  "Búfalo del Cabo",
+  "Medusa Avispa de Mar"
+];
+
 const tones = [
   "Documental Científico (Serio, NatGeo)",
   "Épico y Cinematográfico (Batalla a muerte)",
@@ -241,7 +264,9 @@ const handleCopyAll = () => {
                 type="text"
                 value={animalA}
                 onChange={(e) => setAnimalA(e.target.value)}
-                placeholder="Ej. León Africano"
+                placeholder="Elige de la lista o escribe el tuyo"
+                list="animals-list"
+                onFocus={(e) => e.target.select()}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
               />
             </div>
@@ -251,9 +276,14 @@ const handleCopyAll = () => {
                 type="text"
                 value={animalB}
                 onChange={(e) => setAnimalB(e.target.value)}
-                placeholder="Ej. Tigre Siberiano"
+                placeholder="Elige de la lista o escribe el tuyo"
+                list="animals-list"
+                onFocus={(e) => e.target.select()}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
               />
+              <datalist id="animals-list">
+                {animalsList.map(a => <option key={a} value={a} />)}
+              </datalist>
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium text-slate-300">Tono del Relato</label>
