@@ -5,30 +5,29 @@ import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
 
-interface MexIdea {
+interface WildlifeIdea {
   title: string;
-  hook: string;
-  pain_point: string;
-  why_it_works: string;
+  description: string;
 }
 
 interface Scene {
   scene_number: number;
+  timestamp: string;
   narration: string;
+  text_overlay: string;
   visual_concept: string;
+  camera_movement: string;
+  audio_cues: string;
   image_prompt: string;
   animation_prompt: string;
-  duration: string;
 }
 
-interface Thumbnail {
-  text: string;
-  image_prompt: string;
-}
-
-interface MexData {
+interface WildlifeData {
   title: string;
-  thumbnail: Thumbnail;
+  music: string;
+  hashtags: string[];
+  winner_stats: string;
+  cta: string;
   scenes: Scene[];
 }
 
@@ -82,7 +81,7 @@ export default function CasasMexicanasPage() {
   const [scriptText, setScriptText] = useState("");
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
 
-  const [data, setData] = useState<MexData | null>(null);
+  const [data, setData] = useState<WildlifeData | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   
   const { copiedStates, handleCopy } = useCopyToClipboard();
@@ -406,18 +405,41 @@ const handleCopyAll = () => {
                 {data.scenes.map((scene, idx) => (
                   <div key={scene.scene_number} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 relative group overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-slate-700 group-hover:bg-red-500/50 transition-colors"></div>
-                    <span className="bg-slate-800 text-slate-300 font-bold px-3 py-1 rounded-full text-sm mb-4 inline-block">Escena {scene.scene_number}</span>
-                    <div className="mb-4 relative pr-12">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">NarraciÃ³n</span>
-                      <p className="text-red-200/90 text-sm mt-1 italic leading-relaxed">&quot;{scene.narration}&quot;</p>
-                      <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
-                        {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="bg-red-900/40 text-red-300 border border-red-800/50 font-bold px-3 py-1 rounded-full text-sm">Escena {scene.scene_number}</span>
+                      {scene.timestamp && <span className="bg-slate-800 text-slate-400 px-3 py-1 rounded-full text-xs font-mono">{scene.timestamp}</span>}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <div className="space-y-4">
+                        <div className="relative pr-12">
+                          <span className="text-xs font-semibold text-slate-500 uppercase">🎙️ Narración</span>
+                          <p className="text-red-200/90 text-sm mt-1 italic leading-relaxed">&quot;{scene.narration}&quot;</p>
+                          <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
+                            {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                        <div>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">🔤 Texto en Pantalla</span>
+                          <p className="text-yellow-400 font-black text-sm mt-1 tracking-wide">{scene.text_overlay}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">🎥 Cámara y Movimiento</span>
+                          <p className="text-slate-300 text-sm mt-1 bg-slate-900/50 p-2 rounded-md border border-slate-800/50">{scene.camera_movement}</p>
+                        </div>
+                        <div>
+                          <span className="text-xs font-semibold text-slate-500 uppercase">🔊 Diseño Sonoro</span>
+                          <p className="text-blue-300 text-sm mt-1 bg-slate-900/50 p-2 rounded-md border border-slate-800/50">{scene.audio_cues}</p>
+                        </div>
+                      </div>
                     </div>
                     <div className="mb-4">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Visual</span>
-                      <p className="text-slate-300 text-sm mt-1">{scene.visual_concept}</p>
+                      <span className="text-xs font-semibold text-slate-500 uppercase">👁️ Visual Concept</span>
+                      <p className="text-slate-400 text-sm mt-1">{scene.visual_concept}</p>
                     </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       
                       <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative flex flex-col">
