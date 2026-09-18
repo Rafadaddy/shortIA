@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Sparkles, Copy, Check, Image as ImageIcon, Loader2, RefreshCw, Wand2, Type, Skull, Swords } from "lucide-react";
+import { Sparkles, Copy, Check, Image as ImageIcon, Loader2, RefreshCw, Wand2, Type, Skull, Swords, Play } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
