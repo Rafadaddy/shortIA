@@ -4,7 +4,7 @@ import { Swords, ListOrdered, Sparkles, BookOpen, Image as ImageIcon, MessageSqu
 export function Sidebar() {
   return (
     <>
-      {/* 💻 Desktop Sidebar (Oculto en celulares) */}
+      {/* ðŸ’» Desktop Sidebar (Oculto en celulares) */}
       <aside className="hidden md:flex w-64 bg-slate-900 border-r border-slate-800 h-screen flex-col sticky top-0">
         <div className="p-4 flex items-center gap-2 mb-4">
           <div className="w-8 h-8 bg-pink-600 rounded-lg flex items-center justify-center">
@@ -36,7 +36,7 @@ export function Sidebar() {
           </Link>
           <Link href="/timeline" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <History className="w-5 h-5 text-emerald-400" />
-            Líneas de Tiempo
+            LÃ­neas de Tiempo
           </Link>
           <Link href="/faceless-youtube" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <PlaySquare className="w-5 h-5 text-cyan-400" />
@@ -80,7 +80,7 @@ export function Sidebar() {
           </div>
                     <Link href="/configuracion" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <Settings className="w-5 h-5 text-slate-400" />
-            Configuración
+            ConfiguraciÃ³n
           </Link>
 
         </nav>
@@ -89,7 +89,7 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* 📱 Mobile Bottom Navigation (Oculto en Desktop) */}
+      {/* ðŸ“± Mobile Bottom Navigation (Oculto en Desktop) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex items-center justify-start p-2 z-50 pb-safe overflow-x-auto gap-2">
         <Link href="/reflexiones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-indigo-400 active:text-indigo-400 min-w-[4rem] flex-shrink-0">
           <BookOpen className="w-5 h-5" />
@@ -97,11 +97,11 @@ export function Sidebar() {
         </Link>
         <Link href="/ilustraciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <ImageIcon className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Imágenes</span>
+          <span className="text-[10px] font-medium">ImÃ¡genes</span>
         </Link>
         <Link href="/historietas" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
           <MessageSquare className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Cómics</span>
+          <span className="text-[10px] font-medium">CÃ³mics</span>
         </Link>
         <Link href="/conversaciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <MessageCircle className="w-5 h-5" />
@@ -109,7 +109,7 @@ export function Sidebar() {
         </Link>
         <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <History className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Líneas</span>
+          <span className="text-[10px] font-medium">LÃ­neas</span>
         </Link>
         <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 min-w-[4rem] flex-shrink-0">
           <PlaySquare className="w-5 h-5" />
@@ -145,7 +145,7 @@ export function Sidebar() {
         </Link>
         <Link href="/videos-motivacionales" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-amber-400 active:text-amber-400 min-w-[4rem] flex-shrink-0">
           <Flame className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Motivación</span>
+          <span className="text-[10px] font-medium">MotivaciÃ³n</span>
         </Link>
                 <Link href="/configuracion" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-slate-200 active:text-slate-200 min-w-[4rem] flex-shrink-0">
           <Settings className="w-5 h-5" />

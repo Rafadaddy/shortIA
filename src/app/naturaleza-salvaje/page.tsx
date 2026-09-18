@@ -33,38 +33,38 @@ interface MexData {
 }
 
 const mexTopics = [
-  "ECONOMÍA (La tanda, Coppel, el recibo CFE)",
+  "ECONOMÃA (La tanda, Coppel, el recibo CFE)",
   "LA FAMILIA EXTENSA (Suegra, arrimados, el terreno)",
   "DRAMA Y CONFLICTOS (La chancla, la tele, chismes)",
-  "FIESTAS Y COMIDA (Tamales, 15 años endeudados)",
-  "PROBLEMAS FÍSICOS DE CASA (El boiler, tinaco, goteras)",
+  "FIESTAS Y COMIDA (Tamales, 15 aÃ±os endeudados)",
+  "PROBLEMAS FÃSICOS DE CASA (El boiler, tinaco, goteras)",
   "AMOR Y VECINDAD (La vecina chismosa, el de los fierros)",
   "SOLUCIONES A LA MEXICANA (VapoRub, cinta y alambre)"
 ];
 
 const mexProtagonists = [
-  "Mamá luchona (con la chancla en mano)",
-  "Papá proveedor (el que apaga todas las luces)",
-  "Abuela sabia (la dueña de los terrenos)",
+  "MamÃ¡ luchona (con la chancla en mano)",
+  "PapÃ¡ proveedor (el que apaga todas las luces)",
+  "Abuela sabia (la dueÃ±a de los terrenos)",
   "Hija/o adolescente (sufriendo las reglas)",
   "Hijo NINI (el mantenido de la casa)",
   "La Suegra metiche",
-  "El Cuñado arrimado"
+  "El CuÃ±ado arrimado"
 ];
 
 const mexTones = [
   "Comedia (Absurdo y gracioso)",
   "Drama que hace llorar (Novelesco)",
   "Nostalgia (Recordando la infancia)",
-  "Terror de mamá enojada",
-  "Motivacional (Echándole ganas)"
+  "Terror de mamÃ¡ enojada",
+  "Motivacional (EchÃ¡ndole ganas)"
 ];
 
 const mexStyles = [
-  "POV TikTok Casero (Cámara celular realista)",
+  "POV TikTok Casero (CÃ¡mara celular realista)",
   "Casa de Infonavit (Luz de foco ahorrador)",
-  "Cinematográfico Exagerado (La Rosa de Guadalupe)",
-  "Estética Vintage Mexicana (Foto 90s)"
+  "CinematogrÃ¡fico Exagerado (La Rosa de Guadalupe)",
+  "EstÃ©tica Vintage Mexicana (Foto 90s)"
 ];
 
 export default function CasasMexicanasPage() {
@@ -219,7 +219,7 @@ export default function CasasMexicanasPage() {
       if (!res.ok) throw new Error(json.error || "Error generating image");
       
       setGeneratedImages(prev => ({ ...prev, [sceneIndex]: json.imageBase64 }));
-      showToast("Imagen generada con éxito", "success");
+      showToast("Imagen generada con Ã©xito", "success");
     } catch (error: unknown) {
       console.error(error);
       showToast((error instanceof Error ? error.message : "Error al generar la imagen"), "error");
@@ -229,14 +229,14 @@ export default function CasasMexicanasPage() {
   };
 const handleCopyAll = () => {
     if (!data) return;
-    let text = `🎥 TÍTULO: ${data.title}\n\n`;
-    text += `🖼️ MINIATURA:\nTexto: ${data.thumbnail.text}\nPrompt: ${data.thumbnail.image_prompt}\n\n---\n\n`;
+    let text = `ðŸŽ¥ TÃTULO: ${data.title}\n\n`;
+    text += `ðŸ–¼ï¸ MINIATURA:\nTexto: ${data.thumbnail.text}\nPrompt: ${data.thumbnail.image_prompt}\n\n---\n\n`;
     data.scenes.forEach((s) => {
-      text += `🎬 ESCENA ${s.scene_number}\n`;
-      text += `🗣️ Narración: ${s.narration}\n`;
-      text += `👁️ Visual: ${s.visual_concept}\n`;
-      text += `🎨 Prompt Imagen: ${s.image_prompt}\n`;
-      text += `✨ Prompt Animación: ${s.animation_prompt}\n\n`;
+      text += `ðŸŽ¬ ESCENA ${s.scene_number}\n`;
+      text += `ðŸ—£ï¸ NarraciÃ³n: ${s.narration}\n`;
+      text += `ðŸ‘ï¸ Visual: ${s.visual_concept}\n`;
+      text += `ðŸŽ¨ Prompt Imagen: ${s.image_prompt}\n`;
+      text += `âœ¨ Prompt AnimaciÃ³n: ${s.animation_prompt}\n\n`;
     });
     handleCopy(text, "all");
     showToast("Guion completo copiado", "success");
@@ -260,22 +260,22 @@ const handleCopyAll = () => {
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">Configuración del Guion</h2>
+            <h2 className="text-xl font-bold text-white">ConfiguraciÃ³n del Guion</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Categoría (Tema)</label>
+              <label className="text-sm font-medium text-slate-300">CategorÃ­a (Tema)</label>
               <input
                 type="text"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="Ej. Visitas, Escribe el tuyo o déjalo en blanco"
+                placeholder="Ej. Visitas, Escribe el tuyo o dÃ©jalo en blanco"
                 list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none"
               />
               <datalist id="topic-list">
-                <option value="🎲 Aleatorio / Sorpréndeme" />
-                <option value="✨ Tema Libre (Borra esto y escribe el tuyo)" />
+                <option value="ðŸŽ² Aleatorio / SorprÃ©ndeme" />
+                <option value="âœ¨ Tema Libre (Borra esto y escribe el tuyo)" />
                 {mexTopics.map(n => <option key={n} value={n} />)}
               </datalist>
             </div>
@@ -292,14 +292,14 @@ const handleCopyAll = () => {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Estética Visual</label>
+              <label className="text-sm font-medium text-slate-300">EstÃ©tica Visual</label>
               <select value={visualStyle} onChange={(e) => setVisualStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-red-500 outline-none">
                 {mexStyles.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             
             <div className="space-y-2 lg:col-span-1">
-              <label className="text-sm font-medium text-slate-300">Duración/Escena</label>
+              <label className="text-sm font-medium text-slate-300">DuraciÃ³n/Escena</label>
               <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
                 <option value="5 Segundos">5 Segundos</option>
                 <option value="10 Segundos">10 Segundos</option>
@@ -321,7 +321,7 @@ const handleCopyAll = () => {
 
           {ideas && (
             <div className="mt-8 space-y-4 animate-in fade-in">
-              <h3 className="text-lg font-semibold text-red-300 mb-2">Selecciona la situación:</h3>
+              <h3 className="text-lg font-semibold text-red-300 mb-2">Selecciona la situaciÃ³n:</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {ideas.map((idea, idx) => (
                   <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-red-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
@@ -339,7 +339,7 @@ const handleCopyAll = () => {
           <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
             <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
               <div className="bg-red-500/20 text-red-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
-              <h2 className="text-xl font-bold text-white">Edición del Guion Mexicano</h2>
+              <h2 className="text-xl font-bold text-white">EdiciÃ³n del Guion Mexicano</h2>
             </div>
             
             {isGeneratingScript && !scriptText ? (
@@ -351,8 +351,8 @@ const handleCopyAll = () => {
               <div className="space-y-4">
                 <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-red-500 outline-none resize-none leading-relaxed" />
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo más exagerado y chistoso, metiendo más palabras mexicanas como güey, nmms, chale.")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más Mexicano</button>
-                  <button onClick={() => improveScript("Haz que termine en un grito dramático o regaño de la mamá (la chancla).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Chancla</button>
+                  <button onClick={() => improveScript("Hazlo mÃ¡s exagerado y chistoso, metiendo mÃ¡s palabras mexicanas como gÃ¼ey, nmms, chale.")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> MÃ¡s Mexicano</button>
+                  <button onClick={() => improveScript("Haz que termine en un grito dramÃ¡tico o regaÃ±o de la mamÃ¡ (la chancla).")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Final de Chancla</button>
                 </div>
               </div>
             )}
@@ -408,7 +408,7 @@ const handleCopyAll = () => {
                     <div className="absolute top-0 left-0 w-1 h-full bg-slate-700 group-hover:bg-red-500/50 transition-colors"></div>
                     <span className="bg-slate-800 text-slate-300 font-bold px-3 py-1 rounded-full text-sm mb-4 inline-block">Escena {scene.scene_number}</span>
                     <div className="mb-4 relative pr-12">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
+                      <span className="text-xs font-semibold text-slate-500 uppercase">NarraciÃ³n</span>
                       <p className="text-red-200/90 text-sm mt-1 italic leading-relaxed">&quot;{scene.narration}&quot;</p>
                       <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
                         {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
