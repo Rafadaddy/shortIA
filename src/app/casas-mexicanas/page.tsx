@@ -385,7 +385,7 @@ export default function CasasMexicanasPage() {
                     <span className="bg-slate-800 text-slate-300 font-bold px-3 py-1 rounded-full text-sm mb-4 inline-block">Escena {scene.scene_number}</span>
                     <div className="mb-4 relative pr-12">
                       <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
-                      <p className="text-orange-200/90 text-sm mt-1 italic leading-relaxed">"{scene.narration}"</p>
+                      <p className="text-orange-200/90 text-sm mt-1 italic leading-relaxed">&quot;{scene.narration}&quot;</p>
                       <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-orange-300 transition-colors">
                         {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
