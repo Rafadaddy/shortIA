@@ -296,7 +296,6 @@ export default function ListasViralesPage() {
                   </div>
                 ))}
               </div>
-              </div>
 
               {data.image_prompt && (
                 <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col items-center gap-6">
