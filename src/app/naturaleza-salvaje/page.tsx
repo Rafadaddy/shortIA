@@ -146,7 +146,11 @@ export default function NaturalezaSalvajePage() {
       if (!res.ok || json.error) {
         throw new Error(json.error || "Error al generar guion");
       }
-      setScriptText(json.script);
+      const scriptResult = json.script || json.guion || json.text || (typeof json === "string" ? json : "");
+      if (!scriptResult) {
+        throw new Error("No se pudo extraer el texto del guion. Intenta nuevamente.");
+      }
+      setScriptText(scriptResult);
       showToast("¡Guion de batalla generado!", "success");
     } catch (error) {
       console.error(error);

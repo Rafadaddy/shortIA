@@ -2,7 +2,33 @@ export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
 import { chatCompletion } from "@/lib/api-helpers";
 
-const clean = (r: string) => r.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
+function parseJsonResponse(raw: string) {
+  let cleanJson = raw.trim();
+  if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
+  else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
+  if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
+  cleanJson = cleanJson.trim();
+
+  // Buscar primer { o [ y último } o ] si el modelo agregó comentarios antes o después
+  const firstBrace = cleanJson.indexOf('{');
+  const firstBracket = cleanJson.indexOf('[');
+  let startIdx = 0;
+  if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+    startIdx = firstBrace;
+    const lastBrace = cleanJson.lastIndexOf('}');
+    if (lastBrace !== -1) {
+      cleanJson = cleanJson.substring(startIdx, lastBrace + 1);
+    }
+  } else if (firstBracket !== -1) {
+    startIdx = firstBracket;
+    const lastBracket = cleanJson.lastIndexOf(']');
+    if (lastBracket !== -1) {
+      cleanJson = cleanJson.substring(startIdx, lastBracket + 1);
+    }
+  }
+
+  return JSON.parse(cleanJson);
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,13 +66,19 @@ Responde ÚNICAMENTE con un JSON válido:
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
-      return NextResponse.json(JSON.parse(clean(response)));
+      try {
+        return NextResponse.json(parseJsonResponse(response));
+      } catch {
+        return NextResponse.json(JSON.parse(clean(response)));
+      }
     }
 
     // 2. GENERAR GUION NARRATIVO
     if (action === "script_only") {
+      const ideaTitle = selectedIdea?.title || (typeof selectedIdea === "string" ? selectedIdea : "Batalla Animal Salvaje");
+      const ideaDesc = selectedIdea?.description || "";
       const prompt = `Eres un guionista y narrador cinematográfico de documentales de animales salvajes para YouTube Shorts y TikTok (60 seg).
-Escribe un guion viral electrizante para este enfrentamiento: "${selectedIdea?.title || 'Batalla Animal'}" (${selectedIdea?.description || ''}).
+Escribe un guion viral electrizante para este enfrentamiento: "${ideaTitle}" (${ideaDesc}).
 Tono del narrador: "${tone || 'Épico y Documental'}".
 
 ESTRUCTURA DE ALTA RETENCIÓN:
@@ -66,7 +98,14 @@ Responde ÚNICAMENTE con un JSON válido:
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
-      return NextResponse.json(JSON.parse(clean(response)));
+      try {
+        const parsed = parseJsonResponse(response);
+        return NextResponse.json(parsed);
+      } catch {
+        // Fallback: si el modelo respondió texto directo en vez de JSON
+        const rawText = clean(response);
+        return NextResponse.json({ script: rawText });
+      }
     }
 
     // 3. MEJORAR GUION
@@ -85,7 +124,13 @@ Responde ÚNICAMENTE con un JSON válido:
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
-      return NextResponse.json(JSON.parse(clean(response)));
+      try {
+        const parsed = parseJsonResponse(response);
+        return NextResponse.json(parsed);
+      } catch {
+        const rawText = clean(response);
+        return NextResponse.json({ script: rawText });
+      }
     }
 
     // 4. GENERAR ESCENAS Y PROMPTS
@@ -124,7 +169,7 @@ Responde ÚNICAMENTE con un JSON válido:
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.75 });
-      return NextResponse.json(JSON.parse(clean(response)));
+      return NextResponse.json(parseJsonResponse(response));
     }
 
     // 5. PROMPT INDIVIDUAL
@@ -135,7 +180,7 @@ Responde ÚNICAMENTE con un JSON válido:
         : `Create an advanced Midjourney v6 image prompt for this wildlife scene: "${visual_concept || narration}". Style: National Geographic wildlife photography, dramatic atmospheric lighting, 8k, photorealistic, vertical 9:16.`;
 
       const response = await chatCompletion(body, `${prompt}\nRespond ONLY with valid JSON: { "${prompt_type === 'animation' ? 'animation_prompt' : 'image_prompt'}": "..." }`, { temperature: 0.8 });
-      return NextResponse.json(JSON.parse(clean(response)));
+      return NextResponse.json(parseJsonResponse(response));
     }
 
     return NextResponse.json({ error: "Acción no válida" }, { status: 400 });
