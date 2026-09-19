@@ -131,8 +131,10 @@ METODOLOGÍA DE CREACIÓN:
    - La Metáfora Animal o Simbólica: "Ten cuidado con [SITUACIÓN/PERSONA]... recuerda que los [SÍMBOLO] se alegran cuando ven [DEBILIDAD]."
    - El Estado de Ánimo o Ironía: "Mi [ASPECTO DE VIDA] es tan [EXTREMO] que [CONSECUENCIA]."
 
-3. REGLAS DE ORO DE COMPOSICIÓN Y TIPOGRAFÍA (Para el prompt de IA):
-   - Espacio Negativo OBLIGATORIO: La escena DEBE reservar un espacio limpio (arriba, a un lado o abajo) para colocar tipografía sin tapar al sujeto.
+3. REGLAS DE ORO DE COMPOSICIÓN Y TIPOGRAFÍA (OBLIGATORIO EN EL PROMPT DE IA):
+   - TEXTO INTEGRADO OBLIGATORIO: El prompt para el generador de imágenes (image_prompt) DEBE incluir explícitamente la orden de renderizar la frase "${suggested_phrase}" dentro de la imagen. 
+     Ejemplo de indicación en inglés dentro del prompt: "There is bold, clean typography placed in the negative space that reads: '[FRASE_EXACTA_EN_ESPAÑOL]'. The text has high contrast and is readable."
+   - Espacio Negativo OBLIGATORIO: La escena DEBE reservar un espacio limpio (arriba, a un lado o abajo) para colocar esa tipografía sin tapar al sujeto.
    - Jerarquía Visual: El ojo debe ir primero a la emoción del personaje/metáfora, luego al texto, luego a los detalles del entorno.
    - Contraste: Fondos oscuros usan texto blanco/dorado/rojo. Fondos claros usan texto oscuro/negro.
    - SEGURIDAD Y CENSURA CERO: PROHIBIDO usar palabras que activen los filtros de censura de DALL-E / Midjourney (prohibido: "robo", "ilegal", "droga", "ciberataque", "armas", "hackeo", "manipulación financiera"). Convierte conceptos oscuros en metáforas elegantes (ej: sombras misteriosas, máscaras sutiles, niebla, laberintos).
@@ -140,8 +142,9 @@ METODOLOGÍA DE CREACIÓN:
 ESTRUCTURA DE RESPUESTA JSON:
 1. "title": Título corto y atractivo del concepto.
 2. "suggested_phrase": La frase exacta en español con una de las fórmulas virales (resalta mentalmente las 1-2 palabras clave).
-3. "image_prompt": Prompt detallado en INGLÉS listo para Midjourney v6 / DALL-E 3 / Flux.
-   Debe describir con riqueza cinematográfica: el sujeto, su emoción o metáfora, el entorno, la iluminación, la textura de estilo (${styleInstruction}), la indicación explícita de "ample negative space for text", y opcionalmente incluir la frase si el estilo la integra. Termina con "${aspectRatioFlag}".
+3. "image_prompt": Prompt detallado en INGLÉS listo para Midjourney v6 / DALL-E 3 / Flux / Imagen 3.
+   ESTRUCTURA OBLIGATORIA DEL PROMPT:
+   "[Descripción cinematográfica detallada del sujeto, su emoción y la metáfora visual]. ${styleInstruction} Located in the clean negative space (top or side), there is large, bold typography cleanly displaying the text: \"[SUGGESTED_PHRASE_EN_ESPAÑOL]\". Perfect typography rendering, highly readable, sharp contrast. ${aspectRatioFlag}"
 4. "caption": Copy listo para publicar en Instagram/TikTok/FB con gancho reflexivo, 2-3 párrafos cortos, emojis y llamada a comentar o compartir.
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:

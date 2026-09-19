@@ -403,22 +403,37 @@ export default function IlustracionesPage() {
                 {/* Columna Derecha: Imagen Generada (Si existe) */}
                 {data.generated_image_base64 && (
                   <div className="w-full lg:w-[400px] flex-shrink-0 flex flex-col gap-4">
-                    <label className="text-sm font-semibold text-pink-400 uppercase tracking-wider flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" /> Resultado Generado
-                    </label>
-                    <div className="w-full rounded-2xl overflow-hidden border-2 border-slate-700/50 shadow-2xl relative bg-slate-950 aspect-[9/16] max-h-[600px] flex items-center justify-center">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-pink-400 uppercase tracking-wider flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" /> Resultado Generado
+                      </label>
+                      <span className="text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded-full font-medium">
+                        HD 9:16
+                      </span>
+                    </div>
+
+                    {/* Contenedor de la Imagen con Superposición Tipográfica de Gancho */}
+                    <div className="w-full rounded-2xl overflow-hidden border-2 border-slate-700/50 shadow-2xl relative bg-slate-950 aspect-[9/16] max-h-[600px] flex items-center justify-center group">
                       <img 
                         src={"data:image/jpeg;base64," + data.generated_image_base64}
                         alt={data.title}
                         className="w-full h-full object-cover"
                       />
+                      
+                      {/* Banner / Tipografía de Gancho Llamativo Superpuesto */}
+                      <div className="absolute inset-x-0 top-0 p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+                        <p className="text-white text-center font-extrabold text-lg md:text-xl leading-tight tracking-wide drop-shadow-[0_3px_6px_rgba(0,0,0,0.9)] uppercase font-sans">
+                          {data.suggested_phrase}
+                        </p>
+                      </div>
                     </div>
+
                     <a 
                       href={"data:image/jpeg;base64," + data.generated_image_base64}
                       download={"ilustracion-" + data.title.replace(/\s+/g, '-').toLowerCase() + ".jpg"}
-                      className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-center font-semibold transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl text-center font-semibold transition-all shadow-lg flex items-center justify-center gap-2"
                     >
-                      Descargar Imagen
+                      Descargar Imagen HD
                     </a>
                   </div>
                 )}
