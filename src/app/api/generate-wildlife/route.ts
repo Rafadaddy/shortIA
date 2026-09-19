@@ -2,6 +2,8 @@ export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
 import { chatCompletion } from "@/lib/api-helpers";
 
+const clean = (r: string) => r.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
+
 function parseJsonResponse(raw: string) {
   let cleanJson = raw.trim();
   if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
