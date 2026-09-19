@@ -40,14 +40,13 @@ const QUICK_NICHES = [
 ];
 
 const visualStylesList = [
-  "Libre / Que la IA decida",
-  "Cinemático Oscuro (Motivación / Hyperrealist)",
-  "Elegante B&W (Mafia / Luxury / Old Money)",
-  "Personaje 3D Pixar / Cartoon Carismático",
-  "Cyberpunk Neón (Glow, Luces de Neón)",
-  "Fotografía Vintage 90s / Retro Film Grain",
-  "Minimalista Vectorial / Ilustración Flat",
-  "Pintura al Óleo Clásica / Renacentista",
+  "🎲 Libre / Que la IA decida",
+  "📖 Cuento / Fábula Moderna (Acuarela y Tinta, Infantil/Profundo)",
+  "🏙️ Foto Realista Urbana / Motivacional (Luz Dorada, Pared/Calle)",
+  "🎨 Pintura Artística / Sarcasmo (Óleo Digital, Expresivo, Dramático)",
+  "🛋️ Minimalista / Cartoon Relatable (Blob, Webcomic, Fondo Limpio)",
+  "🦁 Metáfora Cinematográfica Oscura (National Geographic, Épico)",
+  "✨ Cute 3D / Pixar Vibe (Render 3D Tierno, Iluminación Suave)",
   "✏️ Escribir mi propio estilo personalizado..."
 ];
 
@@ -274,18 +273,19 @@ export default function IlustracionesPage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 ml-1">Superficie Texto</label>
+                <label className="text-sm font-medium text-slate-300 ml-1">Espacio de Texto / Integración</label>
                 <select
                   value={textSurface}
                   onChange={(e) => setTextSurface(e.target.value)}
-                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all appearance-none text-sm"
+                  className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all appearance-none text-sm"
                 >
-                  <option value="Integrado (Por Defecto)">Integrado en entorno</option>
-                  <option value="Letrero de Neón">Letrero de Neón</option>
-                  <option value="Tiza en Pizarrón">Tiza en Pizarrón</option>
-                  <option value="Tallado en Madera">Tallado en Madera</option>
-                  <option value="Papel Roto / Antiguo">Papel Roto / Antiguo</option>
-                  <option value="Cielo / Nubes">Cielo / Nubes</option>
+                  <option value="Integrado (Por Defecto)">✨ Espacio Negativo Limpio (Arriba / Lado)</option>
+                  <option value="Pared Urbana / Mural">🧱 Pintado en Pared / Mural Urbano</option>
+                  <option value="Letrero de Neón">💡 Letrero de Neón Luminoso</option>
+                  <option value="Tiza en Pizarrón">📋 Tiza en Pizarrón / Pizarra</option>
+                  <option value="Tallado en Madera">🪵 Tallado rústico en Madera</option>
+                  <option value="Papel Roto / Antiguo">📜 Papel Antiguo o Roto</option>
+                  <option value="Cielo / Nubes">☁️ Cielo / Nubes Flotantes</option>
                 </select>
               </div>
             </div>

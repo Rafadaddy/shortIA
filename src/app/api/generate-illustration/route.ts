@@ -15,39 +15,22 @@ export async function POST(req: NextRequest) {
     if (requestedFormat.includes("1:1")) aspectRatioFlag = "--ar 1:1";
 
     let styleInstruction = "";
-    if (requestedStyle.includes("Cinemático Oscuro")) {
-      styleInstruction = "A dark, cinematic, high-contrast, moody photography style. Think millionaire mindset, sigma male, dramatic shadows, silhouettes, glowing light at the end of a tunnel. The typography must be bold, aggressive, clean, often in white and yellow or gold. Masterpiece, 8k, photorealistic.";
-    } else if (requestedStyle.includes("Elegante B&W")) {
-      styleInstruction = "A highly elegant, black and white, cinematic photography style. Sigma male aesthetic, luxury, mafia style, adjusting cuffs, dark moody lighting, faceless subject. The typography must be written elegantly in white cursive or serif font over the dark areas of the center of the image.";
-    } else if (requestedStyle.includes("Personaje 3D Gracioso")) {
-      styleInstruction = "A highly detailed, hyper-realistic 3D character design (like a cool duck with sunglasses, a cute dog with a hat, etc.) with human-like posture, cinematic lighting, funny modern meme aesthetic. The background should be a beautiful scenic landscape. The typography must be written in bold, clean white letters at the top of the image.";
-    } else if (requestedStyle.includes("Aesthetic Tierno")) {
-      styleInstruction = "A cozy, cute, hand-drawn aesthetic illustration style. Watercolor textures, soft pastel colors, emotional and tender. The typography should look like beautiful hand-written calligraphy or cute bubble letters integrated playfully into the environment.";
-    } else if (requestedStyle.includes("Minimalista Elegante")) {
-      styleInstruction = "A clean, minimalist, high-end editorial style. Lots of negative space, neutral colors (black, white, beige). The typography must be sleek, modern serif or sans-serif, elegant and sophisticated.";
-    } else if (requestedStyle.includes("3D Pixar")) {
-      styleInstruction = "A highly detailed, hyper-realistic 3D Pixar/Disney style character design. Beautiful soft lighting, vibrant colors, emotional expression, expressive eyes. The typography should be bold, playful, and integrated into the scene.";
-    } else if (requestedStyle.includes("Animación 2D")) {
-      styleInstruction = "A classic 2D animated cartoon style. Flat colors, expressive character designs, traditional western animation aesthetics. The typography should match the playful cartoon style.";
-    } else if (requestedStyle.includes("Lápiz")) {
-      styleInstruction = "A traditional pencil sketch drawing style. Highly detailed graphite shading, monochromatic, visible pencil strokes on textured paper. The typography must look hand-written in pencil, perfectly blending with the sketch.";
-    } else if (requestedStyle.includes("Mural Urbano")) {
-      styleInstruction = "An urban street photography style. A highly realistic photo of a large concrete wall, brick wall, or city surface. The typography MUST look like it is physically painted directly onto the wall (like a clean mural or stencil street art). Natural daylight, shadows of trees or buildings, ultra-realistic street aesthetic.";
+    if (requestedStyle.includes("Cuento / Fábula Moderna")) {
+      styleInstruction = "Illustration style of a modern children's book, soft watercolor and ink textures, pastel colors, whimsical atmosphere. Characters or animals acting out a powerful visual metaphor. Simple background with negative space at the top or side for text. High quality, detailed, emotional expression.";
+    } else if (requestedStyle.includes("Foto Realista Urbana")) {
+      styleInstruction = "Realistic cinematic photography, golden hour lighting, urban street corner or textured wall background. Warm sunset tones, shadows of trees. Minimalist composition with generous negative space on the wall/scene for bold typography. Photorealistic, 8k, depth of field.";
+    } else if (requestedStyle.includes("Pintura Artística / Sarcasmo")) {
+      styleInstruction = "Digital oil painting style, thick visible brushstrokes, expressive texture. Humanoid animal or relatable figure holding an everyday object (like a coffee mug), looking tired, sarcastic, or introspective. Dark warm background (orange, brown, dark tones). Moody lighting, dramatic shadows. Centered composition with negative space.";
+    } else if (requestedStyle.includes("Minimalista / Cartoon Relatable")) {
+      styleInstruction = "Minimalist vector illustration, clean white background. A cute simple round character (blob style) in a relatable adult situation. Flat colors, soft subtle shading. Large empty negative space above or around the subject for text. Viral webcomic aesthetic.";
+    } else if (requestedStyle.includes("Metáfora Cinematográfica Oscura")) {
+      styleInstruction = "Hyper-realistic cinematic shot, National Geographic style but stylized and metaphorical. A powerful animal or figure in an introspective posture on an edge or natural setting. In the background or shadows, subtle threatening or symbolic elements. Sunset or stormy sky lighting. Dramatic atmosphere, emotional storytelling, space at top for serif text.";
+    } else if (requestedStyle.includes("Cute 3D / Pixar Vibe")) {
+      styleInstruction = "3D render style like Pixar animation, C4D, Octane render. A cute fluffy animal or character wearing modern clothing or doing a human activity. Bright natural soft lighting, cozy or green field background. Adorable big expressive eyes, high detail fur texture, space above for text.";
+    } else if (requestedStyle.includes("Cinemático Oscuro")) {
+      styleInstruction = "A dark, cinematic, high-contrast, moody photography style. Dramatic shadows, silhouettes, glowing light. Generous negative space for bold typography. Masterpiece, 8k, photorealistic.";
     } else {
-      styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}. Integrated typography that fits the mood.`;
-    }
-
-    let textSurfaceInstruction = "written clearly and naturally within the scene";
-    if (textSurface === "Letrero de Neón") {
-      textSurfaceInstruction = "written in glowing neon lights mounted on a wall or structure";
-    } else if (textSurface === "Tallado en Madera") {
-      textSurfaceInstruction = "carved or engraved deeply into a rustic wooden surface";
-    } else if (textSurface === "Tiza en Pizarrón") {
-      textSurfaceInstruction = "handwritten in chalk on a dusty blackboard";
-    } else if (textSurface === "Papel Roto / Antiguo") {
-      textSurfaceInstruction = "handwritten on a torn, aged, vintage piece of paper";
-    } else if (textSurface === "Cielo / Nubes") {
-      textSurfaceInstruction = "formed by clouds or glowing floating letters in the sky";
+      styleInstruction = `A high quality visual artwork in the style of ${requestedStyle}, with intentional negative space for overlaying text.`;
     }
 
     let prompt = "";
@@ -123,38 +106,43 @@ Responde SOLO con un JSON válido en este formato:
       return NextResponse.json(JSON.parse(clean));
     } else {
       prompt = `
-Eres un director de arte experto en crear contenido visual viral para redes sociales.
-Tu especialidad es generar imágenes impactantes que INCLUYEN TEXTO DIRECTAMENTE EN LA COMPOSICIÓN.
+Eres un experto director de arte y creador de contenido viral de clase mundial para redes sociales (Instagram, TikTok, Facebook).
+Tu especialidad absoluta es crear imágenes que combinan una METÁFORA VISUAL POTENTE con un mensaje de texto corto e impactante. 
+LA IMAGEN DEBE CONTAR LA HISTORIA POR SÍ MISMA ANTES DE LEER EL TEXTO.
+Genera prompts detallados para crear estas imágenes usando IA (Midjourney/DALL-E/Flux) y sugiere el texto exacto.
 
-CONTEXTO: Genera una imagen viral para redes sociales con texto integrado.
+CONTEXTO:
+- NICHO / TEMÁTICA: "${niche}"
+- ESTILO VISUAL SOLICITADO: "${requestedStyle}"
+- GUÍA DE ESTILO TÉCNICO: ${styleInstruction}
+${idea ? `- IDEA / TEMA ESPECÍFICO DEL USUARIO: "${idea}"` : `- Si no hay idea específica, genera una metáfora visual alucinante y viral sobre este nicho.`}
+- FORMATO SOLICITADO: ${requestedFormat} (${aspectRatioFlag})
 
-NICHO / TEMÁTICA: "${niche}"
-ESTILO VISUAL SOLICITADO: "${requestedStyle}"
-${idea ? `IDEA ESPECÍFICA: "${idea}"` : `Genera una idea al azar súper original y viral basada en este nicho.`}
-FORMATO: ${requestedFormat} (${aspectRatioFlag})
+METODOLOGÍA DE CREACIÓN:
+1. METÁFORA VISUAL (La imagen habla por sí sola):
+   - Plantea una metáfora visual potente (ej. animales con expresiones humanas u objetos cotidianos, contrastes entre sombras y luz, reflejos distorsionados que revelan verdades, objetos simbólicos).
+   - Humanización: Si usas animales o personajes, dales gestos y expresiones emocionales humanas profundas (sarcasmo, cansancio, resiliencia, ternura).
 
-PARÁMETROS VISUALES A DEFINIR POR TI (para maximizar viralidad):
-- TONO DEL MENSAJE: Selecciona el mejor tono para esto (Motivador, Provocador, Reflexivo, Sarcástico, Inspirador o Directo).
-- AUDIENCIA: Define a quién va dirigido (Edad, intereses, dolor principal, aspiración).
-- ELEMENTOS VISUALES:
-  * Ambiente: Selecciona (Urbano / Naturaleza / Interior / Abstracto)
-  * Paleta de Colores: Selecciona (Oscuro / Cálido / Frío / Neón / Pastel)
-  * Composición: Selecciona (Persona sola / Grupo / Objeto simbólico / Paisaje)
+2. FÓRMULAS DE TEXTO VIRAL PARA EL COPY ("suggested_phrase"):
+   Aplica una de estas estructuras probadas para crear una frase inolvidable (5 a 15 palabras máximo):
+   - La Paradoja: "Cuando [SITUACIÓN MALA], [RESULTADO BUENO/IRÓNICO]." (Ej: "Cuando el Wi-Fi se cae, el amor sigue conectado.")
+   - La Verdad Incómoda: "No es que [EXCUSA], es que [REALIDAD DURA]." (Ej: "No me alejo para enseñarte una lección, es porque ya aprendí la mía.")
+   - El Consejo Directo: "[ACCIÓN]. Eso se llama [CONCEPTO CLAVE]." (Ej: "Saber llegar a tus clientes. Eso se llama ESTRATEGIA.")
+   - La Metáfora Animal o Simbólica: "Ten cuidado con [SITUACIÓN/PERSONA]... recuerda que los [SÍMBOLO] se alegran cuando ven [DEBILIDAD]."
+   - El Estado de Ánimo o Ironía: "Mi [ASPECTO DE VIDA] es tan [EXTREMO] que [CONSECUENCIA]."
 
-RESTRICCIONES IMPORTANTES:
-- Máximo 10-15 palabras en el texto.
-- Impacto visual en los primeros 3 segundos.
-- Debe ser muy compartible (que genere identificación o aspiración).
+3. REGLAS DE ORO DE COMPOSICIÓN Y TIPOGRAFÍA (Para el prompt de IA):
+   - Espacio Negativo OBLIGATORIO: La escena DEBE reservar un espacio limpio (arriba, a un lado o abajo) para colocar tipografía sin tapar al sujeto.
+   - Jerarquía Visual: El ojo debe ir primero a la emoción del personaje/metáfora, luego al texto, luego a los detalles del entorno.
+   - Contraste: Fondos oscuros usan texto blanco/dorado/rojo. Fondos claros usan texto oscuro/negro.
+   - SEGURIDAD Y CENSURA CERO: PROHIBIDO usar palabras que activen los filtros de censura de DALL-E / Midjourney (prohibido: "robo", "ilegal", "droga", "ciberataque", "armas", "hackeo", "manipulación financiera"). Convierte conceptos oscuros en metáforas elegantes (ej: sombras misteriosas, máscaras sutiles, niebla, laberintos).
 
-INSTRUCCIONES DE SALIDA:
-1. "title": Un título corto de la idea.
-2. "suggested_phrase": La frase exacta que irá escrita DENTRO de la imagen. Debe ser CORTA (5-15 palabras máximo), brutalmente impactante, ingeniosa o motivacional. Usa un español neutro.
-3. "image_prompt": EL PROMPT EN INGLÉS PARA GENERAR LA IMAGEN EN DALL-E 3 O MIDJOURNEY. 
-ESTRUCTURA ESTRICTA DEL PROMPT:
-"[Describe exactamente la escena principal y el sujeto integrando el ambiente, paleta y composición que elegiste]. ${styleInstruction} Integrated into the artwork, there is bold typography that perfectly reads: '[SUGGESTED_PHRASE_EN_ESPAÑOL]'. The text should be ${textSurfaceInstruction}. ${aspectRatioFlag}"
-4. "caption": Un pequeño texto para publicar junto a la imagen en redes sociales (pie de foto). Debe ser empático o motivacional (20-50 palabras). Usa emojis �¥�. SIN etiquetas estructurales.
-
-IMPORTANTE: El image_prompt DEBE estar en inglés, pero la FRASE que le pides que escriba ("...") DEBE ESTAR EN EL ESPAÑOL EXACTO que generaste en suggested_phrase.
+ESTRUCTURA DE RESPUESTA JSON:
+1. "title": Título corto y atractivo del concepto.
+2. "suggested_phrase": La frase exacta en español con una de las fórmulas virales (resalta mentalmente las 1-2 palabras clave).
+3. "image_prompt": Prompt detallado en INGLÉS listo para Midjourney v6 / DALL-E 3 / Flux.
+   Debe describir con riqueza cinematográfica: el sujeto, su emoción o metáfora, el entorno, la iluminación, la textura de estilo (${styleInstruction}), la indicación explícita de "ample negative space for text", y opcionalmente incluir la frase si el estilo la integra. Termina con "${aspectRatioFlag}".
+4. "caption": Copy listo para publicar en Instagram/TikTok/FB con gancho reflexivo, 2-3 párrafos cortos, emojis y llamada a comentar o compartir.
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 {
