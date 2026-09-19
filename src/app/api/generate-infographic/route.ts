@@ -27,13 +27,20 @@ export async function POST(req: NextRequest) {
         `Ángulo creativo para esta tanda: ${randomAngle}.`,
         `Semilla de variedad única: ${seed}.`,
         "",
+        "POLÍTICAS ESTRICTAS DE SEGURIDAD, LEGALIDAD Y MONETIZACIÓN (100% CUMPLIMIENTO):",
+        "- PROHIBIDO TERMINANTEMENTE proponer o sugerir actividades ilegales, delitos, estafas o fraudes.",
+        "- PROHIBIDO temas sobre venta de información privada, hackeo, doxxing, robo de datos o evasión ilícita.",
+        "- PROHIBIDO temas sobre manipulación de mercados financieros, esquemas Ponzi o estafas bursátiles.",
+        "- ENFOQUE DE DEFENSA Y PREVENCIÓN: Si tocas temas de psicología oscura o finanzas, el ángulo DEBE SER SIEMPRE de autodefensa, cómo protegerse de manipuladores, educación y prevención, NUNCA cómo engañar o cometer actos ilícitos.",
+        "- APTO PARA MONETIZAR EN TIKTOK, FACEBOOK Y YOUTUBE: El contenido debe ser 100% apto para todo público y libre de banderas rojas de censura.",
+        "",
         "REGLAS DE MÁXIMA ORIGINALIDAD:",
         "- PROHIBIDO REPETIR títulos genéricos trillados (como '10 Hábitos de la gente exitosa', '10 Formas de ahorrar', etc.). Sé ultra específico, intrigante y diferente.",
         `- Cada una de las 4 ideas DEBE estar pensada para exactamente ${count} puntos.`,
         `- El título DEBE empezar con el número exacto ${count} (ejemplo: "${count} Cosas que...", "${count} Reglas que...", "${count} Errores de...").`,
         "",
         "Responde SOLO con JSON valido:",
-        `{ "ideas": [ { "title": "${count} ...", "description": "Enfoque original y qué hace única a esta lista" } ] }`
+        `{ "ideas": [ { "title": "${count} ...", "description": "Enfoque original, ético y qué hace única a esta lista" } ] }`
       ].join("\n");
 
       const response = await chatCompletion(body, prompt, { temperature: 0.95 });
@@ -51,14 +58,15 @@ export async function POST(req: NextRequest) {
         'Eres un estratega de contenido viral para TikTok y Reels. Tu especialidad son las listas infograficas de alta retencion.',
         `Crea el contenido completo para un video/carrusel basado en este titulo: "${title}".`,
         "",
-        "REGLAS ESTRICTAS DE CANTIDAD:",
+        "REGLAS ESTRICTAS DE CANTIDAD Y CONTENIDO:",
         `1. CANTIDAD EXACTA OBLIGATORIA: Debes generar EXACTAMENTE ${count} puntos numerados del 01 al ${String(count).padStart(2, '0')} dentro del array 'items'. No te detengas hasta completar los ${count} puntos.`,
         "2. Los primeros 2 items deben ser los mas fuertes y de mayor valor.",
         "3. El ultimo item debe ser el mas polemico o sorprendente.",
         "4. El campo label debe tener de 3 a 6 palabras maximo.",
         "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
-        `6. Genera un image_prompt para la PORTADA en ENGLISH para Ideogram/DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista y tipografico'}". INCLUYE EL TITULO PRINCIPAL ("${title}"). NO decoraciones.`,
-        `7. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista'}". Este prompt debe incluir el texto exacto del punto (Label + Text). Formato para cada punto: 'An ultra-minimalist ${format || 'Vertical'} infographic poster about [TEMA], [ESTILO]. Purely typographical layout, NO decorations, clean solid background, massive bold readable text containing exactly: [NUM]. [LABEL]. [TEXT]'.`,
+        "6. POLÍTICA DE SEGURIDAD Y LEGALIDAD: Ningún punto debe promover actividades ilegales, fraudes, robo de información o manipulación dañina. Enfócalo en hábitos, psicología defensiva o educación financiera legal.",
+        `7. Genera un image_prompt para la PORTADA en ENGLISH para Ideogram/DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista y tipografico'}". INCLUYE EL TITULO PRINCIPAL ("${title}"). NO decoraciones. Asegúrate de que las palabras del prompt sean 100% seguras y libres de censura (NO uses palabras como hack, stolen, illegal, manipulation).`,
+        `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista'}". Este prompt debe incluir el texto exacto del punto (Label + Text). Formato para cada punto: 'An ultra-minimalist ${format || 'Vertical'} infographic poster about [TEMA], [ESTILO]. Purely typographical layout, NO decorations, clean solid background, massive bold readable text containing exactly: [NUM]. [LABEL]. [TEXT]'.`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
         JSON.stringify({

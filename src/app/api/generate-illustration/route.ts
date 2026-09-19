@@ -93,11 +93,14 @@ ${idea ? `Dirección específica del usuario: "${idea}"` : `Ángulo creativo par
 
 Semilla de variedad única: ${seed}
 
-REGLAS DE MÁXIMA ORIGINALIDAD Y VARIEDAD:
-1. PROHIBIDO GENERAR CLICHÉS O FRASES TÍPICAS DE AUTOAYUDA (como 'El silencio es poder', 'Tu mente es tu límite', 'No confíes en nadie', 'Sé tu propia luz', etc.).
-2. Cada idea debe ser FRESCA, ESPECÍFICA y con un ángulo que despierte curiosidad inmediata.
-3. Varía los tonos: incluye ideas provocadoras, reflexivas, poéticas, intrigantes y crudas.
-4. Genera exactamente 10 títulos/conceptos completamente distintos entre sí y únicos.
+REGLAS DE MÁXIMA ORIGINALIDAD, LEGALIDAD Y SEGURIDAD:
+1. PROHIBIDO TERMINANTEMENTE proponer o sugerir actividades ilegales, fraudes, hackeos, delitos o venta de información privada.
+2. POLÍTICA DE SEGURIDAD PARA IMÁGENES (DALL-E / MIDJOURNEY SAFE): Los conceptos y frases NUNCA deben contener palabras que activen los filtros de censura de las IA (prohibido palabras como: "robo", "ilegal", "droga", "ciberataque", "manipulación financiera").
+3. ENFOQUE DEFENSIVO Y ÉTICO: Si tocas psicología oscura o relaciones, enfócalo en cómo defenderse de manipuladores, verdades sobre el autocontrol, la mente y la resiliencia personal.
+4. PROHIBIDO GENERAR CLICHÉS O FRASES TÍPICAS DE AUTOAYUDA (como 'El silencio es poder', 'Tu mente es tu límite', 'No confíes en nadie', 'Sé tu propia luz', etc.).
+5. Cada idea debe ser FRESCA, ESPECÍFICA y con un ángulo que despierte curiosidad inmediata.
+6. Varía los tonos: incluye ideas provocadoras, reflexivas, poéticas, intrigantes y crudas.
+7. Genera exactamente 10 títulos/conceptos completamente distintos entre sí, únicos y 100% seguros para monetizar.
 
 Responde SOLO con un JSON válido en este formato:
 {
