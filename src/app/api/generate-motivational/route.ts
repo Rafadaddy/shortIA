@@ -15,51 +15,50 @@ export async function POST(req: NextRequest) {
 
     let styleInstruction = "";
     if (requestedStyle.includes("Aleatorio") || requestedStyle.includes("IA decida")) {
-      styleInstruction = "Dynamic visual style tailored specifically to the narrative. Period-accurate settings. Highly coherent, visually stunning, avoiding generic metaphors.";
+      styleInstruction = "Dynamic cinematic visual style tailored specifically to the narrative, highly coherent, avoiding generic metaphors.";
     } else if (requestedStyle.includes("Cinemático Oscuro")) {
-      styleInstruction = "Dark cinematic style, dramatic shadows, moody lighting, high contrast, film grain.";
+      styleInstruction = "Dark cinematic style, dramatic shadows, moody lighting, high contrast, cinematic atmosphere, 8k resolution.";
     } else if (requestedStyle.includes("Paisajes Épicos")) {
-      styleInstruction = "Epic landscape cinematography, golden hour lighting, vast open spaces, drone-style aerial shots.";
+      styleInstruction = "Epic landscape cinematography, golden hour lighting, vast open spaces, dramatic drone aerial view, atmospheric depth.";
     } else if (requestedStyle.includes("Urbano / Calle")) {
-      styleInstruction = "Urban street photography style, neon lights, rain-slicked streets, gritty aesthetic.";
+      styleInstruction = "Cinematic urban street photography, warm streetlights, textured walls, atmospheric city depth, gritty cinematic realism.";
     } else if (requestedStyle.includes("Minimalista")) {
-      styleInstruction = "Minimalist clean aesthetic, soft neutral tones, lots of negative space.";
+      styleInstruction = "Minimalist clean aesthetic, soft neutral tones, balanced negative space, high-end editorial composition.";
     } else if (requestedStyle.includes("Natural / Bosque")) {
-      styleInstruction = "Nature cinematography, lush green forests, sunlight filtering through trees.";
+      styleInstruction = "Lush nature cinematography, misty forest, volumetric sunbeams through ancient trees, serene cinematic atmosphere.";
     } else if (requestedStyle.includes("Noir / B&W")) {
-      styleInstruction = "Black and white noir cinematography, high contrast, dramatic shadows.";
+      styleInstruction = "Black and white noir cinematography, high contrast chiascuro lighting, sharp silhouettes, dramatic shadows.";
     } else if (requestedStyle.includes("Colorido / Vibrante")) {
-      styleInstruction = "Vibrant saturated colors, dynamic lighting, energetic and uplifting visual style.";
+      styleInstruction = "Vibrant rich colors, dynamic cinematic lighting, uplifting and powerful atmospheric visual storytelling.";
     } else {
-      styleInstruction = `Cinematic visual style: ${requestedStyle}. Professional lighting, dramatic composition.`;
+      styleInstruction = `Cinematic visual style: ${requestedStyle}. Professional lighting, dramatic composition, photorealistic 8k.`;
     }
 
     if (mode === "ideas") {
-      prompt = `Eres un guionista y copywriter experto en contenido viral para TikTok, Reels y Shorts, especializado en videos motivacionales con tono crudo, realista y directo. Tu estilo se parece a creadores que dicen verdades incómodas, no a coaches de autoayuda genéricos.
-Genera 8 ideas de videos altamente clicables para el siguiente tema.
+      prompt = `Eres un guionista y estratega de contenido viral para TikTok, Reels y Shorts, especializado en videos motivacionales con tono crudo, realista y directo.
+Genera exactamente 8 ideas de videos altamente virales para el siguiente nicho.
 
 Nicho/Tema: "${niche || 'Desarrollo personal y motivación'}"
 
-REGLAS OBLIGATORIAS PARA LOS GANCHOS (TÍTULOS):
-- Máximo 15 palabras.
-- Debe sonar como algo que diría una persona REAL, lenguaje coloquial y directo.
-- PROHIBIDO CLICHÉS: "tú puedes", "cree en ti", "el cielo es el límite", "eres un guerrero", "vibra alto".
-- Usa técnicas variadas: Dolor emocional específico, curiosidad, historias reales, contradicciones o urgencia.
+REGLAS OBLIGATORIAS:
+- Idioma: Español neutro impecable, ortografía y tildes perfectas, sin caracteres extraños ni garabatos.
+- Máximo 15 palabras por gancho/título.
+- Lenguaje coloquial, directo y sin clichés de autoayuda (prohibido 'tú puedes', 'sé tu propia luz', 'vibra alto').
+- Variedad: Dolor emocional específico, curiosidad psicológica, lecciones de vida duras o verdades incómodas.
+- Semilla de variedad: ${Date.now()}-${Math.random()}
 
-[VARIEDAD ALEATORIA: ${Math.random()}] IMPORTANTE: NUNCA generes la misma historia o enfoque.
-
-Responde SOLO con un JSON válido:
+Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {
   "ideas": [
     {
       "title": "Título corto y crudo (el gancho)",
-      "hook": "La técnica usada",
-      "focus": "Breve explicación de por qué funciona este enfoque"
+      "hook": "La frase gancho exacta para los primeros 3 segundos",
+      "focus": "Breve explicación de por qué conecta psicológicamente con la audiencia"
     }
   ]
 }`;
     } else if (mode === "script_only") {
-      prompt = `Eres un guionista y copywriter experto en contenido viral para TikTok y Shorts. Tu estilo es crudo, realista y directo, como un amigo diciendo verdades incómodas. Cero autoayuda genérica.
+      prompt = `Eres un guionista experto en contenido viral para TikTok y Shorts. Tu estilo es crudo, realista y reflexivo.
   
 Tema/Nicho: "${niche || 'Desarrollo personal y motivación'}"
 Idea base (Gancho elegido): "${idea}"
@@ -67,40 +66,38 @@ Tono Emocional: "${requestedTone} (Crudo y directo)"
 
 ESCRIBE EL GUION NARRATIVO COMPLETO PARA UN VIDEO DE ${count * (parseInt(requestedDuration) || 10)} SEGUNDOS.
 
-REGLAS:
-- La narración debe ser un MONÓLOGO directo.
-- Tensión inicial: Amplía el dolor o curiosidad del gancho.
-- Desarrollo: Aporta el valor real usando historias concretas, edades, lugares o datos contra-intuitivos.
-- Clímax: Un momento de revelación o verdad incómoda.
-- Cierre y CTA: Una frase potente memorable y una invitación final.
-- PROHIBIDO CLICHÉS: nada de "tú puedes", "vibra alto", "nunca te rindas".
-- DEBES incluir al menos UN número concreto en el guion.
-- Usa pausas naturales marcadas con "..."
+REGLAS DE REDACCIÓN:
+- Idioma: Español neutro impecable, con puntuación limpia y tildes correctas. CERO garabatos o caracteres corruptos.
+- La narración debe ser un monólogo directo y atrapante de principio a fin.
+- Tensión inicial: Expande de inmediato el dolor o la curiosidad del gancho.
+- Desarrollo: Argumentos contundentes, situaciones reales y verdades incómodas.
+- Clímax: Un quiebre de conciencia o revelación profunda.
+- Cierre: Una frase memorable para reflexionar y llamado a la acción sutil.
+- Cero clichés de autoayuda barata.
 
 Responde SOLO con un JSON válido:
 {
-  "script": "Aquí va el texto completo del guion, escrito como un solo bloque de texto narrativo..."
+  "script": "Texto completo del guion narrativo continuo..."
 }`;
     } else if (mode === "improve_script") {
       prompt = `Eres un guionista experto en contenido viral.
 Tienes el siguiente guion base:
 "${current_script}"
 
-Instrucción del usuario para mejorarlo/modificarlo: "${instruction}"
-(Por ejemplo: "Hazlo más largo", "Hazlo más corto", "Hazlo más agresivo", etc.)
+Instrucción del usuario para modificarlo: "${instruction}"
 
-Reescribe el guion completo aplicando la instrucción. Mantén el tono realista y directo.
+Reescribe el guion completo aplicando la instrucción. Mantén el tono reflexivo, directo y emocionante.
+Idioma: Español neutro impecable, tildes y signos de puntuación correctos, sin caracteres corruptos.
 
 Responde SOLO con un JSON válido:
 {
-  "script": "Aquí va el nuevo texto completo del guion..."
+  "script": "Nuevo texto completo del guion..."
 }`;
-        } else if (mode === "full_from_script") {
+    } else if (mode === "full_from_script") {
       // BACKEND PRE-SPLITTING FOR 100% RELIABLE SCENE COUNT
       const sentences = current_script.split(/(?<=[.?!])\s+/).filter((s: string) => s.trim().length > 0);
       const preSplitScenes = Array.from({ length: count }, () => [] as string[]);
       
-      // Distribute sentences as evenly as possible across the requested scene count
       if (sentences.length > 0) {
         sentences.forEach((s: string, i: number) => {
             const index = Math.min(Math.floor(i / (sentences.length / count)), count - 1);
@@ -117,67 +114,66 @@ Responde SOLO con un JSON válido:
       const scenesTemplate = Array.from({ length: count }).map((_, i) => `{
         "scene_number": ${i + 1},
         "narration": "Texto exacto de la Escena ${i + 1}",
-        "visual_concept": "Qué se ve en pantalla...",
-        "image_prompt": "English prompt...",
-        "animation_prompt": "English animation prompt...",
-        "duration": "~10s"
+        "visual_concept": "Qué ocurre en pantalla en español claro",
+        "image_prompt": "Detailed cinematic prompt in English without weird symbols or gibberish. Describes subject, background, lighting, camera angle, 8k.",
+        "animation_prompt": "Cinematic camera movement and character motion description in English for Runway or Luma.",
+        "duration": "${requestedDuration}"
       }`).join(',\n      ');
 
-      prompt = `Eres un director visual experto en crear videos virales para TikTok y Shorts.
-El usuario ya aprobó el guion. YO, el sistema, ya he dividido el guion en EXACTAMENTE ${count} escenas para ti.
+      prompt = `Eres un director de cine y creador audiovisual viral.
+El guion ha sido pre-dividido en exactamente ${count} escenas:
 
-AQUÍ ESTÁN TUS ESCENAS PRE-DIVIDIDAS (NO LAS ALTERES, USA ESTE TEXTO EXACTO PARA CADA "narration"):
 ${scenesTextBlocks}
 
 TU TAREA:
-1. Toma cada una de las ${count} escenas que te di arriba.
-2. Genera los prompts visuales para ilustrar cada escena.
-3. Genera la metadata de publicación.
+1. Para cada una de las ${count} escenas, asigna su narración exacta.
+2. Escribe el visual_concept en español claro explicando qué se ve.
+3. Escribe image_prompt en INGLÉS LIMPIO Y PRECISO (sin caracteres raros, sin símbolos de codificación corrupta). Debe describir con claridad: el sujeto, la atmósfera, la iluminación cinematográfica, el encuadre y el estilo (${styleInstruction}). Relación de aspecto vertical (9:16).
+4. Escribe animation_prompt en INGLÉS LIMPIO describiendo el movimiento de cámara suave y acción cinemática.
+5. Genera la metadata de publicación (caption, música recomendada y hashtags).
 
-Estilo Visual: "${requestedStyle}"
-Duración por escena: ${requestedDuration}
+REGLAS DE CALIDAD:
+- CERO caracteres corruptos o garabatos.
+- Texto en español neutro con ortografía impecable.
+- Prompts de IA en inglés limpio y directo para Midjourney / DALL-E / Flux.
 
-REGLAS PARA LOS PROMPTS:
-- Cada escena visual debe ser vertical (9:16).
-- ${styleInstruction}
-- image_prompt: Prompt MUY DETALLADO en inglés (mínimo 30 palabras). [Sujeto] + [Entorno] + [Iluminación] + [Cámara] + [Calidad].
-- animation_prompt: Prompt en inglés para animar el video (Runway/Veo3).
-
-� REGLAS PARA LA METADATA (DATOS DE PUBLICACIÓN)
-- "caption": Texto para redes sociales (30-50 palabras).
-- "music_recommendation": Pista de fondo ideal.
-- "hashtags": Array de 5 a 8 hashtags.
-
-Responde SOLO con un JSON válido:
+Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {
   "title": "Título impactante del video",
-  "full_narration": "El guion completo intacto",
+  "full_narration": "Guion completo",
   "scenes": [
       ${scenesTemplate}
-    ],
-  "caption": "El texto persuasivo para redes sociales...",
-  "music_recommendation": "Tipo de música sugerida",
-  "hashtags": ["#motivacion", "#desarrollopersonal", "#frases"]
+  ],
+  "caption": "Copy reflexivo para redes sociales en español con emojis adecuados",
+  "music_recommendation": "Nombre del estilo o canción instrumental recomendada",
+  "hashtags": ["#motivacion", "#disciplina", "#crecimientopersonal"]
 }`;
     } else if (mode === "single_prompt") {
-      // (Omitted unchanged code for brevity, handling single prompts if needed)
-      // I will keep the original implementation for single prompts just to not break existing buttons.
       if (prompt_type === "image") {
-        prompt = `Eres un director de arte visual... Regenera SOLO el prompt de imagen para la escena ${scene_number}... 
-Narración: "${narration}"
-Prompt anterior: "${existing_prompt}"
-Estilo Visual: ${requestedStyle}
+        prompt = `Eres un director de arte cinematográfico.
+Regenera SOLO el prompt de imagen para la escena ${scene_number}.
+Narración de la escena: "${narration}"
+Prompt anterior (NO repetir): "${existing_prompt}"
+Estilo visual: ${requestedStyle}
 ${styleInstruction}
 
-Responde SOLO con un JSON válido:
-{ "image_prompt": "El nuevo prompt visual en inglés..." }`;
-      } else {
-        prompt = `Eres un director de arte visual... Regenera SOLO el prompt de animación para la escena ${scene_number}...
-Narración: "${narration}"
-Prompt anterior: "${existing_prompt}"
+REGLAS:
+- El prompt DEBE estar en INGLÉS limpio y detallado (sin caracteres raros, sin garabatos).
+- Vertical 9:16, iluminación cinemática, alta definición.
 
 Responde SOLO con un JSON válido:
-{ "animation_prompt": "El nuevo prompt de animación en inglés..." }`;
+{ "image_prompt": "New detailed cinematic image prompt in English..." }`;
+      } else {
+        prompt = `Eres un director de animación cinematográfica.
+Regenera SOLO el prompt de animación/cámara para la escena ${scene_number}.
+Narración de la escena: "${narration}"
+Prompt anterior (NO repetir): "${existing_prompt}"
+
+REGLAS:
+- Prompt en INGLÉS limpio describiendo movimiento de cámara y acción (sin caracteres corruptos).
+
+Responde SOLO con un JSON válido:
+{ "animation_prompt": "New detailed motion and camera prompt in English..." }`;
       }
     }
 
