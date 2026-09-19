@@ -254,6 +254,20 @@ export default function MotivationalVideos() {
     showToast("Guion técnico completo copiado al portapapeles.", "success");
   };
 
+  const handleCopyAllImagePrompts = () => {
+    if (!data) return;
+    const text = data.scenes.map((s) => `--- ESCENA ${s.scene_number} (IMAGEN) ---\n${s.image_prompt}`).join("\n\n");
+    handleCopy(text, "all_images");
+    showToast("¡Prompts de todas las imágenes copiados!", "success");
+  };
+
+  const handleCopyAllVideoPrompts = () => {
+    if (!data) return;
+    const text = data.scenes.map((s) => `--- ESCENA ${s.scene_number} (VIDEO) ---\n${s.animation_prompt}`).join("\n\n");
+    handleCopy(text, "all_videos");
+    showToast("¡Prompts de video de todas las escenas copiados!", "success");
+  };
+
   const handleCopyMetadata = () => {
     if (!data) return;
     let text = `🎵 Música recomendada: ${data.music_recommendation}\n\n`;
@@ -557,20 +571,48 @@ export default function MotivationalVideos() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="bg-slate-900/60 p-6 md:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-xl">
               
-              {/* Encabezado del resultado */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-slate-800/80 pb-5">
+              {/* Encabezado del resultado con botones rápidos */}
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4 border-b border-slate-800/80 pb-5">
                 <div>
                   <h2 className="text-2xl font-extrabold text-white mb-1.5">{data.title}</h2>
                   <p className="text-slate-400 text-xs flex items-center gap-2">
                     <Play className="w-3.5 h-3.5 text-amber-500" /> {data.scenes.length} escenas estructuradas con prompts limpios
                   </p>
                 </div>
-                <button 
-                  onClick={handleCopyAll} 
-                  className="flex items-center gap-2 bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 py-2.5 px-4 rounded-xl text-xs font-bold transition-all"
-                >
-                  {copiedStates['all'] ? <><Check className="w-4 h-4" /> ¡Todo Copiado!</> : <><Copy className="w-4 h-4" /> Copiar Guion Completo</>}
-                </button>
+
+                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                  {/* Botón Destacado: Copiar solo Prompts de Imágenes */}
+                  <button 
+                    onClick={handleCopyAllImagePrompts} 
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-pink-500/15 text-pink-300 border border-pink-500/40 hover:bg-pink-500/25 py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm"
+                  >
+                    {copiedStates['all_images'] ? (
+                      <><Check className="w-4 h-4 text-emerald-400" /> ¡Prompts de Imagen Copiados!</>
+                    ) : (
+                      <><ImageIcon className="w-4 h-4 text-pink-400" /> Copiar Prompts de Imágenes</>
+                    )}
+                  </button>
+
+                  {/* Botón: Copiar Prompts de Video */}
+                  <button 
+                    onClick={handleCopyAllVideoPrompts} 
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/25 py-2.5 px-4 rounded-xl text-xs font-bold transition-all shadow-sm"
+                  >
+                    {copiedStates['all_videos'] ? (
+                      <><Check className="w-4 h-4 text-emerald-400" /> ¡Prompts de Video Copiados!</>
+                    ) : (
+                      <><Video className="w-4 h-4 text-emerald-400" /> Copiar Prompts de Video</>
+                    )}
+                  </button>
+
+                  {/* Botón: Copiar Todo */}
+                  <button 
+                    onClick={handleCopyAll} 
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 py-2.5 px-4 rounded-xl text-xs font-bold transition-all"
+                  >
+                    {copiedStates['all'] ? <><Check className="w-4 h-4" /> ¡Todo Copiado!</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
+                  </button>
+                </div>
               </div>
 
               {/* LISTA ORDENADA DE ESCENAS (DESPLIEGUE MODERNO) */}
