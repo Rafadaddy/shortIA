@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   Flame, Loader2, Play, Check, Copy, RefreshCw, Wand2, 
   Type, Image as ImageIcon, Sparkles, ChevronDown, ChevronUp,
-  Sliders, Music, Hash, Video, Eye, Film
+  Sliders, Music, Hash, Video, Eye, Film, FolderArchive, RotateCcw
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
+import { saveHistoryItem } from "@/lib/history-storage";
 
 interface Scene {
   scene_number: number;
@@ -105,6 +107,57 @@ export default function MotivationalVideos() {
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
 
+  // RECUPERAR BORRADOR AL ENTRAR
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("shortia_draft_motivational");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.ideas) setIdeas(draft.ideas);
+        if (draft.selectedIdea) setSelectedIdea(draft.selectedIdea);
+        if (draft.scriptText) setScriptText(draft.scriptText);
+        if (draft.data) setData(draft.data);
+        if (draft.selectedNicheOption) setSelectedNicheOption(draft.selectedNicheOption);
+        if (draft.customNiche) setCustomNiche(draft.customNiche);
+        if (draft.tone) setTone(draft.tone);
+        if (draft.style) setStyle(draft.style);
+      }
+    } catch (e) {
+      console.error("[VideosMotivacionales] Error restoring draft:", e);
+    }
+  }, []);
+
+  // GUARDAR BORRADOR EN TIEMPO REAL
+  useEffect(() => {
+    try {
+      if (scriptText || data || (ideas && ideas.length > 0)) {
+        localStorage.setItem("shortia_draft_motivational", JSON.stringify({
+          ideas,
+          selectedIdea,
+          scriptText,
+          data,
+          selectedNicheOption,
+          customNiche,
+          tone,
+          style
+        }));
+      }
+    } catch (e) {
+      console.error("[VideosMotivacionales] Error saving draft:", e);
+    }
+  }, [ideas, selectedIdea, scriptText, data, selectedNicheOption, customNiche, tone, style]);
+
+  const handleResetDraft = () => {
+    if (confirm("¿Deseas reiniciar la pantalla y empezar un video nuevo? (Se conservará en tu historial)")) {
+      setIdeas(null);
+      setSelectedIdea(null);
+      setScriptText("");
+      setData(null);
+      localStorage.removeItem("shortia_draft_motivational");
+      showToast("Pantalla reiniciada para un nuevo video", "success");
+    }
+  };
+
   const getEffectiveNiche = () => {
     if (selectedNicheOption === "✏️ Escribir mi propio nicho personalizado...") {
       return customNiche.trim() || "Desarrollo personal y motivación";
@@ -165,7 +218,17 @@ export default function MotivationalVideos() {
       }
       const json = await res.json();
       setScriptText(json.script);
-      showToast("Guion narrativo generado. Puedes afinarlo a tu gusto.", "success");
+
+      // GUARDAR EN HISTORIAL GLOBAL
+      saveHistoryItem({
+        category: "Videos Motivacionales",
+        title: idea.title || "Video Motivacional",
+        subtitle: idea.hook,
+        script: json.script,
+        metadata: { niche: getEffectiveNiche(), tone }
+      });
+
+      showToast("Guion narrativo generado y guardado en Borradores.", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al conectar con la IA", "error");
@@ -226,7 +289,27 @@ export default function MotivationalVideos() {
       }
       const json = await res.json();
       setData(json);
-      showToast("¡Escenas y prompts generados!", "success");
+
+      // GUARDAR EN HISTORIAL CON TODOS LOS PROMPTS
+      saveHistoryItem({
+        category: "Videos Motivacionales",
+        title: json.title || selectedIdea?.title || "Video Motivacional",
+        subtitle: `${getEffectiveNiche()} • ${style}`,
+        script: scriptText,
+        prompts: json.scenes?.map((s: Scene) => ({
+          scene_number: s.scene_number,
+          image_prompt: s.image_prompt,
+          animation_prompt: s.animation_prompt,
+          narration: s.narration,
+        })),
+        metadata: {
+          music: json.music_recommendation,
+          hashtags: json.hashtags,
+          caption: json.caption
+        }
+      });
+
+      showToast("¡Escenas y prompts generados y guardados en Borradores!", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al conectar con la IA", "error");
@@ -282,16 +365,39 @@ export default function MotivationalVideos() {
       <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
 
         {/* HEADER */}
-        <header className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Flame className="w-4 h-4" /> Flujo Profesional Paso a Paso
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Flame className="w-4 h-4" /> Flujo Profesional Paso a Paso
+            </div>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              Videos Motivacionales Virales
+            </h1>
+            <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+              1. Elige una temática e idea. 2. Afina tu guion narrativo. 3. Genera escenas y prompts limpios para Midjourney, Runway o Kling.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-3">
-            Videos Motivacionales Virales
-          </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-            1. Elige una temática e idea. 2. Afina tu guion narrativo. 3. Genera escenas y prompts limpios para Midjourney, Runway o Kling.
-          </p>
+
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
+            <Link
+              href="/historial"
+              className="bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-semibold py-2.5 px-3.5 rounded-xl border border-amber-500/30 flex items-center gap-2 transition-colors shadow-lg shadow-amber-950/40"
+            >
+              <FolderArchive className="w-4 h-4 text-amber-400" />
+              <span>Ver Borradores / Historial</span>
+            </Link>
+
+            {(scriptText || data || (ideas && ideas.length > 0)) && (
+              <button
+                onClick={handleResetDraft}
+                title="Reiniciar pantalla para empezar un video nuevo"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-semibold py-2.5 px-3 rounded-xl border border-slate-800 flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Nuevo</span>
+              </button>
+            )}
+          </div>
         </header>
 
         {/* PASO 1: CONFIGURACIÓN E IDEAS */}

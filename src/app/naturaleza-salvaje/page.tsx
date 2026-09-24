@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   Sparkles, Copy, Check, Image as ImageIcon, Loader2, 
-  RefreshCw, Wand2, Type, Swords, Play, Mic, Film, Eye, Volume2, Video
+  RefreshCw, Wand2, Type, Swords, Play, Mic, Film, Eye, Volume2, Video,
+  FolderArchive, RotateCcw
 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
+import { saveHistoryItem } from "@/lib/history-storage";
 
 interface WildlifeIdea {
   title: string;
@@ -97,6 +100,55 @@ export default function NaturalezaSalvajePage() {
   const [generatedImages, setGeneratedImages] = useState<Record<number, string>>({});
   const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
+  // RECUPERAR BORRADOR AL ENTRAR
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("shortia_draft_wildlife");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.ideas) setIdeas(draft.ideas);
+        if (draft.selectedIdea) setSelectedIdea(draft.selectedIdea);
+        if (draft.scriptText) setScriptText(draft.scriptText);
+        if (draft.data) setData(draft.data);
+        if (draft.animalA) setAnimalA(draft.animalA);
+        if (draft.animalB) setAnimalB(draft.animalB);
+        if (draft.tone) setTone(draft.tone);
+      }
+    } catch (e) {
+      console.error("[NaturalezaSalvaje] Error restoring draft:", e);
+    }
+  }, []);
+
+  // GUARDAR BORRADOR EN TIEMPO REAL
+  useEffect(() => {
+    try {
+      if (scriptText || data || (ideas && ideas.length > 0)) {
+        localStorage.setItem("shortia_draft_wildlife", JSON.stringify({
+          ideas,
+          selectedIdea,
+          scriptText,
+          data,
+          animalA,
+          animalB,
+          tone
+        }));
+      }
+    } catch (e) {
+      console.error("[NaturalezaSalvaje] Error saving draft:", e);
+    }
+  }, [ideas, selectedIdea, scriptText, data, animalA, animalB, tone]);
+
+  const handleResetDraft = () => {
+    if (confirm("¿Deseas reiniciar la pantalla y empezar una nueva batalla? (Se conservará en tu historial)")) {
+      setIdeas(null);
+      setSelectedIdea(null);
+      setScriptText("");
+      setData(null);
+      localStorage.removeItem("shortia_draft_wildlife");
+      showToast("Pantalla reiniciada para una nueva batalla", "success");
+    }
+  };
+
   const generateIdeas = async () => {
     setIsGeneratingIdeas(true);
     setIdeas(null);
@@ -151,7 +203,17 @@ export default function NaturalezaSalvajePage() {
         throw new Error("No se pudo extraer el texto del guion. Intenta nuevamente.");
       }
       setScriptText(scriptResult);
-      showToast("¡Guion de batalla generado!", "success");
+
+      // GUARDAR EN HISTORIAL GLOBAL
+      saveHistoryItem({
+        category: "Naturaleza Salvaje",
+        title: idea.title || "Batalla Animal",
+        subtitle: idea.description,
+        script: scriptResult,
+        metadata: { animalA, animalB, tone }
+      });
+
+      showToast("¡Guion de batalla generado y guardado en Borradores!", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al generar el guion", "error");
@@ -193,7 +255,27 @@ export default function NaturalezaSalvajePage() {
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error || "Error al generar escenas");
       setData(json);
-      showToast("¡Escenas y prompts generados!", "success");
+
+      // GUARDAR EN HISTORIAL CON TODOS LOS PROMPTS
+      saveHistoryItem({
+        category: "Naturaleza Salvaje",
+        title: json.title || selectedIdea?.title || "Batalla Animal",
+        subtitle: `${animalA} vs ${animalB} • ${tone}`,
+        script: scriptText,
+        prompts: json.scenes?.map((s: Scene) => ({
+          scene_number: s.scene_number,
+          image_prompt: s.image_prompt,
+          animation_prompt: s.animation_prompt,
+          narration: s.narration,
+        })),
+        metadata: {
+          music: json.music,
+          hashtags: json.hashtags,
+          winner_stats: json.winner_stats
+        }
+      });
+
+      showToast("¡Escenas y prompts listos y guardados en Borradores!", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al generar escenas", "error");
@@ -313,16 +395,39 @@ export default function NaturalezaSalvajePage() {
       <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
 
         {/* HEADER */}
-        <header className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-full text-red-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Swords className="w-4 h-4" /> Duelos Épicos de Animales
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-full text-red-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Swords className="w-4 h-4" /> Duelos Épicos de Animales
+            </div>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center gap-4">
+              Naturaleza Salvaje (Showdowns)
+            </h1>
+            <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+              Crea enfrentamientos biológicos virales para TikTok y Shorts. Análisis de mordidas, ventajas biomecánicas y ganador final.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
-            Naturaleza Salvaje (Showdowns)
-          </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-            Crea enfrentamientos biológicos virales para TikTok y Shorts. Análisis de mordidas, ventajas biomecánicas y ganador final.
-          </p>
+
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
+            <Link
+              href="/historial"
+              className="bg-slate-900 hover:bg-slate-800 text-red-300 text-xs font-semibold py-2.5 px-3.5 rounded-xl border border-red-500/30 flex items-center gap-2 transition-colors shadow-lg shadow-red-950/40"
+            >
+              <FolderArchive className="w-4 h-4 text-red-400" />
+              <span>Ver Borradores / Historial</span>
+            </Link>
+
+            {(scriptText || data || (ideas && ideas.length > 0)) && (
+              <button
+                onClick={handleResetDraft}
+                title="Reiniciar batalla"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-semibold py-2.5 px-3 rounded-xl border border-slate-800 flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Nuevo</span>
+              </button>
+            )}
+          </div>
         </header>
 
         {/* PASO 1: CONFIGURACIÓN */}

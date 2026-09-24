@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   Sparkles, Loader2, Play, Check, Copy, RefreshCw, Wand2, 
   Type, Image as ImageIcon, ChevronDown, ChevronUp,
   Music, Hash, Video, Eye, Film, Baby, Heart, HelpCircle,
-  BookOpen, Star, Smile, Lightbulb
+  BookOpen, Star, Smile, Lightbulb, FolderArchive, RotateCcw
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { aiFetch } from "@/lib/ai-fetch";
+import { saveHistoryItem } from "@/lib/history-storage";
 
 interface Scene {
   scene_number: number;
@@ -103,6 +105,59 @@ export default function VideosInfantilesPage() {
   const [generatedImages, setGeneratedImages] = useState<Record<number, string>>({});
   const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
+  // CARGAR BORRADOR AUTOMÁTICO AL ENTRAR
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("shortia_draft_kids");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.ideas) setIdeas(draft.ideas);
+        if (draft.selectedIdea) setSelectedIdea(draft.selectedIdea);
+        if (draft.scriptText) setScriptText(draft.scriptText);
+        if (draft.data) setData(draft.data);
+        if (draft.ageGroup) setAgeGroup(draft.ageGroup);
+        if (draft.formatType) setFormatType(draft.formatType);
+        if (draft.visualStyle) setVisualStyle(draft.visualStyle);
+        if (draft.character) setCharacter(draft.character);
+        if (draft.moral) setMoral(draft.moral);
+      }
+    } catch (e) {
+      console.error("[VideosInfantiles] Error restoring draft:", e);
+    }
+  }, []);
+
+  // GUARDAR BORRADOR CADA VEZ QUE CAMBIE EL CONTENIDO
+  useEffect(() => {
+    try {
+      if (scriptText || data || (ideas && ideas.length > 0)) {
+        localStorage.setItem("shortia_draft_kids", JSON.stringify({
+          ideas,
+          selectedIdea,
+          scriptText,
+          data,
+          ageGroup,
+          formatType,
+          visualStyle,
+          character,
+          moral
+        }));
+      }
+    } catch (e) {
+      console.error("[VideosInfantiles] Error saving draft:", e);
+    }
+  }, [ideas, selectedIdea, scriptText, data, ageGroup, formatType, visualStyle, character, moral]);
+
+  const handleResetDraft = () => {
+    if (confirm("¿Deseas reiniciar la pantalla y empezar un video nuevo? (Se conservará en tu historial)")) {
+      setIdeas(null);
+      setSelectedIdea(null);
+      setScriptText("");
+      setData(null);
+      localStorage.removeItem("shortia_draft_kids");
+      showToast("Pantalla reiniciada para un nuevo video", "success");
+    }
+  };
+
   // 1. GENERAR 4 IDEAS INFANTILES
   const generateIdeas = async () => {
     setIsGeneratingIdeas(true);
@@ -164,7 +219,17 @@ export default function VideosInfantilesPage() {
         throw new Error("No se pudo extraer el texto del guion. Intenta nuevamente.");
       }
       setScriptText(scriptResult);
-      showToast("¡Guion infantil generado!", "success");
+
+      // GUARDAR EN HISTORIAL GLOBAL
+      saveHistoryItem({
+        category: "Videos Infantiles",
+        title: idea.title || "Video Infantil",
+        subtitle: `${ageGroup} • ${formatType}`,
+        script: scriptResult,
+        metadata: { ageGroup, formatType, visualStyle, moral }
+      });
+
+      showToast("¡Guion infantil generado y guardado en Borradores!", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al generar el guion", "error");
@@ -209,7 +274,27 @@ export default function VideosInfantilesPage() {
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error || "Error al generar escenas");
       setData(json);
-      showToast("¡Escenas y prompts infantiles listos!", "success");
+
+      // GUARDAR EN HISTORIAL CON TODOS LOS PROMPTS
+      saveHistoryItem({
+        category: "Videos Infantiles",
+        title: json.title || selectedIdea?.title || "Video Infantil",
+        subtitle: `${ageGroup} • ${visualStyle}`,
+        script: scriptText,
+        prompts: json.scenes?.map((s: Scene) => ({
+          scene_number: s.scene_number,
+          image_prompt: s.image_prompt,
+          animation_prompt: s.animation_prompt,
+          narration: s.narration,
+        })),
+        metadata: {
+          music: json.music_recommendation,
+          hashtags: json.hashtags,
+          learning_value: json.learning_value
+        }
+      });
+
+      showToast("¡Escenas y prompts infantiles listos y guardados!", "success");
     } catch (error) {
       console.error(error);
       showToast(error instanceof Error ? error.message : "Error al generar escenas", "error");
@@ -312,18 +397,41 @@ export default function VideosInfantilesPage() {
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* HEADER */}
-        <header className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-semibold uppercase tracking-wider">
-            <Baby className="w-3.5 h-3.5" />
-            YouTube Kids & TikTok Infantil
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-semibold uppercase tracking-wider">
+              <Baby className="w-3.5 h-3.5" />
+              YouTube Kids & TikTok Infantil
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
+              Creador de <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text">Videos Infantiles</span>
+              <Sparkles className="w-8 h-8 text-pink-400 hidden sm:block animate-pulse" />
+            </h1>
+            <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+              Crea adivinanzas interactivas con cuenta regresiva, fábulas con moraleja y cuentos tiernos en 3D Pixar, acuarela o plastilina.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white flex items-center gap-3">
-            Creador de <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-transparent bg-clip-text">Videos Infantiles</span>
-            <Sparkles className="w-8 h-8 text-pink-400 hidden sm:block animate-pulse" />
-          </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl">
-            Crea adivinanzas interactivas con cuenta regresiva, fábulas con moraleja y cuentos tiernos en 3D Pixar, acuarela o plastilina.
-          </p>
+
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
+            <Link
+              href="/historial"
+              className="bg-slate-900 hover:bg-slate-800 text-indigo-300 text-xs font-semibold py-2.5 px-3.5 rounded-xl border border-indigo-500/30 flex items-center gap-2 transition-colors shadow-lg shadow-indigo-950/40"
+            >
+              <FolderArchive className="w-4 h-4 text-indigo-400" />
+              <span>Ver Historial / Borradores</span>
+            </Link>
+
+            {(scriptText || data || (ideas && ideas.length > 0)) && (
+              <button
+                onClick={handleResetDraft}
+                title="Reiniciar pantalla para empezar un video nuevo"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-semibold py-2.5 px-3 rounded-xl border border-slate-800 flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Nuevo</span>
+              </button>
+            )}
+          </div>
         </header>
 
         {/* PASO 1: CONFIGURACIÓN */}

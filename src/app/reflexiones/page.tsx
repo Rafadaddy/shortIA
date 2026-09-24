@@ -2,10 +2,12 @@
 import { aiFetch } from "@/lib/ai-fetch";
 
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon, List } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, BookOpen, RefreshCw, Copy, Check, Search, Image as ImageIcon, List, FolderArchive, RotateCcw } from "lucide-react";
 import { topicCategories } from "./topics";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
+import { saveHistoryItem } from "@/lib/history-storage";
 
 export const allTopicsList = topicCategories.flatMap((cat, catIdx) =>
   cat.topics.map((t, topicIdx) => {
@@ -57,6 +59,55 @@ export default function ReflexionesPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // RECUPERAR BORRADOR AL ENTRAR
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("shortia_draft_reflection");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.topic) setTopic(draft.topic);
+        if (draft.titles) setTitles(draft.titles);
+        if (draft.data) setData(draft.data);
+        if (draft.visualStyle) setVisualStyle(draft.visualStyle);
+        if (draft.imageFormat) setImageFormat(draft.imageFormat);
+        if (draft.tone) setTone(draft.tone);
+        if (draft.reflectionStyle) setReflectionStyle(draft.reflectionStyle);
+      }
+    } catch (e) {
+      console.error("[Reflexiones] Error restoring draft:", e);
+    }
+  }, []);
+
+  // GUARDAR BORRADOR EN TIEMPO REAL
+  useEffect(() => {
+    try {
+      if (data || (titles && titles.length > 0)) {
+        localStorage.setItem("shortia_draft_reflection", JSON.stringify({
+          topic,
+          titles,
+          data,
+          visualStyle,
+          imageFormat,
+          tone,
+          reflectionStyle
+        }));
+      }
+    } catch (e) {
+      console.error("[Reflexiones] Error saving draft:", e);
+    }
+  }, [topic, titles, data, visualStyle, imageFormat, tone, reflectionStyle]);
+
+  const handleResetDraft = () => {
+    if (confirm("¿Deseas reiniciar la pantalla y empezar una nueva reflexión? (Se conservará en tu historial)")) {
+      setTitles(null);
+      setData(null);
+      setTopic("");
+      setSearchTerm("");
+      localStorage.removeItem("shortia_draft_reflection");
+      showToast("Pantalla reiniciada para una nueva reflexión", "success");
+    }
+  };
+
   const handleGenerateTitles = async () => {
     setIsGeneratingTitles(true);
     setTitles(null);
@@ -106,6 +157,26 @@ export default function ReflexionesPage() {
       if (!res.ok) throw new Error("Error en la solicitud");
       const reflectionData = await res.json();
       setData(reflectionData);
+
+      // GUARDAR EN HISTORIAL GLOBAL
+      saveHistoryItem({
+        category: "Reflexiones y Textos",
+        title: reflectionData.title || selectedTitle || "Reflexión",
+        subtitle: `${tone} • ${reflectionStyle}`,
+        script: reflectionData.reflection_text,
+        prompts: reflectionData.image_prompt ? [{
+          scene_number: 1,
+          image_prompt: reflectionData.image_prompt,
+        }] : undefined,
+        metadata: {
+          style: visualStyle,
+          format: imageFormat,
+          tone,
+          reflectionStyle
+        }
+      });
+
+      showToast("¡Reflexión generada y guardada en Borradores!", "success");
     } catch (error) {
       console.error(error);
       showToast("Hubo un error al generar la reflexión.", "error");
@@ -149,14 +220,37 @@ export default function ReflexionesPage() {
       <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* Encabezado */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3 text-indigo-400 mb-2">
-            <BookOpen className="w-8 h-8" />
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Reflexiones y Textos</h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3 text-indigo-400 mb-1">
+              <BookOpen className="w-8 h-8" />
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Reflexiones y Textos</h1>
+            </div>
+            <p className="text-slate-400 max-w-2xl text-sm md:text-base">
+              Genera guiones altamente empáticos y humanos. Toca las fibras sensibles de tu audiencia con verdades incómodas, dolores reales y vulnerabilidad.
+            </p>
           </div>
-          <p className="text-slate-400 max-w-2xl text-lg">
-            Genera guiones altamente empáticos y humanos. Toca las fibras sensibles de tu audiencia con verdades incómodas, dolores reales y vulnerabilidad.
-          </p>
+
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
+            <Link
+              href="/historial"
+              className="bg-slate-900 hover:bg-slate-800 text-indigo-300 text-xs font-semibold py-2.5 px-3.5 rounded-xl border border-indigo-500/30 flex items-center gap-2 transition-colors shadow-lg shadow-indigo-950/40"
+            >
+              <FolderArchive className="w-4 h-4 text-indigo-400" />
+              <span>Ver Borradores / Historial</span>
+            </Link>
+
+            {(data || (titles && titles.length > 0)) && (
+              <button
+                onClick={handleResetDraft}
+                title="Reiniciar pantalla para empezar una nueva reflexión"
+                className="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs font-semibold py-2.5 px-3 rounded-xl border border-slate-800 flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Nuevo</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Panel de Configuración */}
