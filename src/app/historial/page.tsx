@@ -248,8 +248,43 @@ export default function HistorialPage() {
                     </div>
                   )}
 
-                  {/* Trivia Options si existen en metadata */}
-                  {selectedItem.metadata?.trivia_game && typeof selectedItem.metadata.trivia_game === "object" && (
+                  {/* Trivia Options / Serie de Preguntas si existen en metadata */}
+                  {selectedItem.metadata?.trivia_questions && Array.isArray(selectedItem.metadata.trivia_questions) && selectedItem.metadata.trivia_questions.length > 0 ? (
+                    <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                        🔥 Serie de {selectedItem.metadata.trivia_questions.length} Preguntas Guardadas:
+                      </span>
+                      <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                        {(selectedItem.metadata.trivia_questions as Array<{ question_number?: number; question: string; options: Array<{ letter: string; text: string; is_correct: boolean }> }>).map((q, qi) => (
+                          <div key={qi} className="bg-slate-950/70 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                            <p className="text-xs font-bold text-white">
+                              {q.question_number || qi + 1}. {q.question}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                              {q.options?.map((o, oi) => (
+                                <div
+                                  key={oi}
+                                  className={`p-1.5 rounded-lg border text-[11px] flex items-center gap-1.5 ${
+                                    o.is_correct
+                                      ? "bg-emerald-950/60 border-emerald-500/50 text-emerald-200 font-bold"
+                                      : "bg-slate-900 border-slate-800 text-slate-400"
+                                  }`}
+                                >
+                                  <span className={`w-4 h-4 rounded text-[9px] font-black flex items-center justify-center ${
+                                    o.is_correct ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
+                                  }`}>
+                                    {o.letter}
+                                  </span>
+                                  <span className="truncate">{o.text}</span>
+                                  {o.is_correct && <span className="ml-auto text-[9px]">✅</span>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : selectedItem.metadata?.trivia_game && typeof selectedItem.metadata.trivia_game === "object" ? (
                     <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 space-y-2.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
                         🎯 Opciones de Trivia Guardadas (A, B, C):
@@ -275,7 +310,7 @@ export default function HistorialPage() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Escenas y Prompts */}
                   {selectedItem.prompts && selectedItem.prompts.length > 0 && (

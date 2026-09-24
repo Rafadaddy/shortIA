@@ -43,56 +43,71 @@ export async function POST(req: NextRequest) {
       moral, 
       selectedIdea, 
       customScript,
-      countdownSeconds
+      countdownSeconds,
+      questionCount,
+      challengeHookStyle
     } = body;
 
     const timerSecs = countdownSeconds ? Number(countdownSeconds) : 10;
+    const qCount = questionCount ? Number(questionCount) : 5;
 
     // 1. GENERAR IDEAS
     if (action === "ideas") {
-      const charLine = character ? `Tema específico, reto o personaje: "${character}".` : "Elige preguntas escolares, retos educativos o personajes adorables y variados.";
-      const moralLine = moral ? `Área de aprendizaje o valor a transmitir: "${moral}".` : "Enfoque educativo interactivo y alegre.";
+      const charLine = character ? `Materia o tema: "${character}".` : "Elige materias escolares populares (Geografía, Matemáticas, Historia, Ciencias, Ortografía).";
+      const moralLine = moral ? `Objetivo didáctico: "${moral}".` : "Desafío de agilidad y conocimiento.";
       const isTriviaOrMath = (formatType || "").toLowerCase().includes("trivia") || 
                              (formatType || "").toLowerCase().includes("matemáticas") || 
                              (formatType || "").toLowerCase().includes("adivinanza") ||
                              (formatType || "").toLowerCase().includes("escolar");
 
       const triviaInstruction = isTriviaOrMath
-        ? `IMPORTANTE PARA TRIVIA ESCOLAR / RETO EDUCATIVO CON 3 OPCIONES:
-- Plantea preguntas de materias escolares reales (Historia, Matemáticas, Español/Gramática, Ciencias, Geografía, etc., por ejemplo: "¿Quién descubrió América?", "¿Cuánto es 8x7?", "¿Cuál es el sujeto en esta oración?").
-- Cada idea debe incluir la pregunta detonante y 3 OPCIONES (A, B y C) bien estructuradas donde una sea la correcta y dos sean distractores creíbles.
-- Especifica el tiempo de cuenta regresiva de ${timerSecs} segundos.`
+        ? `IMPORTANTE PARA SERIE DE TRIVIA VIRAL (RETO DE ${qCount} PREGUNTAS CON OPCIONES A, B, C):
+- Genera ideas con un GANCHO RETADOR AL EGO / CURIOSIDAD para los primeros 3 segundos.
+- Ejemplos de ganchos virales potentes:
+  * "¿Qué tanto sabes realmente de [Materia]? ¡Solo el 5% logra 5 de 5!"
+  * "¿Sabes más que un estudiante de primaria? ¡Demuéstralo en este reto!"
+  * "¡Pocos pasan de la pregunta 3! 5 preguntas de [Materia], ¿hasta cuál llegas?"
+  * "Si fallas la primera, ¡tienes que dejar tu like! Pregunta número 1..."
+- Cada idea debe ser una SERIE DE ${qCount} PREGUNTAS progresivas (de fácil a difícil).
+- Cada pregunta debe tener sus 3 opciones (A, B y C) bien estructuradas (1 correcta, 2 distractores creíbles).`
         : "";
 
-      const prompt = `Eres un experto creador de contenido infantil y educativo viral para YouTube Kids, YouTube Shorts y TikTok en español.
-El usuario quiere generar 4 ideas super atrapantes y educativas para videos infantiles.
+      const prompt = `Eres un estratega y creador de contenido viral #1 en TikTok, YouTube Shorts y Reels especializado en trivias escolares y retos educativos.
+El usuario quiere generar 4 propuestas irresistibles de videos de trivia/retos para captar máxima retención y comentarios.
 
 PARÁMETROS:
-- Rango de Edad: "${ageGroup || 'Preescolar (4 a 6 años)'}"
-- Formato / Tipo: "${formatType || 'Trivia Escolar Educativa con Cuenta Regresiva'}"
-- Tiempo de Cuenta Regresiva para responder: ${timerSecs} segundos
+- Rango de Edad: "${ageGroup || 'Primaria Inicial (7 a 10 años)'}"
+- Formato: "${formatType || 'Trivia Educativa / Preguntas Escolares'}"
+- Cantidad de preguntas por video: ${qCount}
+- Tiempo de conteo por pregunta: ${timerSecs} segundos
+- Estilo de gancho: "${challengeHookStyle || 'Desafío de Orgullo / ¿Qué tanto sabes?'}"
 - Estilo Visual: "${visualStyle || '3D Pixar / Disney Tierno'}"
 ${charLine}
 ${moralLine}
 ${triviaInstruction}
 Semilla de aleatoriedad: ${Date.now()}-${Math.random()}
 
-REGLAS INFANTILES ESTRICTAS:
-- Idioma: Español neutro limpio, entusiasta y cariñoso. CERO lenguaje violento, grosero o aterrador.
-- Ganchos con preguntas directas, retos de conocimiento escolar o misterios simpáticos que involucren al niño o a la familia.
-- Formato adaptado a la edad seleccionada.
+REGLAS DE RETENCIÓN VIRAL:
+- Ganchos directos que obliguen a detener el scroll retando su conocimiento.
+- Tono desafiante, alegre, motivador y 100% familiar (sin groserías ni faltas de respeto).
 
 Responde ÚNICAMENTE con un JSON válido:
 {
   "ideas": [
     {
-      "title": "Título llamativo y divertido con emojis",
-      "hook": "La frase o pregunta inicial exacta para los primeros 3 segundos",
-      "description": "De qué trata la pregunta o reto y qué aprenderá el niño",
-      "options": [
-        { "letter": "A", "text": "Primera opción", "is_correct": false },
-        { "letter": "B", "text": "Segunda opción (ejemplo la correcta)", "is_correct": true },
-        { "letter": "C", "text": "Tercera opción", "is_correct": false }
+      "title": "Título llamativo con emojis (ej. 🧠 ¿Sabes más que un niño de primaria? - 5 Preguntas)",
+      "hook": "La frase de gancho retador exacta para los primeros 3 segundos",
+      "description": "Explicación del reto y materias que abarcan las ${qCount} preguntas",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Pregunta de nivel fácil...",
+          "options": [
+            { "letter": "A", "text": "Opción A", "is_correct": false },
+            { "letter": "B", "text": "Opción B", "is_correct": true },
+            { "letter": "C", "text": "Opción C", "is_correct": false }
+          ]
+        }
       ]
     }
   ]
@@ -106,9 +121,9 @@ Responde ÚNICAMENTE con un JSON válido:
       }
     }
 
-    // 2. GENERAR GUION NARRATIVO COMPLETO
+    // 2. GENERAR GUION NARRATIVO COMPLETO EN CADENA
     if (action === "script_only") {
-      const ideaTitle = selectedIdea?.title || (typeof selectedIdea === "string" ? selectedIdea : "Cuento Infantil");
+      const ideaTitle = selectedIdea?.title || (typeof selectedIdea === "string" ? selectedIdea : "Trivia Educativa");
       const ideaHook = selectedIdea?.hook || "";
       const ideaDesc = selectedIdea?.description || "";
       const isTriviaOrMath = (formatType || "").toLowerCase().includes("trivia") || 
@@ -117,46 +132,47 @@ Responde ÚNICAMENTE con un JSON válido:
                              (formatType || "").toLowerCase().includes("escolar");
 
       const structureGuide = isTriviaOrMath
-        ? `ESTRUCTURA EXACTA DE TRIVIA ESCOLAR CON 3 OPCIONES Y CUENTA REGRESIVA DE ${timerSecs} SEGUNDOS:
-1. PREGUNTA RETO Y 3 OPCIONES (0-15s):
-   - Saludo entusiasta y planteamiento claro de la pregunta.
-   - Enunciar las 3 opciones de manera divertida:
-     "¿Será la opción A: [Opción A], la opción B: [Opción B], o la opción C: [Opción C]?"
-2. CUENTA REGRESIVA EN PANTALLA (${timerSecs} segundos):
-   - Incluir la pauta sonora y visual: "[Aparecen en pantalla las opciones A, B y C con reloj de ${timerSecs} segundos: ⏳ ${Array.from({length: Math.min(timerSecs, 10)}, (_, i) => timerSecs - i).join('... ')}...]".
-   - El locutor puede decir brevemente: "¡Corre el tiempo! ¿Cuál eliges? ¡Déjala en los comentarios antes de que se acabe!".
-3. REVELACIÓN Y EFECTO VISUAL (después del conteo):
-   - Anuncio triunfal: "[¡Tiempo terminado! ¡La opción correcta se ilumina en verde brillante ✅!] ¡Exacto, la respuesta correcta es la opción [Letra]!".
-   - Explicación didáctica: Explicar en 2 frases sencillas y atractivas el por qué, dando un dato curioso que enriquezca el aprendizaje del niño.
-4. LLAMADA A LA ACCIÓN (últimos 5s):
-   - Preguntar con calidez: "¿Acertaste? ¡Dale like al video si elegiste la correcta y suscríbete para más retos diarios!".`
+        ? `ESTRUCTURA DE RETO EN CADENA DE ${qCount} PREGUNTAS (CUENTA REGRESIVA DE ${timerSecs} SEGUNDOS CADA UNA):
+1. GANCHO AL EGO / CURIOSIDAD (0-4s):
+   - Frase retadora: "${ideaHook || `¿Qué tanto sabes realmente? ¡Solo los más inteligentes sacan ${qCount} de ${qCount}!`}"
+   - "¡Empecemos con la número 1!"
+2. BUCLE ENCADENADO PARA CADA UNA DE LAS ${qCount} PREGUNTAS:
+   - Presentar la pregunta: "Pregunta [Número]: [Pregunta]"
+   - Opciones en pantalla: "¿Será la A: [A], la B: [B], o la C: [C]?"
+   - Pauta de conteo: "[Aparecen opciones A, B y C con reloj regresivo: ⏳ ${timerSecs}... 3... 2... 1...]"
+   - Revelación y relleno verde: "[¡Tiempo! La opción [Letra] se ilumina en verde ✅] ¡Es la opción [Letra]: [Respuesta correcta]!"
+   - Explicación de 1 frase interesante del por qué.
+   - Transición rápida a la siguiente: "¡Siguiente pregunta!" o "¡Vamos por la ronda [Número], sube la dificultad!".
+   - En la última pregunta: "¡Y última pregunta, la más difícil de todas!".
+3. LLAMADA A LA ACCIÓN FINAL DISPARADORA DE COMENTARIOS:
+   - "¡Fin del juego! ¿Cuántas acertaste: 3 de ${qCount}, 4 de ${qCount} o récord perfecto de ${qCount} de ${qCount}? ¡Escribe tu puntuación en los comentarios y suscríbete para la revancha de mañana!"`
         : `PAUTAS DE NARRACIÓN INFANTIL:
 1. INICIO (0-5s): Saludo cálido y gancho entusiasta ("¡Hola amiguito! ¿Listo para una aventura?").
 2. DESARROLLO (5-35s): Frases cortas, rítmicas y claras. Si hay cuenta regresiva, incluye: "[Cuenta regresiva sonora: ${timerSecs}... 3... 2... 1...]". Si es cuento o fábula, presenta al personaje y su pequeña travesura o descubrimiento.
 3. CLÍMAX / REVELACIÓN (35-50s): Celebración alegre y explicación clara.
 4. CIERRE AMABLE (50-60s): Pregunta cariñosa y llamado a la acción familiar.`;
 
-      const prompt = `Eres un talentoso educador infantil y guionista de videos para niños (YouTube Kids, Shorts y TikTok).
-Escribe un guion narrativo continuo para un video de 45 a 60 segundos.
+      const prompt = `Eres un talentoso presentador de concursos educativos y guionista de videos virales (YouTube Kids, Shorts y TikTok).
+Escribe un guion narrativo continuo y dinámico para una serie de ${qCount} preguntas.
 
 DATOS DEL VIDEO:
 - Título/Idea: "${ideaTitle}"
 - Gancho sugerido: "${ideaHook}"
-- Descripción: "${ideaDesc}"
-- Edad objetivo: "${ageGroup || 'Preescolar (4 a 6 años)'}"
+- Cantidad de preguntas: ${qCount}
+- Tiempo de cuenta regresiva por pregunta: ${timerSecs} segundos
+- Edad objetivo: "${ageGroup || 'Primaria Inicial (7 a 10 años)'}"
 - Formato: "${formatType || 'Trivia Escolar Educativa'}"
-- Tiempo de cuenta regresiva: ${timerSecs} segundos
-- Valor / Aprendizaje: "${moral || 'Conocimiento escolar y curiosidad'}"
+- Valor / Aprendizaje: "${moral || 'Conocimiento escolar y agilidad mental'}"
 
 ${structureGuide}
 
 REGLAS:
-- Idioma: Español neutro impecable, tildes correctas, sin palabras difíciles ni garabatos.
-- Tono: Alegre, didáctico, dulce y muy estimulante.
+- Idioma: Español neutro impecable, tildes correctas, cero garabatos.
+- Ritmo: Muy dinámico, competitivo y entretenido. Mantén a la audiencia enganchada de inicio a fin.
 
 Responde ÚNICAMENTE con un JSON válido:
 {
-  "script": "Texto narrativo continuo de la locución infantil con indicaciones entre corchetes..."
+  "script": "Texto narrativo continuo completo de la locución con todas las ${qCount} preguntas encadenadas e indicaciones entre corchetes..."
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
@@ -233,15 +249,27 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura:
   "hashtags": ["#paraniños", "#youtubekids", "#adivinanzas", "#cuentosinfantiles"],
   "learning_value": "Qué habilidad o valor aprendió el niño",
   "trivia_game": {
-    "question": "Pregunta exacta de la trivia",
+    "question": "Pregunta principal o primera pregunta",
     "countdown_seconds": 10,
     "options": [
       { "letter": "A", "text": "Texto opción A", "is_correct": false },
       { "letter": "B", "text": "Texto opción B (correcta)", "is_correct": true },
       { "letter": "C", "text": "Texto opción C", "is_correct": false }
     ],
-    "explanation": "Breve explicación didáctica de por qué es la correcta"
+    "explanation": "Breve explicación didáctica"
   },
+  "trivia_questions": [
+    {
+      "question_number": 1,
+      "question": "Pregunta exacta de la ronda 1",
+      "options": [
+        { "letter": "A", "text": "Texto opción A", "is_correct": false },
+        { "letter": "B", "text": "Texto opción B", "is_correct": true },
+        { "letter": "C", "text": "Texto opción C", "is_correct": false }
+      ],
+      "explanation": "Dato o confirmación"
+    }
+  ],
   "scenes": [
     {
       "scene_number": 1,

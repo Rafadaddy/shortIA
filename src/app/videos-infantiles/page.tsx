@@ -19,6 +19,13 @@ interface TriviaOption {
   is_correct: boolean;
 }
 
+interface TriviaQuestion {
+  question_number?: number;
+  question: string;
+  options: TriviaOption[];
+  explanation?: string;
+}
+
 interface TriviaGame {
   question: string;
   countdown_seconds: number;
@@ -44,6 +51,7 @@ interface KidsVideoData {
   hashtags: string[];
   learning_value: string;
   trivia_game?: TriviaGame;
+  trivia_questions?: TriviaQuestion[];
   scenes: Scene[];
 }
 
@@ -52,6 +60,7 @@ interface KidsIdea {
   hook: string;
   description: string;
   options?: TriviaOption[];
+  questions?: TriviaQuestion[];
 }
 
 const AGE_GROUPS = [
@@ -78,12 +87,25 @@ const COUNTDOWN_OPTIONS = [
   { label: "⏱️ 15 segundos", value: "15" },
 ];
 
+const QUESTION_COUNT_OPTIONS = [
+  { label: "⚡ 1 Pregunta (Short Rápido de 20s)", value: "1" },
+  { label: "🔥 3 Preguntas (Short Dinámico de 45-60s)", value: "3" },
+  { label: "🏆 5 Preguntas (Retención Total / Recomendado Viral)", value: "5" },
+];
+
+const CHALLENGE_HOOK_OPTIONS = [
+  { label: "🧠 Desafío al Ego: '¿Qué tanto sabes de...?'", value: "ego_knowledge" },
+  { label: "🎒 Comparativo: '¿Sabes más que un niño de primaria?'", value: "smarter_than" },
+  { label: "🔥 Dificultad: 'Solo el 5% logra 5 de 5'", value: "top_percentage" },
+  { label: "🎯 Apuesta: 'Si fallas la primera, me das like'", value: "like_bet" },
+];
+
 const SCHOOL_TOPIC_CHIPS = [
-  { label: "🌎 Historia y Geografía", char: "El descubrimiento de América y exploradores del mundo", moral: "Curiosidad por la historia" },
-  { label: "➗ Matemáticas Divertidas", char: "Un reto de cálculo mental rápido con manzanas y estrellas", moral: "Agilidad mental" },
-  { label: "📚 Ortografía y Español", char: "Adivina cuál es la palabra correcta y cómo se escribe", moral: "Amor por la lectura" },
-  { label: "🪐 El Sistema Solar", char: "Los planetas, la luna y curiosidades del universo", moral: "Cuidado del planeta" },
-  { label: "🦁 El Reino Animal", char: "Animales salvajes, sus hábitats y récords asombrosos", moral: "Respeto a los animales" },
+  { label: "🌎 Historia y Geografía", char: "Geografía mundial y las capitales de los países", moral: "Curiosidad por el mundo" },
+  { label: "➗ Matemáticas Divertidas", char: "Retos de cálculo mental rápido y tablas de multiplicar", moral: "Agilidad mental matemática" },
+  { label: "📚 Ortografía y Español", char: "Palabras con acento, sinónimos y ortografía básica", moral: "Amor por el lenguaje" },
+  { label: "🪐 El Sistema Solar", char: "Planetas, el sol y curiosidades astronómicas", moral: "Cuidado del planeta" },
+  { label: "🦁 El Reino Animal", char: "Animales asombrosos, récords y sus hábitats", moral: "Respeto a la naturaleza" },
 ];
 
 const VISUAL_STYLES = [
@@ -116,10 +138,12 @@ const MORAL_OPTIONS = [
 export default function VideosInfantilesPage() {
   const [ageGroup, setAgeGroup] = useState(AGE_GROUPS[1]);
   const [formatType, setFormatType] = useState(FORMAT_TYPES[0]);
+  const [questionCount, setQuestionCount] = useState("5");
+  const [challengeHookStyle, setChallengeHookStyle] = useState(CHALLENGE_HOOK_OPTIONS[0].value);
   const [countdownSeconds, setCountdownSeconds] = useState("10");
   const [visualStyle, setVisualStyle] = useState(VISUAL_STYLES[0]);
-  const [character, setCharacter] = useState("¿Quién descubrió América y en qué año?");
-  const [moral, setMoral] = useState("Aprender historia universal y geografía");
+  const [character, setCharacter] = useState("Geografía mundial y capitales");
+  const [moral, setMoral] = useState("Conocimiento escolar y agilidad mental");
 
   const [ideas, setIdeas] = useState<KidsIdea[] | null>(null);
   const [selectedIdea, setSelectedIdea] = useState<KidsIdea | null>(null);
@@ -144,6 +168,7 @@ export default function VideosInfantilesPage() {
   const [simIsRunning, setSimIsRunning] = useState(false);
   const [simRevealed, setSimRevealed] = useState(false);
   const [selectedUserOption, setSelectedUserOption] = useState<string | null>(null);
+  const [simQuestionIndex, setSimQuestionIndex] = useState(0);
 
   // Manejo del contador interactivo de la trivia
   useEffect(() => {
@@ -174,6 +199,7 @@ export default function VideosInfantilesPage() {
     setSimRevealed(false);
     setSelectedUserOption(null);
   };
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem("shortia_draft_kids");
@@ -185,6 +211,8 @@ export default function VideosInfantilesPage() {
         if (draft.data) setData(draft.data);
         if (draft.ageGroup) setAgeGroup(draft.ageGroup);
         if (draft.formatType) setFormatType(draft.formatType);
+        if (draft.questionCount) setQuestionCount(draft.questionCount);
+        if (draft.challengeHookStyle) setChallengeHookStyle(draft.challengeHookStyle);
         if (draft.countdownSeconds) setCountdownSeconds(draft.countdownSeconds);
         if (draft.visualStyle) setVisualStyle(draft.visualStyle);
         if (draft.character) setCharacter(draft.character);
@@ -206,6 +234,8 @@ export default function VideosInfantilesPage() {
           data,
           ageGroup,
           formatType,
+          questionCount,
+          challengeHookStyle,
           countdownSeconds,
           visualStyle,
           character,
@@ -215,7 +245,7 @@ export default function VideosInfantilesPage() {
     } catch (e) {
       console.error("[VideosInfantiles] Error saving draft:", e);
     }
-  }, [ideas, selectedIdea, scriptText, data, ageGroup, formatType, countdownSeconds, visualStyle, character, moral]);
+  }, [ideas, selectedIdea, scriptText, data, ageGroup, formatType, questionCount, challengeHookStyle, countdownSeconds, visualStyle, character, moral]);
 
   const handleResetDraft = () => {
     if (confirm("¿Deseas reiniciar la pantalla y empezar un video nuevo? (Se conservará en tu historial)")) {
@@ -241,6 +271,8 @@ export default function VideosInfantilesPage() {
         action: "ideas",
         ageGroup,
         formatType,
+        questionCount,
+        challengeHookStyle,
         countdownSeconds,
         visualStyle,
         character,
@@ -275,6 +307,8 @@ export default function VideosInfantilesPage() {
         action: "script_only",
         ageGroup,
         formatType,
+        questionCount,
+        challengeHookStyle,
         countdownSeconds,
         visualStyle,
         moral,
@@ -296,9 +330,9 @@ export default function VideosInfantilesPage() {
       saveHistoryItem({
         category: "Videos Infantiles",
         title: idea.title || "Video Infantil",
-        subtitle: `${ageGroup} • ${formatType} (${countdownSeconds}s)`,
+        subtitle: `${ageGroup} • ${formatType} (${questionCount} Preguntas • ${countdownSeconds}s)`,
         script: scriptResult,
-        metadata: { ageGroup, formatType, countdownSeconds, visualStyle, moral }
+        metadata: { ageGroup, formatType, questionCount, challengeHookStyle, countdownSeconds, visualStyle, moral }
       });
 
       showToast("¡Guion infantil generado y guardado en Borradores!", "success");
@@ -363,6 +397,7 @@ export default function VideosInfantilesPage() {
           music: json.music_recommendation,
           hashtags: json.hashtags,
           learning_value: json.learning_value,
+          trivia_questions: json.trivia_questions || selectedIdea?.questions,
           trivia_game: json.trivia_game || (selectedIdea?.options ? {
             question: selectedIdea.title,
             countdown_seconds: Number(countdownSeconds || 10),
@@ -559,11 +594,48 @@ export default function VideosInfantilesPage() {
               </select>
             </div>
 
+            {/* Cantidad de Preguntas por Video */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-amber-300">
+                  <Star className="w-3.5 h-3.5 text-amber-400" />
+                  Preguntas por Video
+                </span>
+                <span className="text-[10px] text-emerald-400 font-bold">5 = Retención Total</span>
+              </label>
+              <select
+                value={questionCount}
+                onChange={(e) => setQuestionCount(e.target.value)}
+                className="w-full bg-slate-950/80 border border-amber-500/50 rounded-xl py-3 px-4 text-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-sm font-bold shadow-sm shadow-amber-500/10"
+              >
+                {QUESTION_COUNT_OPTIONS.map((q) => (
+                  <option key={q.value} value={q.value}>{q.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Estilo de Gancho Retador (Al ego / curiosidad) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5 text-pink-300">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                Gancho Retador Inicial (Scroll-Stopper)
+              </label>
+              <select
+                value={challengeHookStyle}
+                onChange={(e) => setChallengeHookStyle(e.target.value)}
+                className="w-full bg-slate-950/80 border border-pink-500/40 rounded-xl py-3 px-4 text-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm font-medium"
+              >
+                {CHALLENGE_HOOK_OPTIONS.map((h) => (
+                  <option key={h.value} value={h.value}>{h.label}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Cuenta Regresiva (Segundos) */}
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                 <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                Tiempo de Cuenta Regresiva
+                Tiempo de Conteo por Pregunta
               </label>
               <select
                 value={countdownSeconds}
@@ -709,7 +781,39 @@ export default function VideosInfantilesPage() {
                     </p>
                   </div>
                   
-                  {idea.options && idea.options.length > 0 && (
+                  {/* Si la idea trae múltiples preguntas (Serie de 3 o 5 preguntas) */}
+                  {idea.questions && idea.questions.length > 0 ? (
+                    <div className="my-2.5 space-y-2 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center justify-between">
+                        <span>🔥 Serie de {idea.questions.length} Preguntas:</span>
+                        <span className="text-[9px] text-slate-400">Nivel Progresivo</span>
+                      </span>
+                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        {idea.questions.map((q, qIdx) => (
+                          <div key={qIdx} className="bg-slate-950/70 p-2 rounded-lg border border-slate-800/80 space-y-1 text-xs">
+                            <p className="font-bold text-slate-200 text-[11px] line-clamp-1">
+                              {q.question_number || qIdx + 1}. {q.question}
+                            </p>
+                            <div className="grid grid-cols-3 gap-1">
+                              {q.options?.map((opt, oIdx) => (
+                                <span 
+                                  key={oIdx}
+                                  className={`px-1.5 py-0.5 rounded text-[10px] truncate ${
+                                    opt.is_correct 
+                                      ? "bg-emerald-950/70 text-emerald-300 font-bold border border-emerald-500/40" 
+                                      : "bg-slate-900 text-slate-400"
+                                  }`}
+                                  title={`${opt.letter}) ${opt.text}`}
+                                >
+                                  {opt.letter}) {opt.text}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : idea.options && idea.options.length > 0 ? (
                     <div className="my-2.5 space-y-1.5 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1">
                         🎯 Opciones en pantalla:
@@ -735,7 +839,7 @@ export default function VideosInfantilesPage() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  ) : null}
 
                   <p className="text-slate-400 text-xs leading-relaxed mt-1">
                     {idea.description}
@@ -892,156 +996,214 @@ export default function VideosInfantilesPage() {
               )}
             </div>
 
-            {/* SIMULADOR VISUAL DE TRIVIA EN PANTALLA (A, B, C con Cuenta Regresiva y Revelación) */}
-            {(data.trivia_game || (selectedIdea?.options && selectedIdea.options.length > 0)) && (
-              <div className="bg-gradient-to-br from-indigo-950/80 via-slate-900 to-purple-950/80 border-2 border-indigo-500/50 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-500/30 pb-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300">
-                      <HelpCircle className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
-                        Simulador de Pantalla para Shorts / TikTok / Reels
-                      </span>
-                      <h3 className="text-lg font-black text-white">
-                        🎮 Dinámica de Trivia con 3 Opciones (A, B, C)
-                      </h3>
-                    </div>
-                  </div>
+            {/* SIMULADOR VISUAL DE TRIVIA EN PANTALLA (Multi-pregunta: Ronda 1 a 5 con Conteo y Revelación) */}
+            {(data.trivia_questions || data.trivia_game || selectedIdea?.questions || selectedIdea?.options) && (() => {
+              // Obtener la lista de preguntas disponibles
+              const questionsList: TriviaQuestion[] = (data.trivia_questions && data.trivia_questions.length > 0)
+                ? data.trivia_questions
+                : (selectedIdea?.questions && selectedIdea.questions.length > 0)
+                ? selectedIdea.questions
+                : [
+                    {
+                      question_number: 1,
+                      question: data.trivia_game?.question || selectedIdea?.title || character,
+                      options: data.trivia_game?.options || selectedIdea?.options || [
+                        { letter: "A", text: "Opción A", is_correct: false },
+                        { letter: "B", text: "Opción B (Correcta)", is_correct: true },
+                        { letter: "C", text: "Opción C", is_correct: false }
+                      ],
+                      explanation: data.trivia_game?.explanation || data.learning_value
+                    }
+                  ];
 
-                  {/* Botones de acción del simulador */}
-                  <div className="flex items-center gap-2">
-                    {simIsRunning ? (
-                      <div className="flex items-center gap-2 bg-pink-950/60 border border-pink-500/50 px-3.5 py-1.5 rounded-xl text-pink-300 text-xs font-bold animate-pulse">
-                        <span className="w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping"></span>
-                        <span>¡Tiempo corriendo! {simTimer}s</span>
+              const currentQ = questionsList[simQuestionIndex] || questionsList[0];
+
+              return (
+                <div className="bg-gradient-to-br from-indigo-950/80 via-slate-900 to-purple-950/80 border-2 border-indigo-500/50 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-500/30 pb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300">
+                        <HelpCircle className="w-5 h-5" />
                       </div>
-                    ) : simRevealed ? (
-                      <button
-                        onClick={() => handleStartSim(Number(countdownSeconds || 10))}
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        Probar Conteo Otra Vez
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleStartSim(Number(countdownSeconds || 10))}
-                        className="bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white text-xs font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-pink-600/20 transition-all"
-                      >
-                        <Play className="w-4 h-4 fill-white" />
-                        Iniciar Conteo de {countdownSeconds || 10}s
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Tarjeta de simulación estilo Short vertical en miniatura */}
-                <div className="max-w-md mx-auto bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden space-y-5">
-                  {/* Cronómetro flotante */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                      <Star className="w-3.5 h-3.5 text-amber-400" />
-                      RETO DEL DÍA
-                    </span>
-                    <div className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 transition-all ${
-                      simIsRunning
-                        ? "bg-amber-500 text-slate-950 scale-105 shadow-md shadow-amber-500/40"
-                        : simRevealed
-                        ? "bg-emerald-500 text-slate-950"
-                        : "bg-slate-800 text-slate-300"
-                    }`}>
-                      <span>⏱️</span>
-                      <span>
-                        {simIsRunning 
-                          ? `${simTimer}s` 
-                          : simRevealed 
-                          ? "¡TIEMPO!" 
-                          : `${countdownSeconds || 10}s`}
-                      </span>
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+                          Simulador de Pantalla para Shorts / TikTok / Reels
+                        </span>
+                        <h3 className="text-lg font-black text-white">
+                          🎮 Serie de {questionsList.length} Preguntas (A, B, C)
+                        </h3>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Pregunta */}
-                  <div className="text-center py-2">
-                    <h4 className="text-base md:text-lg font-black text-white leading-snug">
-                      {data.trivia_game?.question || selectedIdea?.title || character}
-                    </h4>
-                  </div>
-
-                  {/* 3 Opciones (A, B, C) */}
-                  <div className="space-y-3">
-                    {(data.trivia_game?.options || selectedIdea?.options || [
-                      { letter: "A", text: "Opción A", is_correct: false },
-                      { letter: "B", text: "Opción B (Correcta)", is_correct: true },
-                      { letter: "C", text: "Opción C", is_correct: false }
-                    ]).map((opt) => {
-                      const isCorrect = opt.is_correct;
-                      let btnStyle = "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-slate-500";
-                      let letterStyle = "bg-slate-800 text-slate-200 border-slate-700";
-
-                      if (simRevealed) {
-                        if (isCorrect) {
-                          btnStyle = "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white font-black shadow-lg shadow-emerald-600/30 scale-102 animate-bounce";
-                          letterStyle = "bg-white text-emerald-700 font-black border-transparent";
-                        } else {
-                          btnStyle = "bg-slate-950/60 border-slate-900 text-slate-500 opacity-40 line-through";
-                          letterStyle = "bg-slate-900 text-slate-600 border-slate-800";
-                        }
-                      } else if (selectedUserOption === opt.letter) {
-                        btnStyle = "bg-indigo-950/80 border-indigo-400 text-white shadow-md shadow-indigo-600/20";
-                        letterStyle = "bg-indigo-600 text-white border-indigo-400";
-                      }
-
-                      return (
-                        <div
-                          key={opt.letter}
-                          onClick={() => {
-                            if (!simRevealed) setSelectedUserOption(opt.letter);
-                          }}
-                          className={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${btnStyle}`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black border transition-all ${letterStyle}`}>
-                              {opt.letter}
-                            </span>
-                            <span className="text-sm font-bold">
-                              {opt.text}
-                            </span>
-                          </div>
-                          {simRevealed && isCorrect && (
-                            <span className="text-xs bg-white text-emerald-800 font-black px-2 py-0.5 rounded-md shadow">
-                              ✅ ¡CORRECTO!
-                            </span>
+                    {/* Botones de acción del simulador */}
+                    <div className="flex items-center gap-2">
+                      {simIsRunning ? (
+                        <div className="flex items-center gap-2 bg-pink-950/60 border border-pink-500/50 px-3.5 py-1.5 rounded-xl text-pink-300 text-xs font-bold animate-pulse">
+                          <span className="w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping"></span>
+                          <span>¡Tiempo corriendo! {simTimer}s</span>
+                        </div>
+                      ) : simRevealed ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleStartSim(Number(countdownSeconds || 10))}
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            Repetir
+                          </button>
+                          {questionsList.length > 1 && simQuestionIndex < questionsList.length - 1 && (
+                            <button
+                              onClick={() => {
+                                handleResetSim();
+                                setSimQuestionIndex(prev => prev + 1);
+                              }}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition-all"
+                            >
+                              <span>Siguiente Ronda ➔</span>
+                            </button>
                           )}
                         </div>
-                      );
-                    })}
+                      ) : (
+                        <button
+                          onClick={() => handleStartSim(Number(countdownSeconds || 10))}
+                          className="bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white text-xs font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-pink-600/20 transition-all"
+                        >
+                          <Play className="w-4 h-4 fill-white" />
+                          Iniciar Conteo ({countdownSeconds || 10}s)
+                        </button>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Explicación didáctica al revelar */}
-                  {simRevealed && (
-                    <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-4 text-xs text-emerald-200 space-y-1 animate-in zoom-in-95">
-                      <span className="font-bold flex items-center gap-1.5 text-emerald-400">
-                        🎉 ¡Excelente trabajo!
-                      </span>
-                      <p className="leading-relaxed">
-                        {data.trivia_game?.explanation || data.learning_value || "¡Esa es la respuesta correcta! Los niños adoran ver cómo se ilumina la opción ganadora."}
-                      </p>
+                  {/* Selector de rondas / preguntas si son más de 1 */}
+                  {questionsList.length > 1 && (
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                      <span className="text-xs font-bold text-slate-400 whitespace-nowrap mr-1">Rondas:</span>
+                      {questionsList.map((q, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            handleResetSim();
+                            setSimQuestionIndex(idx);
+                          }}
+                          className={`text-xs py-1.5 px-3 rounded-xl font-bold whitespace-nowrap transition-all ${
+                            simQuestionIndex === idx
+                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-105"
+                              : "bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800"
+                          }`}
+                        >
+                          Pregunta {idx + 1}
+                        </button>
+                      ))}
                     </div>
                   )}
 
-                  {/* Instrucción de edición para CapCut/Premiere */}
-                  <div className="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-start gap-2">
-                    <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Pauta para edición (CapCut / Premiere):</strong> Mantén fijas las cajas A, B y C durante los {countdownSeconds || 10} segundos con el tic-tac. Al llegar a 0s, aplica animación de relleno verde (#22C55E) en la opción correcta con sonido *ding* o campana.
-                    </span>
+                  {/* Tarjeta de simulación estilo Short vertical en miniatura */}
+                  <div className="max-w-md mx-auto bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden space-y-5">
+                    {/* Cronómetro flotante y número de ronda */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5" />
+                        RONDA {simQuestionIndex + 1} DE {questionsList.length}
+                      </span>
+                      <div className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 transition-all ${
+                        simIsRunning
+                          ? "bg-amber-500 text-slate-950 scale-105 shadow-md shadow-amber-500/40"
+                          : simRevealed
+                          ? "bg-emerald-500 text-slate-950"
+                          : "bg-slate-800 text-slate-300"
+                      }`}>
+                        <span>⏱️</span>
+                        <span>
+                          {simIsRunning 
+                            ? `${simTimer}s` 
+                            : simRevealed 
+                            ? "¡TIEMPO!" 
+                            : `${countdownSeconds || 10}s`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Pregunta */}
+                    <div className="text-center py-2">
+                      <h4 className="text-base md:text-lg font-black text-white leading-snug">
+                        {currentQ.question}
+                      </h4>
+                    </div>
+
+                    {/* 3 Opciones (A, B, C) */}
+                    <div className="space-y-3">
+                      {(currentQ.options || [
+                        { letter: "A", text: "Opción A", is_correct: false },
+                        { letter: "B", text: "Opción B (Correcta)", is_correct: true },
+                        { letter: "C", text: "Opción C", is_correct: false }
+                      ]).map((opt) => {
+                        const isCorrect = opt.is_correct;
+                        let btnStyle = "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-slate-500";
+                        let letterStyle = "bg-slate-800 text-slate-200 border-slate-700";
+
+                        if (simRevealed) {
+                          if (isCorrect) {
+                            btnStyle = "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white font-black shadow-lg shadow-emerald-600/30 scale-102 animate-bounce";
+                            letterStyle = "bg-white text-emerald-700 font-black border-transparent";
+                          } else {
+                            btnStyle = "bg-slate-950/60 border-slate-900 text-slate-500 opacity-40 line-through";
+                            letterStyle = "bg-slate-900 text-slate-600 border-slate-800";
+                          }
+                        } else if (selectedUserOption === opt.letter) {
+                          btnStyle = "bg-indigo-950/80 border-indigo-400 text-white shadow-md shadow-indigo-600/20";
+                          letterStyle = "bg-indigo-600 text-white border-indigo-400";
+                        }
+
+                        return (
+                          <div
+                            key={opt.letter}
+                            onClick={() => {
+                              if (!simRevealed) setSelectedUserOption(opt.letter);
+                            }}
+                            className={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${btnStyle}`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black border transition-all ${letterStyle}`}>
+                                {opt.letter}
+                              </span>
+                              <span className="text-sm font-bold">
+                                {opt.text}
+                              </span>
+                            </div>
+                            {simRevealed && isCorrect && (
+                              <span className="text-xs bg-white text-emerald-800 font-black px-2 py-0.5 rounded-md shadow">
+                                ✅ ¡CORRECTO!
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Explicación didáctica al revelar */}
+                    {simRevealed && (
+                      <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-4 text-xs text-emerald-200 space-y-1 animate-in zoom-in-95">
+                        <span className="font-bold flex items-center gap-1.5 text-emerald-400">
+                          🎉 ¡Respuesta Revelada!
+                        </span>
+                        <p className="leading-relaxed">
+                          {currentQ.explanation || data.learning_value || "¡Esa es la opción correcta! En tu video, resalta esta opción en verde."}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Instrucción de edición para CapCut/Premiere */}
+                    <div className="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-start gap-2">
+                      <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Pauta para edición (CapCut / Premiere):</strong> Mantén fijas las cajas A, B y C durante la ronda {simQuestionIndex + 1} ({countdownSeconds || 10}s con tic-tac). Al llegar a 0s, rellena en verde la opción ganadora con sonido ding.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Escenas desglosadas */}
             <div className="space-y-4">
