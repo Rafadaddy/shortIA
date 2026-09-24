@@ -42,28 +42,43 @@ export async function POST(req: NextRequest) {
       character, 
       moral, 
       selectedIdea, 
-      customScript 
+      customScript,
+      countdownSeconds
     } = body;
+
+    const timerSecs = countdownSeconds ? Number(countdownSeconds) : 10;
 
     // 1. GENERAR IDEAS
     if (action === "ideas") {
-      const charLine = character ? `Protagonista o tema: "${character}".` : "Elige personajes animales o elementos adorables y variados.";
-      const moralLine = moral ? `Valor o enseñanza clave a transmitir: "${moral}".` : "Enfoque alegre, positivo o educativo.";
+      const charLine = character ? `Tema específico, reto o personaje: "${character}".` : "Elige preguntas escolares, retos educativos o personajes adorables y variados.";
+      const moralLine = moral ? `Área de aprendizaje o valor a transmitir: "${moral}".` : "Enfoque educativo interactivo y alegre.";
+      const isTriviaOrMath = (formatType || "").toLowerCase().includes("trivia") || 
+                             (formatType || "").toLowerCase().includes("matemáticas") || 
+                             (formatType || "").toLowerCase().includes("adivinanza") ||
+                             (formatType || "").toLowerCase().includes("escolar");
 
-      const prompt = `Eres un experto creador de contenido infantil viral para YouTube Kids, YouTube Shorts y TikTok en español.
-El usuario quiere generar 4 ideas super atrapantes y tiernas para videos infantiles.
+      const triviaInstruction = isTriviaOrMath
+        ? `IMPORTANTE PARA TRIVIA ESCOLAR / RETO EDUCATIVO:
+- Plantea preguntas de materias escolares reales (Historia, Matemáticas, Español/Gramática, Ciencias, Geografía, etc., por ejemplo: "¿Quién descubrió América?", "¿Cuánto es 8x7?", "¿Cuál es el sujeto en esta oración?").
+- Las ideas deben incluir la pregunta detonante y la expectativa de una cuenta regresiva de ${timerSecs} segundos para que el niño piense y responda antes de revelar la solución.`
+        : "";
+
+      const prompt = `Eres un experto creador de contenido infantil y educativo viral para YouTube Kids, YouTube Shorts y TikTok en español.
+El usuario quiere generar 4 ideas super atrapantes y educativas para videos infantiles.
 
 PARÁMETROS:
 - Rango de Edad: "${ageGroup || 'Preescolar (4 a 6 años)'}"
-- Formato / Tipo: "${formatType || 'Adivinanza Interactiva con Cuenta Regresiva'}"
+- Formato / Tipo: "${formatType || 'Trivia Escolar Educativa con Cuenta Regresiva'}"
+- Tiempo de Cuenta Regresiva para responder: ${timerSecs} segundos
 - Estilo Visual: "${visualStyle || '3D Pixar / Disney Tierno'}"
 ${charLine}
 ${moralLine}
+${triviaInstruction}
 Semilla de aleatoriedad: ${Date.now()}-${Math.random()}
 
 REGLAS INFANTILES ESTRICTAS:
 - Idioma: Español neutro limpio, entusiasta y cariñoso. CERO lenguaje violento, grosero o aterrador.
-- Ganchos con preguntas directas o rimas simpáticas que involucren al niño o a la familia.
+- Ganchos con preguntas directas, retos de conocimiento escolar o misterios simpáticos que involucren al niño o a la familia.
 - Formato adaptado a la edad seleccionada.
 
 Responde ÚNICAMENTE con un JSON válido:
@@ -90,8 +105,24 @@ Responde ÚNICAMENTE con un JSON válido:
       const ideaTitle = selectedIdea?.title || (typeof selectedIdea === "string" ? selectedIdea : "Cuento Infantil");
       const ideaHook = selectedIdea?.hook || "";
       const ideaDesc = selectedIdea?.description || "";
+      const isTriviaOrMath = (formatType || "").toLowerCase().includes("trivia") || 
+                             (formatType || "").toLowerCase().includes("matemáticas") || 
+                             (formatType || "").toLowerCase().includes("adivinanza") ||
+                             (formatType || "").toLowerCase().includes("escolar");
 
-      const prompt = `Eres un talentoso narrador infantil y guionista de cuentos para niños (YouTube Kids y TikTok).
+      const structureGuide = isTriviaOrMath
+        ? `ESTRUCTURA EXACTA DE TRIVIA ESCOLAR CON CUENTA REGRESIVA DE ${timerSecs} SEGUNDOS:
+1. PREGUNTA RETO (0-5s): Saludo alegre y formulación directa y entusiasta de la pregunta (ejemplo: "¡Hola amiguito! ¿Sabes quién descubrió el continente americano?").
+2. CUENTA REGRESIVA (${timerSecs} segundos): Debe incluirse explícitamente en el guion una pauta sonora y visual: "[Pausa con cuenta regresiva sonora de ${timerSecs} segundos: ${Array.from({length: Math.min(timerSecs, 10)}, (_, i) => timerSecs - i).join('... ')}...]". El narrador puede decir "¡Corre el tiempo, piensa bien tu respuesta!".
+3. RESPUESTA Y EXPLICACIÓN EDUCATIVA (5-15s después): Revela la respuesta correcta con emoción ("¡Tiempo terminado! ¡La respuesta correcta es Cristóbal Colón en 1492!"). Explica en 2 frases didácticas y claras el por qué o un dato curioso fascinante que refuerce el aprendizaje.
+4. LLAMADA A LA ACCIÓN (últimos 5s): Pregunta al niño si acertó ("¿Acertaste a la primera? ¡Escribe tu respuesta o pide a tus papás que le den like al video!") y dale un refuerzo positivo afectuoso.`
+        : `PAUTAS DE NARRACIÓN INFANTIL:
+1. INICIO (0-5s): Saludo cálido y gancho entusiasta ("¡Hola amiguito! ¿Listo para una aventura?").
+2. DESARROLLO (5-35s): Frases cortas, rítmicas y claras. Si hay cuenta regresiva, incluye: "[Cuenta regresiva sonora: ${timerSecs}... 3... 2... 1...]". Si es cuento o fábula, presenta al personaje y su pequeña travesura o descubrimiento.
+3. CLÍMAX / REVELACIÓN (35-50s): Celebración alegre y explicación clara.
+4. CIERRE AMABLE (50-60s): Pregunta cariñosa y llamado a la acción familiar.`;
+
+      const prompt = `Eres un talentoso educador infantil y guionista de videos para niños (YouTube Kids, Shorts y TikTok).
 Escribe un guion narrativo continuo para un video de 45 a 60 segundos.
 
 DATOS DEL VIDEO:
@@ -99,22 +130,19 @@ DATOS DEL VIDEO:
 - Gancho sugerido: "${ideaHook}"
 - Descripción: "${ideaDesc}"
 - Edad objetivo: "${ageGroup || 'Preescolar (4 a 6 años)'}"
-- Formato: "${formatType || 'Adivinanza Interactiva'}"
-- Valor/Moraleja: "${moral || 'Amistad y compañerismo'}"
+- Formato: "${formatType || 'Trivia Escolar Educativa'}"
+- Tiempo de cuenta regresiva: ${timerSecs} segundos
+- Valor / Aprendizaje: "${moral || 'Conocimiento escolar y curiosidad'}"
 
-PAUTAS DE NARRACIÓN INFANTIL:
-1. INICIO (0-5s): Saludo cálido y gancho entusiasta ("¡Hola amiguito! ¿Listo para un reto misterioso?").
-2. DESARROLLO (5-35s): Frases cortas, rítmicas y claras. Si es adivinanza, da 3 pistas visuales y haz una pausa marcada para la cuenta regresiva: "[Pausa sonora: 3... 2... 1...]". Si es cuento o fábula, presenta al personaje y su pequeña travesura o descubrimiento.
-3. CLÍMAX / REVELACIÓN (35-50s): Celebración alegre ("¡Exacto! ¡Es nuestro amigo el Elefantito!").
-4. CIERRE AMABLE (50-60s): Pregunta cariñosa y llamado a la acción apto para toda la familia ("¿Lo adivinaste a la primera? ¡Pídele a mamá o papá que le den amor al video y comenta tu animal favorito!").
+${structureGuide}
 
 REGLAS:
-- Idioma: Español neutro impecable, tildes correctas, sin palabras difíciles.
-- Tono: Alegre, dulce y estimulante.
+- Idioma: Español neutro impecable, tildes correctas, sin palabras difíciles ni garabatos.
+- Tono: Alegre, didáctico, dulce y muy estimulante.
 
 Responde ÚNICAMENTE con un JSON válido:
 {
-  "script": "Texto narrativo continuo de la locución infantil con indicaciones entre corchetes si hay efectos de sonido o pausas..."
+  "script": "Texto narrativo continuo de la locución infantil con indicaciones entre corchetes si hay efectos de sonido o pausas de cuenta regresiva..."
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
@@ -178,8 +206,8 @@ REGLAS DE GENERACIÓN DE PROMPTS:
 - image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato vertical 9:16. Describe al personaje, sus ojos tiernos y grandes, sus colores, la iluminación soleada y suave, y el entorno alegre (flores, bosque mágico, habitación acogedora, cielo estrellado). CERO textos en la imagen.
 - animation_prompt: En INGLÉS para Runway Gen-3 / Kling / Luma. Describe movimientos suaves, simpáticos y naturales (parpadear con alegría, saludar con la patita/mano a la cámara, sonreír, dar saltitos juguetones).
 - narration: Asigna el fragmento exacto del guion a cada escena.
-- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla (ej. "¡Pista 1! 🐾", "3... 2... 1... ⏳", "¡Es el Elefantito! 🐘").
-- audio_cues: Efectos de sonido sugeridos (xilófono alegre, campanita mágica, risitas tiernas, pop).
+- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla (ej. "¡Pregunta Escolar! 🎓", "⏳ 10... 9... 8...", "¡Respuesta Correcta! ✨", "¡Es el Elefantito! 🐘"). Si la escena corresponde a la cuenta regresiva, coloca el contador visual ("⏳ 10s... 9s...").
+- audio_cues: Efectos de sonido sugeridos (reloj tic-tac con suspenso infantil, campanita mágica triunfal de acierto, xilófono alegre, pop).
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {

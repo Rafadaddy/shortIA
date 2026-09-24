@@ -46,11 +46,29 @@ const AGE_GROUPS = [
 ];
 
 const FORMAT_TYPES = [
-  "❓ Adivinanza Interactiva (con cuenta regresiva 3-2-1)",
+  "🧠 Trivia Educativa / Preguntas Escolares (Historia, Ciencias, Geografía)",
+  "🔢 Reto de Matemáticas Rápido (Sumas, Restas, Tablas)",
+  "📖 Adivinanzas de Español y Vocabulario (Ortografía, Sinónimos)",
+  "❓ Adivinanza de Animales (con cuenta regresiva)",
   "🦊 Fábula con Moraleja (Valores y empatía)",
   "🌙 Cuento para Dormir (Bedtime Story relajante)",
-  "🦖 Curiosidad Infantil (Dinos, Espacio, Animales)",
+  "🦖 Curiosidad Infantil (Dinos, Espacio, Océano)",
   "🎒 Aventura de Personaje Tierno",
+];
+
+const COUNTDOWN_OPTIONS = [
+  { label: "⏱️ 3 segundos", value: "3" },
+  { label: "⏱️ 5 segundos", value: "5" },
+  { label: "⏱️ 10 segundos (Recomendado Trivia)", value: "10" },
+  { label: "⏱️ 15 segundos", value: "15" },
+];
+
+const SCHOOL_TOPIC_CHIPS = [
+  { label: "🌎 Historia y Geografía", char: "El descubrimiento de América y exploradores del mundo", moral: "Curiosidad por la historia" },
+  { label: "➗ Matemáticas Divertidas", char: "Un reto de cálculo mental rápido con manzanas y estrellas", moral: "Agilidad mental" },
+  { label: "📚 Ortografía y Español", char: "Adivina cuál es la palabra correcta y cómo se escribe", moral: "Amor por la lectura" },
+  { label: "🪐 El Sistema Solar", char: "Los planetas, la luna y curiosidades del universo", moral: "Cuidado del planeta" },
+  { label: "🦁 El Reino Animal", char: "Animales salvajes, sus hábitats y récords asombrosos", moral: "Respeto a los animales" },
 ];
 
 const VISUAL_STYLES = [
@@ -83,9 +101,10 @@ const MORAL_OPTIONS = [
 export default function VideosInfantilesPage() {
   const [ageGroup, setAgeGroup] = useState(AGE_GROUPS[1]);
   const [formatType, setFormatType] = useState(FORMAT_TYPES[0]);
+  const [countdownSeconds, setCountdownSeconds] = useState("10");
   const [visualStyle, setVisualStyle] = useState(VISUAL_STYLES[0]);
-  const [character, setCharacter] = useState(QUICK_CHARACTERS[0].value);
-  const [moral, setMoral] = useState(MORAL_OPTIONS[0]);
+  const [character, setCharacter] = useState("¿Quién descubrió América y en qué año?");
+  const [moral, setMoral] = useState("Aprender historia universal y geografía");
 
   const [ideas, setIdeas] = useState<KidsIdea[] | null>(null);
   const [selectedIdea, setSelectedIdea] = useState<KidsIdea | null>(null);
@@ -117,6 +136,7 @@ export default function VideosInfantilesPage() {
         if (draft.data) setData(draft.data);
         if (draft.ageGroup) setAgeGroup(draft.ageGroup);
         if (draft.formatType) setFormatType(draft.formatType);
+        if (draft.countdownSeconds) setCountdownSeconds(draft.countdownSeconds);
         if (draft.visualStyle) setVisualStyle(draft.visualStyle);
         if (draft.character) setCharacter(draft.character);
         if (draft.moral) setMoral(draft.moral);
@@ -137,6 +157,7 @@ export default function VideosInfantilesPage() {
           data,
           ageGroup,
           formatType,
+          countdownSeconds,
           visualStyle,
           character,
           moral
@@ -145,7 +166,7 @@ export default function VideosInfantilesPage() {
     } catch (e) {
       console.error("[VideosInfantiles] Error saving draft:", e);
     }
-  }, [ideas, selectedIdea, scriptText, data, ageGroup, formatType, visualStyle, character, moral]);
+  }, [ideas, selectedIdea, scriptText, data, ageGroup, formatType, countdownSeconds, visualStyle, character, moral]);
 
   const handleResetDraft = () => {
     if (confirm("¿Deseas reiniciar la pantalla y empezar un video nuevo? (Se conservará en tu historial)")) {
@@ -171,6 +192,7 @@ export default function VideosInfantilesPage() {
         action: "ideas",
         ageGroup,
         formatType,
+        countdownSeconds,
         visualStyle,
         character,
         moral,
@@ -204,6 +226,7 @@ export default function VideosInfantilesPage() {
         action: "script_only",
         ageGroup,
         formatType,
+        countdownSeconds,
         visualStyle,
         moral,
         selectedIdea: idea,
@@ -224,9 +247,9 @@ export default function VideosInfantilesPage() {
       saveHistoryItem({
         category: "Videos Infantiles",
         title: idea.title || "Video Infantil",
-        subtitle: `${ageGroup} • ${formatType}`,
+        subtitle: `${ageGroup} • ${formatType} (${countdownSeconds}s)`,
         script: scriptResult,
-        metadata: { ageGroup, formatType, visualStyle, moral }
+        metadata: { ageGroup, formatType, countdownSeconds, visualStyle, moral }
       });
 
       showToast("¡Guion infantil generado y guardado en Borradores!", "success");
@@ -482,6 +505,23 @@ export default function VideosInfantilesPage() {
               </select>
             </div>
 
+            {/* Cuenta Regresiva (Segundos) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+                Tiempo de Cuenta Regresiva
+              </label>
+              <select
+                value={countdownSeconds}
+                onChange={(e) => setCountdownSeconds(e.target.value)}
+                className="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm font-medium"
+              >
+                {COUNTDOWN_OPTIONS.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Estilo Visual Artístico */}
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
@@ -499,33 +539,55 @@ export default function VideosInfantilesPage() {
               </select>
             </div>
 
-            {/* Protagonista / Personaje */}
+            {/* Pregunta Escolar o Protagonista */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Heart className="w-3.5 h-3.5 text-rose-400" />
-                  Personaje o Protagonista
+                  Pregunta, Reto Escolar o Personaje
                 </span>
-                <span className="text-[10px] text-slate-400">Elige un chip rápido o escribe el tuyo</span>
+                <span className="text-[10px] text-slate-400">Escribe tu pregunta exacta o usa un chip temático</span>
               </label>
               <input
                 type="text"
                 value={character}
                 onChange={(e) => setCharacter(e.target.value)}
-                placeholder="Ej. Un tierno dragón bebé azul con alas de mariposa..."
+                placeholder="Ej. ¿Quién conquistó América y en qué barco llegó? / ¿Cuánto es 7 x 8?..."
                 className="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm font-medium"
               />
-              <div className="flex flex-wrap gap-2 pt-1">
-                {QUICK_CHARACTERS.map((qc) => (
-                  <button
-                    key={qc.label}
-                    type="button"
-                    onClick={() => setCharacter(qc.value)}
-                    className="text-xs py-1 px-2.5 rounded-lg bg-slate-800/80 hover:bg-pink-600/30 hover:border-pink-500/50 border border-slate-700/50 text-slate-300 transition-colors"
-                  >
-                    {qc.label}
-                  </button>
-                ))}
+              
+              {/* Chips de Preguntas Escolares / Materias */}
+              <div className="space-y-1.5 pt-1.5">
+                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Materias y Preguntas Escolares:</span>
+                <div className="flex flex-wrap gap-2">
+                  {SCHOOL_TOPIC_CHIPS.map((st) => (
+                    <button
+                      key={st.label}
+                      type="button"
+                      onClick={() => {
+                        setCharacter(st.char);
+                        setMoral(st.moral);
+                      }}
+                      className="text-xs py-1 px-2.5 rounded-lg bg-indigo-950/50 hover:bg-indigo-900/50 border border-indigo-800/60 text-indigo-200 transition-colors"
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pt-1 block">Personajes Infantiles:</span>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_CHARACTERS.map((qc) => (
+                    <button
+                      key={qc.label}
+                      type="button"
+                      onClick={() => setCharacter(qc.value)}
+                      className="text-xs py-1 px-2.5 rounded-lg bg-slate-800/80 hover:bg-pink-600/30 hover:border-pink-500/50 border border-slate-700/50 text-slate-300 transition-colors"
+                    >
+                      {qc.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -533,7 +595,7 @@ export default function VideosInfantilesPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                 <Star className="w-3.5 h-3.5 text-amber-400" />
-                Valor / Moraleja
+                Valor / Aprendizaje
               </label>
               <select
                 value={moral}
