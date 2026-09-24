@@ -248,6 +248,35 @@ export default function HistorialPage() {
                     </div>
                   )}
 
+                  {/* Trivia Options si existen en metadata */}
+                  {selectedItem.metadata?.trivia_game && typeof selectedItem.metadata.trivia_game === "object" && (
+                    <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 space-y-2.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                        🎯 Opciones de Trivia Guardadas (A, B, C):
+                      </span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        {((selectedItem.metadata.trivia_game as { options?: Array<{ letter: string; text: string; is_correct: boolean }> })?.options || []).map((o, oi) => (
+                          <div
+                            key={oi}
+                            className={`p-2.5 rounded-xl border text-xs flex items-center gap-2 ${
+                              o.is_correct
+                                ? "bg-emerald-950/50 border-emerald-500/50 text-emerald-200 font-bold"
+                                : "bg-slate-950/70 border-slate-800 text-slate-300"
+                            }`}
+                          >
+                            <span className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black ${
+                              o.is_correct ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
+                            }`}>
+                              {o.letter}
+                            </span>
+                            <span className="truncate">{o.text}</span>
+                            {o.is_correct && <span className="ml-auto text-[10px]">✅</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Escenas y Prompts */}
                   {selectedItem.prompts && selectedItem.prompts.length > 0 && (
                     <div className="space-y-4 pt-2">

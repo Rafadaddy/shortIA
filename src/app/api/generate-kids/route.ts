@@ -58,9 +58,10 @@ export async function POST(req: NextRequest) {
                              (formatType || "").toLowerCase().includes("escolar");
 
       const triviaInstruction = isTriviaOrMath
-        ? `IMPORTANTE PARA TRIVIA ESCOLAR / RETO EDUCATIVO:
+        ? `IMPORTANTE PARA TRIVIA ESCOLAR / RETO EDUCATIVO CON 3 OPCIONES:
 - Plantea preguntas de materias escolares reales (Historia, Matemáticas, Español/Gramática, Ciencias, Geografía, etc., por ejemplo: "¿Quién descubrió América?", "¿Cuánto es 8x7?", "¿Cuál es el sujeto en esta oración?").
-- Las ideas deben incluir la pregunta detonante y la expectativa de una cuenta regresiva de ${timerSecs} segundos para que el niño piense y responda antes de revelar la solución.`
+- Cada idea debe incluir la pregunta detonante y 3 OPCIONES (A, B y C) bien estructuradas donde una sea la correcta y dos sean distractores creíbles.
+- Especifica el tiempo de cuenta regresiva de ${timerSecs} segundos.`
         : "";
 
       const prompt = `Eres un experto creador de contenido infantil y educativo viral para YouTube Kids, YouTube Shorts y TikTok en español.
@@ -87,7 +88,12 @@ Responde ÚNICAMENTE con un JSON válido:
     {
       "title": "Título llamativo y divertido con emojis",
       "hook": "La frase o pregunta inicial exacta para los primeros 3 segundos",
-      "description": "De qué trata la aventura o adivinanza y qué aprenderá el niño"
+      "description": "De qué trata la pregunta o reto y qué aprenderá el niño",
+      "options": [
+        { "letter": "A", "text": "Primera opción", "is_correct": false },
+        { "letter": "B", "text": "Segunda opción (ejemplo la correcta)", "is_correct": true },
+        { "letter": "C", "text": "Tercera opción", "is_correct": false }
+      ]
     }
   ]
 }`;
@@ -111,11 +117,19 @@ Responde ÚNICAMENTE con un JSON válido:
                              (formatType || "").toLowerCase().includes("escolar");
 
       const structureGuide = isTriviaOrMath
-        ? `ESTRUCTURA EXACTA DE TRIVIA ESCOLAR CON CUENTA REGRESIVA DE ${timerSecs} SEGUNDOS:
-1. PREGUNTA RETO (0-5s): Saludo alegre y formulación directa y entusiasta de la pregunta (ejemplo: "¡Hola amiguito! ¿Sabes quién descubrió el continente americano?").
-2. CUENTA REGRESIVA (${timerSecs} segundos): Debe incluirse explícitamente en el guion una pauta sonora y visual: "[Pausa con cuenta regresiva sonora de ${timerSecs} segundos: ${Array.from({length: Math.min(timerSecs, 10)}, (_, i) => timerSecs - i).join('... ')}...]". El narrador puede decir "¡Corre el tiempo, piensa bien tu respuesta!".
-3. RESPUESTA Y EXPLICACIÓN EDUCATIVA (5-15s después): Revela la respuesta correcta con emoción ("¡Tiempo terminado! ¡La respuesta correcta es Cristóbal Colón en 1492!"). Explica en 2 frases didácticas y claras el por qué o un dato curioso fascinante que refuerce el aprendizaje.
-4. LLAMADA A LA ACCIÓN (últimos 5s): Pregunta al niño si acertó ("¿Acertaste a la primera? ¡Escribe tu respuesta o pide a tus papás que le den like al video!") y dale un refuerzo positivo afectuoso.`
+        ? `ESTRUCTURA EXACTA DE TRIVIA ESCOLAR CON 3 OPCIONES Y CUENTA REGRESIVA DE ${timerSecs} SEGUNDOS:
+1. PREGUNTA RETO Y 3 OPCIONES (0-15s):
+   - Saludo entusiasta y planteamiento claro de la pregunta.
+   - Enunciar las 3 opciones de manera divertida:
+     "¿Será la opción A: [Opción A], la opción B: [Opción B], o la opción C: [Opción C]?"
+2. CUENTA REGRESIVA EN PANTALLA (${timerSecs} segundos):
+   - Incluir la pauta sonora y visual: "[Aparecen en pantalla las opciones A, B y C con reloj de ${timerSecs} segundos: ⏳ ${Array.from({length: Math.min(timerSecs, 10)}, (_, i) => timerSecs - i).join('... ')}...]".
+   - El locutor puede decir brevemente: "¡Corre el tiempo! ¿Cuál eliges? ¡Déjala en los comentarios antes de que se acabe!".
+3. REVELACIÓN Y EFECTO VISUAL (después del conteo):
+   - Anuncio triunfal: "[¡Tiempo terminado! ¡La opción correcta se ilumina en verde brillante ✅!] ¡Exacto, la respuesta correcta es la opción [Letra]!".
+   - Explicación didáctica: Explicar en 2 frases sencillas y atractivas el por qué, dando un dato curioso que enriquezca el aprendizaje del niño.
+4. LLAMADA A LA ACCIÓN (últimos 5s):
+   - Preguntar con calidez: "¿Acertaste? ¡Dale like al video si elegiste la correcta y suscríbete para más retos diarios!".`
         : `PAUTAS DE NARRACIÓN INFANTIL:
 1. INICIO (0-5s): Saludo cálido y gancho entusiasta ("¡Hola amiguito! ¿Listo para una aventura?").
 2. DESARROLLO (5-35s): Frases cortas, rítmicas y claras. Si hay cuenta regresiva, incluye: "[Cuenta regresiva sonora: ${timerSecs}... 3... 2... 1...]". Si es cuento o fábula, presenta al personaje y su pequeña travesura o descubrimiento.
@@ -142,7 +156,7 @@ REGLAS:
 
 Responde ÚNICAMENTE con un JSON válido:
 {
-  "script": "Texto narrativo continuo de la locución infantil con indicaciones entre corchetes si hay efectos de sonido o pausas de cuenta regresiva..."
+  "script": "Texto narrativo continuo de la locución infantil con indicaciones entre corchetes..."
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.85 });
@@ -206,15 +220,28 @@ REGLAS DE GENERACIÓN DE PROMPTS:
 - image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato vertical 9:16. Describe al personaje, sus ojos tiernos y grandes, sus colores, la iluminación soleada y suave, y el entorno alegre (flores, bosque mágico, habitación acogedora, cielo estrellado). CERO textos en la imagen.
 - animation_prompt: En INGLÉS para Runway Gen-3 / Kling / Luma. Describe movimientos suaves, simpáticos y naturales (parpadear con alegría, saludar con la patita/mano a la cámara, sonreír, dar saltitos juguetones).
 - narration: Asigna el fragmento exacto del guion a cada escena.
-- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla (ej. "¡Pregunta Escolar! 🎓", "⏳ 10... 9... 8...", "¡Respuesta Correcta! ✨", "¡Es el Elefantito! 🐘"). Si la escena corresponde a la cuenta regresiva, coloca el contador visual ("⏳ 10s... 9s...").
-- audio_cues: Efectos de sonido sugeridos (reloj tic-tac con suspenso infantil, campanita mágica triunfal de acierto, xilófono alegre, pop).
+- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla (ej. "¡Pregunta Escolar! 🎓", "A) Benito Juárez | B) Cristóbal Colón | C) Miguel Hidalgo", "⏳ 10... 9... 8...", "✅ ¡Opción B Correcta!", "¡Es el Elefantito! 🐘").
+  * Si la escena es la pregunta con opciones: enumera las opciones ("A) ... B) ... C) ...").
+  * Si la escena es la cuenta regresiva: contador visual con opciones activas ("⏳ 10s... 9s... [A, B, C]").
+  * Si la escena es la revelación: marca con palomita y resalta la opción ganadora ("✅ Correcta: Opción [Letra]").
+- audio_cues: Efectos de sonido sugeridos (reloj tic-tac con suspenso infantil, campanita mágica triunfal de acierto 'ding!', xilófono alegre, pop).
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {
   "title": "Título encantador del video con emojis",
-  "music_recommendation": "Música sugerida (ej. Marimba alegre infantil, Canción de cuna en cajita de música, Melodía de ukelele saltarín)",
+  "music_recommendation": "Música sugerida (ej. Marimba alegre infantil, Melodía de ukelele saltarín)",
   "hashtags": ["#paraniños", "#youtubekids", "#adivinanzas", "#cuentosinfantiles"],
   "learning_value": "Qué habilidad o valor aprendió el niño",
+  "trivia_game": {
+    "question": "Pregunta exacta de la trivia",
+    "countdown_seconds": 10,
+    "options": [
+      { "letter": "A", "text": "Texto opción A", "is_correct": false },
+      { "letter": "B", "text": "Texto opción B (correcta)", "is_correct": true },
+      { "letter": "C", "text": "Texto opción C", "is_correct": false }
+    ],
+    "explanation": "Breve explicación didáctica de por qué es la correcta"
+  },
   "scenes": [
     {
       "scene_number": 1,

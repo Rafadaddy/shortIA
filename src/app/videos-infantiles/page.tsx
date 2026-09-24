@@ -13,6 +13,19 @@ import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { aiFetch } from "@/lib/ai-fetch";
 import { saveHistoryItem } from "@/lib/history-storage";
 
+interface TriviaOption {
+  letter: string;
+  text: string;
+  is_correct: boolean;
+}
+
+interface TriviaGame {
+  question: string;
+  countdown_seconds: number;
+  options: TriviaOption[];
+  explanation?: string;
+}
+
 interface Scene {
   scene_number: number;
   timestamp: string;
@@ -30,6 +43,7 @@ interface KidsVideoData {
   music_recommendation: string;
   hashtags: string[];
   learning_value: string;
+  trivia_game?: TriviaGame;
   scenes: Scene[];
 }
 
@@ -37,6 +51,7 @@ interface KidsIdea {
   title: string;
   hook: string;
   description: string;
+  options?: TriviaOption[];
 }
 
 const AGE_GROUPS = [
@@ -124,7 +139,41 @@ export default function VideosInfantilesPage() {
   const [generatedImages, setGeneratedImages] = useState<Record<number, string>>({});
   const [generatingImageFor, setGeneratingImageFor] = useState<number | null>(null);
 
-  // CARGAR BORRADOR AUTOMÁTICO AL ENTRAR
+  // ESTADO DEL SIMULADOR DE TRIVIA EN VIVO
+  const [simTimer, setSimTimer] = useState<number | null>(null);
+  const [simIsRunning, setSimIsRunning] = useState(false);
+  const [simRevealed, setSimRevealed] = useState(false);
+  const [selectedUserOption, setSelectedUserOption] = useState<string | null>(null);
+
+  // Manejo del contador interactivo de la trivia
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (simIsRunning && simTimer !== null && simTimer > 0) {
+      interval = setInterval(() => {
+        setSimTimer((prev) => (prev !== null && prev > 1 ? prev - 1 : 0));
+      }, 1000);
+    } else if (simTimer === 0 && simIsRunning) {
+      setSimIsRunning(false);
+      setSimRevealed(true);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [simIsRunning, simTimer]);
+
+  const handleStartSim = (secs: number) => {
+    setSimTimer(secs);
+    setSimIsRunning(true);
+    setSimRevealed(false);
+    setSelectedUserOption(null);
+  };
+
+  const handleResetSim = () => {
+    setSimIsRunning(false);
+    setSimTimer(null);
+    setSimRevealed(false);
+    setSelectedUserOption(null);
+  };
   useEffect(() => {
     try {
       const saved = localStorage.getItem("shortia_draft_kids");
@@ -313,7 +362,12 @@ export default function VideosInfantilesPage() {
         metadata: {
           music: json.music_recommendation,
           hashtags: json.hashtags,
-          learning_value: json.learning_value
+          learning_value: json.learning_value,
+          trivia_game: json.trivia_game || (selectedIdea?.options ? {
+            question: selectedIdea.title,
+            countdown_seconds: Number(countdownSeconds || 10),
+            options: selectedIdea.options
+          } : undefined)
         }
       });
 
@@ -654,7 +708,36 @@ export default function VideosInfantilesPage() {
                       "{idea.hook}"
                     </p>
                   </div>
-                  <p className="text-slate-400 text-xs leading-relaxed">
+                  
+                  {idea.options && idea.options.length > 0 && (
+                    <div className="my-2.5 space-y-1.5 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1">
+                        🎯 Opciones en pantalla:
+                      </span>
+                      <div className="grid grid-cols-1 gap-1 text-xs">
+                        {idea.options.map((opt, oIdx) => (
+                          <div 
+                            key={oIdx} 
+                            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium ${
+                              opt.is_correct 
+                                ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300 font-bold" 
+                                : "bg-slate-950/60 border-slate-800 text-slate-300"
+                            }`}
+                          >
+                            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${
+                              opt.is_correct ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
+                            }`}>
+                              {opt.letter}
+                            </span>
+                            <span className="truncate">{opt.text}</span>
+                            {opt.is_correct && <span className="ml-auto text-[10px] text-emerald-400">✅ Correcta</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-slate-400 text-xs leading-relaxed mt-1">
                     {idea.description}
                   </p>
                 </button>
@@ -808,6 +891,157 @@ export default function VideosInfantilesPage() {
                 </div>
               )}
             </div>
+
+            {/* SIMULADOR VISUAL DE TRIVIA EN PANTALLA (A, B, C con Cuenta Regresiva y Revelación) */}
+            {(data.trivia_game || (selectedIdea?.options && selectedIdea.options.length > 0)) && (
+              <div className="bg-gradient-to-br from-indigo-950/80 via-slate-900 to-purple-950/80 border-2 border-indigo-500/50 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-500/30 pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300">
+                      <HelpCircle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+                        Simulador de Pantalla para Shorts / TikTok / Reels
+                      </span>
+                      <h3 className="text-lg font-black text-white">
+                        🎮 Dinámica de Trivia con 3 Opciones (A, B, C)
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Botones de acción del simulador */}
+                  <div className="flex items-center gap-2">
+                    {simIsRunning ? (
+                      <div className="flex items-center gap-2 bg-pink-950/60 border border-pink-500/50 px-3.5 py-1.5 rounded-xl text-pink-300 text-xs font-bold animate-pulse">
+                        <span className="w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping"></span>
+                        <span>¡Tiempo corriendo! {simTimer}s</span>
+                      </div>
+                    ) : simRevealed ? (
+                      <button
+                        onClick={() => handleStartSim(Number(countdownSeconds || 10))}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        Probar Conteo Otra Vez
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleStartSim(Number(countdownSeconds || 10))}
+                        className="bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white text-xs font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-pink-600/20 transition-all"
+                      >
+                        <Play className="w-4 h-4 fill-white" />
+                        Iniciar Conteo de {countdownSeconds || 10}s
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Tarjeta de simulación estilo Short vertical en miniatura */}
+                <div className="max-w-md mx-auto bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden space-y-5">
+                  {/* Cronómetro flotante */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 text-amber-400" />
+                      RETO DEL DÍA
+                    </span>
+                    <div className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 transition-all ${
+                      simIsRunning
+                        ? "bg-amber-500 text-slate-950 scale-105 shadow-md shadow-amber-500/40"
+                        : simRevealed
+                        ? "bg-emerald-500 text-slate-950"
+                        : "bg-slate-800 text-slate-300"
+                    }`}>
+                      <span>⏱️</span>
+                      <span>
+                        {simIsRunning 
+                          ? `${simTimer}s` 
+                          : simRevealed 
+                          ? "¡TIEMPO!" 
+                          : `${countdownSeconds || 10}s`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Pregunta */}
+                  <div className="text-center py-2">
+                    <h4 className="text-base md:text-lg font-black text-white leading-snug">
+                      {data.trivia_game?.question || selectedIdea?.title || character}
+                    </h4>
+                  </div>
+
+                  {/* 3 Opciones (A, B, C) */}
+                  <div className="space-y-3">
+                    {(data.trivia_game?.options || selectedIdea?.options || [
+                      { letter: "A", text: "Opción A", is_correct: false },
+                      { letter: "B", text: "Opción B (Correcta)", is_correct: true },
+                      { letter: "C", text: "Opción C", is_correct: false }
+                    ]).map((opt) => {
+                      const isCorrect = opt.is_correct;
+                      let btnStyle = "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-slate-500";
+                      let letterStyle = "bg-slate-800 text-slate-200 border-slate-700";
+
+                      if (simRevealed) {
+                        if (isCorrect) {
+                          btnStyle = "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white font-black shadow-lg shadow-emerald-600/30 scale-102 animate-bounce";
+                          letterStyle = "bg-white text-emerald-700 font-black border-transparent";
+                        } else {
+                          btnStyle = "bg-slate-950/60 border-slate-900 text-slate-500 opacity-40 line-through";
+                          letterStyle = "bg-slate-900 text-slate-600 border-slate-800";
+                        }
+                      } else if (selectedUserOption === opt.letter) {
+                        btnStyle = "bg-indigo-950/80 border-indigo-400 text-white shadow-md shadow-indigo-600/20";
+                        letterStyle = "bg-indigo-600 text-white border-indigo-400";
+                      }
+
+                      return (
+                        <div
+                          key={opt.letter}
+                          onClick={() => {
+                            if (!simRevealed) setSelectedUserOption(opt.letter);
+                          }}
+                          className={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${btnStyle}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black border transition-all ${letterStyle}`}>
+                              {opt.letter}
+                            </span>
+                            <span className="text-sm font-bold">
+                              {opt.text}
+                            </span>
+                          </div>
+                          {simRevealed && isCorrect && (
+                            <span className="text-xs bg-white text-emerald-800 font-black px-2 py-0.5 rounded-md shadow">
+                              ✅ ¡CORRECTO!
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explicación didáctica al revelar */}
+                  {simRevealed && (
+                    <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-4 text-xs text-emerald-200 space-y-1 animate-in zoom-in-95">
+                      <span className="font-bold flex items-center gap-1.5 text-emerald-400">
+                        🎉 ¡Excelente trabajo!
+                      </span>
+                      <p className="leading-relaxed">
+                        {data.trivia_game?.explanation || data.learning_value || "¡Esa es la respuesta correcta! Los niños adoran ver cómo se ilumina la opción ganadora."}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Instrucción de edición para CapCut/Premiere */}
+                  <div className="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-start gap-2">
+                    <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Pauta para edición (CapCut / Premiere):</strong> Mantén fijas las cajas A, B y C durante los {countdownSeconds || 10} segundos con el tic-tac. Al llegar a 0s, aplica animación de relleno verde (#22C55E) en la opción correcta con sonido *ding* o campana.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Escenas desglosadas */}
             <div className="space-y-4">
