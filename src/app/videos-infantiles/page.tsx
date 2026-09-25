@@ -147,6 +147,7 @@ export default function VideosInfantilesPage() {
 
   const [ideas, setIdeas] = useState<KidsIdea[] | null>(null);
   const [selectedIdea, setSelectedIdea] = useState<KidsIdea | null>(null);
+  const [showIdeasExpanded, setShowIdeasExpanded] = useState(true);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
 
   const [scriptText, setScriptText] = useState("");
@@ -494,14 +495,41 @@ export default function VideosInfantilesPage() {
     }
   };
 
-  // COPIAR TODOS LOS PROMPTS
+  // COPIAR TODOS LOS PROMPTS DE IMAGEN O VIDEO
   const handleCopyAllPrompts = (type: "image" | "animation") => {
     if (!data || !data.scenes) return;
     const textToCopy = data.scenes
       .map((scene, i) => `--- Escena ${i + 1} (${scene.timestamp}) ---\n${type === "image" ? scene.image_prompt : scene.animation_prompt}`)
       .join("\n\n");
-    handleCopy(`all_${type}`, textToCopy);
-    showToast(`¡Todos los prompts de ${type === "image" ? "imagen" : "animación"} copiados!`, "success");
+    handleCopy(textToCopy, `all_${type}`);
+    showToast(`¡Todos los prompts de ${type === "image" ? "imagen" : "video/animación"} copiados!`, "success");
+  };
+
+  // COPIAR TODAS LAS LOCUCIONES / VOZ DE LAS ESCENAS
+  const handleCopyAllNarration = () => {
+    if (!data || !data.scenes) return;
+    const textToCopy = data.scenes
+      .map((scene, i) => `Escena ${i + 1} (${scene.timestamp}):\n"${scene.narration}"`)
+      .join("\n\n");
+    handleCopy(textToCopy, "all_narration");
+    showToast("¡Todas las locuciones de voz copiadas!", "success");
+  };
+
+  // COPIAR GUION / PROYECTO COMPLETO
+  const handleCopyFullProject = () => {
+    if (!data) return;
+    let full = `🎬 TÍTULO: ${data.title}\n\n`;
+    full += `🗣️ GUION COMPLETO:\n${scriptText}\n\n`;
+    full += `------------------------------------\n\n`;
+    data.scenes.forEach((s) => {
+      full += `🎞️ ESCENA ${s.scene_number} (${s.timestamp})\n`;
+      full += `🎙️ Voz: ${s.narration}\n`;
+      full += `💬 Texto en pantalla: ${s.text_overlay || 'N/A'}\n`;
+      full += `🎨 Prompt Imagen: ${s.image_prompt}\n`;
+      full += `✨ Prompt Video: ${s.animation_prompt}\n\n`;
+    });
+    handleCopy(full, "full_project");
+    showToast("¡Proyecto completo copiado al portapapeles!", "success");
   };
 
   return (
@@ -755,112 +783,202 @@ export default function VideosInfantilesPage() {
           </button>
         </div>
 
-        {/* PASO 1.5: SELECCIÓN DE IDEAS */}
-        {ideas && ideas.length > 0 && !scriptText && !isGeneratingScript && (
+        {/* PASO 1.5: SELECCIÓN DE IDEAS (SE CONSERVAN LAS 4 DISPONIBLES) */}
+        {ideas && ideas.length > 0 && (
           <div className="bg-slate-900/60 p-6 md:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-5 animate-in slide-in-from-bottom-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-              <Lightbulb className="w-5 h-5 text-amber-400" />
-              Selecciona la Idea Infantil que prefieras:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {ideas.map((idea, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => selectIdeaAndGenerateScript(idea)}
-                  className="text-left bg-slate-950/80 p-5 rounded-2xl border border-slate-800 hover:border-pink-500/60 hover:bg-slate-900 transition-all group flex flex-col justify-between"
-                >
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-pink-400/90 bg-pink-900/20 px-2 py-0.5 rounded-md mb-2 inline-block">
-                      Opción {idx + 1}
-                    </span>
-                    <h3 className="text-pink-400 font-extrabold text-base mb-1.5 group-hover:text-pink-300 leading-snug">
-                      {idea.title}
-                    </h3>
-                    <p className="text-xs text-amber-300/90 font-medium mb-2 italic">
-                      "{idea.hook}"
-                    </p>
-                  </div>
-                  
-                  {/* Si la idea trae múltiples preguntas (Serie de 3 o 5 preguntas) */}
-                  {idea.questions && idea.questions.length > 0 ? (
-                    <div className="my-2.5 space-y-2 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center justify-between">
-                        <span>🔥 Serie de {idea.questions.length} Preguntas:</span>
-                        <span className="text-[9px] text-slate-400">Nivel Progresivo</span>
-                      </span>
-                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                        {idea.questions.map((q, qIdx) => (
-                          <div key={qIdx} className="bg-slate-950/70 p-2 rounded-lg border border-slate-800/80 space-y-1 text-xs">
-                            <p className="font-bold text-slate-200 text-[11px] line-clamp-1">
-                              {q.question_number || qIdx + 1}. {q.question}
-                            </p>
-                            <div className="grid grid-cols-3 gap-1">
-                              {q.options?.map((opt, oIdx) => (
-                                <span 
-                                  key={oIdx}
-                                  className={`px-1.5 py-0.5 rounded text-[10px] truncate ${
-                                    opt.is_correct 
-                                      ? "bg-emerald-950/70 text-emerald-300 font-bold border border-emerald-500/40" 
-                                      : "bg-slate-900 text-slate-400"
-                                  }`}
-                                  title={`${opt.letter}) ${opt.text}`}
-                                >
-                                  {opt.letter}) {opt.text}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : idea.options && idea.options.length > 0 ? (
-                    <div className="my-2.5 space-y-1.5 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1">
-                        🎯 Opciones en pantalla:
-                      </span>
-                      <div className="grid grid-cols-1 gap-1 text-xs">
-                        {idea.options.map((opt, oIdx) => (
-                          <div 
-                            key={oIdx} 
-                            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium ${
-                              opt.is_correct 
-                                ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300 font-bold" 
-                                : "bg-slate-950/60 border-slate-800 text-slate-300"
-                            }`}
-                          >
-                            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${
-                              opt.is_correct ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
-                            }`}>
-                              {opt.letter}
-                            </span>
-                            <span className="truncate">{opt.text}</span>
-                            {opt.is_correct && <span className="ml-auto text-[10px] text-emerald-400">✅ Correcta</span>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <p className="text-slate-400 text-xs leading-relaxed mt-1">
-                    {idea.description}
-                  </p>
-                </button>
-              ))}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-amber-400" />
+                <h2 className="text-lg font-bold text-white">
+                  Ideas Infantiles Generadas ({ideas.length})
+                </h2>
+                {selectedIdea && (
+                  <span className="hidden sm:inline-flex text-[11px] font-semibold text-pink-400 bg-pink-950/60 border border-pink-800/40 px-2.5 py-0.5 rounded-full">
+                    Activa: {selectedIdea.title}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowIdeasExpanded(!showIdeasExpanded)}
+                className="text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors"
+              >
+                {showIdeasExpanded ? (
+                  <>
+                    <ChevronUp className="w-3.5 h-3.5" />
+                    <span>Minimizar ideas</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                    <span>Ver las 4 ideas</span>
+                  </>
+                )}
+              </button>
             </div>
+
+            {showIdeasExpanded ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {ideas.map((idea, idx) => {
+                  const isCurrent = selectedIdea?.title === idea.title;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => selectIdeaAndGenerateScript(idea)}
+                      disabled={isGeneratingScript}
+                      className={`text-left p-5 rounded-2xl border transition-all group flex flex-col justify-between relative ${
+                        isCurrent
+                          ? "bg-slate-900/90 border-pink-500 ring-2 ring-pink-500/40 shadow-lg shadow-pink-500/10"
+                          : "bg-slate-950/80 border-slate-800 hover:border-pink-500/60 hover:bg-slate-900"
+                      } ${isGeneratingScript ? "opacity-60 cursor-not-allowed" : ""}`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md inline-block ${
+                            isCurrent ? "bg-pink-500 text-white" : "text-pink-400/90 bg-pink-900/20"
+                          }`}>
+                            Opción {idx + 1} {isCurrent && "✓ Seleccionada"}
+                          </span>
+                          {isCurrent && (
+                            <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                              En uso
+                            </span>
+                          )}
+                        </div>
+                        <h3 className={`font-extrabold text-base mb-1.5 leading-snug ${
+                          isCurrent ? "text-pink-300" : "text-pink-400 group-hover:text-pink-300"
+                        }`}>
+                          {idea.title}
+                        </h3>
+                        <p className="text-xs text-amber-300/90 font-medium mb-2 italic">
+                          "{idea.hook}"
+                        </p>
+                      </div>
+                      
+                      {/* Si la idea trae múltiples preguntas (Serie de 3 o 5 preguntas) */}
+                      {idea.questions && idea.questions.length > 0 ? (
+                        <div className="my-2.5 space-y-2 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center justify-between">
+                            <span>🔥 Serie de {idea.questions.length} Preguntas:</span>
+                            <span className="text-[9px] text-slate-400">Nivel Progresivo</span>
+                          </span>
+                          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            {idea.questions.map((q, qIdx) => (
+                              <div key={qIdx} className="bg-slate-950/70 p-2 rounded-lg border border-slate-800/80 space-y-1 text-xs">
+                                <p className="font-bold text-slate-200 text-[11px] line-clamp-1">
+                                  {q.question_number || qIdx + 1}. {q.question}
+                                </p>
+                                <div className="grid grid-cols-3 gap-1">
+                                  {q.options?.map((opt, oIdx) => (
+                                    <span 
+                                      key={oIdx}
+                                      className={`px-1.5 py-0.5 rounded text-[10px] truncate ${
+                                        opt.is_correct 
+                                          ? "bg-emerald-950/70 text-emerald-300 font-bold border border-emerald-500/40" 
+                                          : "bg-slate-900 text-slate-400"
+                                      }`}
+                                      title={`${opt.letter}) ${opt.text}`}
+                                    >
+                                      {opt.letter}) {opt.text}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : idea.options && idea.options.length > 0 ? (
+                        <div className="my-2.5 space-y-1.5 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1">
+                            🎯 Opciones en pantalla:
+                          </span>
+                          <div className="grid grid-cols-1 gap-1 text-xs">
+                            {idea.options.map((opt, oIdx) => (
+                              <div 
+                                key={oIdx} 
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium ${
+                                  opt.is_correct 
+                                    ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300 font-bold" 
+                                    : "bg-slate-950/60 border-slate-800 text-slate-300"
+                                }`}
+                              >
+                                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${
+                                  opt.is_correct ? "bg-emerald-500 text-slate-950" : "bg-slate-800 text-slate-300"
+                                }`}>
+                                  {opt.letter}
+                                </span>
+                                <span className="truncate">{opt.text}</span>
+                                {opt.is_correct && <span className="ml-auto text-[10px] text-emerald-400">✅ Correcta</span>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <p className="text-slate-400 text-xs leading-relaxed mt-1">
+                        {idea.description}
+                      </p>
+
+                      <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-semibold">
+                        <span className="text-slate-400">
+                          {isCurrent ? "Clic para regenerar con esta idea" : "Elegir esta idea"}
+                        </span>
+                        <span className={isCurrent ? "text-pink-400" : "text-slate-500 group-hover:text-pink-400"}>
+                          →
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs">
+                  <span className="text-slate-400 font-medium">Idea seleccionada actualmente: </span>
+                  <span className="text-pink-300 font-bold">{selectedIdea?.title || "Ninguna seleccionada"}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowIdeasExpanded(true)}
+                  className="text-xs text-pink-400 hover:text-pink-300 font-bold underline text-left"
+                >
+                  Cambiar a otra de las 4 ideas
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* PASO 2: GUION INFANTIL */}
         {(isGeneratingScript || scriptText) && (
           <div className="bg-slate-900/60 p-6 md:p-8 rounded-3xl border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
-            <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-              <div className="bg-pink-600 text-white w-8 h-8 flex items-center justify-center rounded-xl font-extrabold text-sm shadow-lg shadow-pink-600/30">
-                2
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-pink-600 text-white w-8 h-8 flex items-center justify-center rounded-xl font-extrabold text-sm shadow-lg shadow-pink-600/30">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Guion Infantil Continuo</h2>
+                  <p className="text-xs text-slate-400">Edítalo a mano o utiliza los ajustes rápidos con un clic</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-white">Guion Infantil Continuo</h2>
-                <p className="text-xs text-slate-400">Edítalo a mano o utiliza los ajustes rápidos con un clic</p>
-              </div>
+              {scriptText && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleCopy(scriptText, "step2_script");
+                    showToast("¡Guion copiado al portapapeles!", "success");
+                  }}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-3.5 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors"
+                >
+                  {copiedStates["step2_script"] ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-pink-400" />
+                  )}
+                  <span>Copiar Guion</span>
+                </button>
+              )}
             </div>
 
             {isGeneratingScript && !scriptText ? (
@@ -951,6 +1069,13 @@ export default function VideosInfantilesPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
+                    onClick={handleCopyAllNarration}
+                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-3.5 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors"
+                  >
+                    {copiedStates["all_narration"] ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-amber-400" />}
+                    Copiar Todas las Voces / Locución
+                  </button>
+                  <button
                     onClick={() => handleCopyAllPrompts("image")}
                     className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-3.5 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors"
                   >
@@ -963,6 +1088,13 @@ export default function VideosInfantilesPage() {
                   >
                     {copiedStates["all_animation"] ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-purple-400" />}
                     Copiar Todos los Prompts de Video
+                  </button>
+                  <button
+                    onClick={handleCopyFullProject}
+                    className="bg-pink-600/20 hover:bg-pink-600/30 text-pink-300 text-xs font-bold py-2 px-3.5 rounded-xl border border-pink-500/40 flex items-center gap-1.5 transition-colors"
+                  >
+                    {copiedStates["full_project"] ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-pink-400" />}
+                    Copiar Todo el Video (Guion + Prompts)
                   </button>
                 </div>
               </div>
