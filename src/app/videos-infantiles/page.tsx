@@ -109,8 +109,8 @@ const SCHOOL_TOPIC_CHIPS = [
 ];
 
 const VISUAL_STYLES = [
-  "🎯 Super Quiz / Trivia Show (Fotografía Real y Diagrama Científico)",
-  "🧪 Quiz Escolar / Enciclopedia Visual (Documental HD)",
+  "🌈 Super Quiz Colorido (Fotografía Vibrante, Macro & Espacio 3D Colorido)",
+  "🧪 Enciclopedia Visual Brillante (Colores Vivos, 3D Saturado & Documental)",
   "🎨 3D Pixar / Disney Tierno",
   "📖 Libro Ilustrado / Acuarela Suave",
   "🧸 Plastilina / Claymation 3D",
@@ -474,8 +474,8 @@ export default function VideosInfantilesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          apiKey: clientApiKey || undefined,
-          aspectRatio: "9:16",
+          clientApiKey: clientApiKey || undefined,
+          aspectRatio: "16:9",
         }),
       });
 
@@ -484,9 +484,12 @@ export default function VideosInfantilesPage() {
         throw new Error(result.error || "Error al generar imagen");
       }
 
+      const rawImg = result.imageBase64 || result.imageUrl;
+      const finalSrc = rawImg?.startsWith("data:") ? rawImg : `data:image/jpeg;base64,${rawImg}`;
+
       setGeneratedImages((prev) => ({
         ...prev,
-        [sceneIndex]: result.imageUrl,
+        [sceneIndex]: finalSrc,
       }));
       showToast("¡Imagen generada con éxito!", "success");
     } catch (err: unknown) {

@@ -252,17 +252,18 @@ Responde ÚNICAMENTE con un JSON válido:
 
     // 4. DESGLOSAR EN ESCENAS Y PROMPTS
     if (action === "full_from_script") {
-      const style = visualStyle || "🎯 Super Quiz / Trivia Show (Fotografía Real y Diagrama Científico)";
+      const style = visualStyle || "🌈 Super Quiz Colorido";
       const isTriviaOrQuiz = (formatType || "").toLowerCase().includes("trivia") || 
                              (formatType || "").toLowerCase().includes("escolar") ||
                              (formatType || "").toLowerCase().includes("matemáticas") ||
                              style.includes("Super Quiz") ||
-                             style.includes("Quiz Escolar");
+                             style.includes("Quiz Escolar") ||
+                             style.includes("Enciclopedia");
       
-      let styleDescriptor = "High quality documentary photograph or scientific educational diagram for quiz display, crisp macro detail, authentic natural colors, clean isolated framing, textbook editorial quality, 8k, National Geographic aesthetic, no cartoons, no fictional furry characters";
+      let styleDescriptor = "Ultra vibrant colorful visual, deep saturated glowing colors, high contrast, visually striking and exciting for young learners, 8k, National Geographic and BBC Earth vivid style, crisp detail, joyful dynamic lighting";
       
-      if (style.includes("Super Quiz") || style.includes("Quiz Escolar")) {
-        styleDescriptor = "Clean professional educational quiz showcase image, authentic realistic documentary photography or clear 3D astronomical/scientific diagram, vivid sharp focus, studio lighting, highly informative and didactic visual, 8k, ultra-clean aesthetic, absolutely no teddy bears or cartoon mascots";
+      if (style.includes("Super Quiz") || style.includes("Enciclopedia") || style.includes("Quiz Escolar")) {
+        styleDescriptor = "Vibrant hyper-colorful educational visual for a dynamic kids/teen quiz video. Deep vivid neon colors, glowing lighting, saturated rich hues (deep space cosmic purples, glowing neon sun gold, vibrant emerald leaf veins with translucent backlight, bright azure skies). Extremely eye-catching, energetic and stimulating visual, ultra-detailed 8k render/photography, clean isolated centerpiece subject. ABSOLUTELY NEVER generate a boring grey television news studio, TV cameras, or a studio set. Focus 100% on the exciting subject itself.";
       } else if (style.includes("Pixar") || style.includes("Disney")) {
         styleDescriptor = "3D Pixar animation style, adorable cute character, big sparkling expressive eyes, soft rounded shapes, subsurface scattering, vibrant joyful pastel palette, volumetric warm sunlight, Unreal Engine 5 render, wholesome, Disney quality, 8k";
       } else if (style.includes("Acuarela") || style.includes("Ilustrado")) {
@@ -276,15 +277,18 @@ Responde ÚNICAMENTE con un JSON válido:
       }
 
       const promptRules = isTriviaOrQuiz
-        ? `REGLAS DE GENERACIÓN DE PROMPTS (ESTILO SUPER QUIZ / TRIVIA VISUAL):
-- El video es un SHOW DE QUIZ / TRIVIA EDUCATIVA (como Super Quiz, Trivia Show, canales de adivinanzas con recuadro de imagen y opciones A, B, C).
-- CERO PERSONAJES DE PELUCHE, CERO OSITOS, CERO BOTARGAS. El protagonista es el RETO INTELECTUAL.
-- image_prompt: En INGLÉS para Midjourney v6 / Flux / Imagen. Describe la IMAGEN FOTOGRÁFICA o DIAGRAMA CIENTÍFICO REALISTA que va dentro del recuadro de la pregunta (ej. fotografía de la Estatua de la Libertad en ángulo icónico, fotografía macro de una hoja con venas iluminadas para fotosíntesis, diagrama del Sistema Solar con órbitas y planetas detallados, foto de satélite de la Tierra, etc.). CERO texto en la imagen. Estilo: ${styleDescriptor}.
-- animation_prompt: En INGLÉS para Runway Gen-3 / Kling. Describe un movimiento de cámara lento y sutil sobre el objeto o elemento científico/histórico (ej. "Slow subtle cinematic camera zoom in on the Statue of Liberty with soft moving clouds", "Slow slow-motion rotation of the planet Earth revealing sun rays").
-- narration: Locución limpia del presentador/narrador en español neutro (lee la pregunta, menciona las 3 opciones, y tras la pausa revela la respuesta ganadora).
-- text_overlay: Texto exacto en pantalla ("¿Cuál es la posición de la Tierra?", "A) La primera | B) La segunda | C) La tercera", "⏳ Conteo regresivo", "✅ Correcta: C) La tercera").`
+        ? `REGLAS CRÍTICAS PARA GENERACIÓN DE PROMPTS (SUPER QUIZ COLORIDO Y VIBRANTE):
+- El objetivo es atrapar al espectador al instante con IMÁGENES COLORIDAS, LLAMATIVAS Y FASCINANTES (como un eclipse de fuego dorado con corona solar brillante, el Sistema Solar con planetas saturados y nebulosas cósmicas púrpuras y azul eléctrico, una hoja en macro con venas fluorescentes brillando en esmeralda, o un animal exótico de colores vivos).
+- PROHIBIDO TERMINANTEMENTE: Cero sets de televisión, cero estudios de grabación de noticias grises, cero cámaras de estudio, cero fondos aburridos apagados, cero pantallas de televisión dentro de una habitación.
+- image_prompt: En INGLÉS para Midjourney v6 / Flux / Imagen. Describe directamente el OBJETO CIENTÍFICO O HISTÓRICO con COLORES SÚPER VIBRANTES y VIVOS:
+  * Ejemplo Espacio: "A breathtaking glowing solar eclipse in deep space, fiery golden solar flares bursting into dark nebula, glowing cosmic corona, hyper-vibrant saturated orange and deep purple space clouds, cinematic 8k, awe-inspiring educational visual, no text."
+  * Ejemplo Tierra/Órbitas: "Stunning 3D scientific diagram of the solar system with vivid colorful planetary orbits, hyper-detailed bright glowing Sun with radiant golden light, Earth glowing blue and green in 3rd orbital position, surrounded by sparkling colorful starfield, 8k."
+  * Ejemplo Plantas/Ciencias: "Extreme macro photography of a lush vibrant green leaf with glowing translucent veins conducting sunlight, electric chlorophyll luminescence, deep emerald and golden rays, hyper-detailed nature photography, colorful and energetic."
+  * Ejemplo Monumento: "The majestic Statue of Liberty standing proudly under an intense vivid azure blue sky with golden sunlight, vibrant copper-green patina glowing in sunlight, high saturation crisp travel photography, 8k."
+  * CERO texto o letras en la imagen. La imagen debe ser el contenido puro del recuadro.
+- animation_prompt: En INGLÉS para Runway Gen-3 / Kling. Describe movimiento cinematográfico suave y fluido del elemento cósmico, natural o histórico con destellos y partículas sutiles de luz.`
         : `REGLAS DE GENERACIÓN DE PROMPTS:
-- image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato vertical 9:16. Describe al personaje, sus colores, la iluminación soleada y suave, y el entorno alegre. CERO textos en la imagen.
+- image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato horizontal 16:9 o vertical 9:16. Describe al sujeto con colores vivos, iluminación hermosa y entorno alegre. CERO textos en la imagen.
 - animation_prompt: En INGLÉS para Runway Gen-3 / Kling / Luma. Describe movimientos suaves, simpáticos y naturales.
 - narration: Asigna el fragmento exacto del guion a cada escena.
 - text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla.`;
