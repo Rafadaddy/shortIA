@@ -4,12 +4,10 @@ import { chatCompletion } from "@/lib/api-helpers";
 
 const clean = (r: string) => r.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
 
-function parseJsonResponse(raw: string) {
+function robustParseJson(raw: string) {
   let cleanJson = raw.trim();
-  if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
-  else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-  if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
-  cleanJson = cleanJson.trim();
+  // Strip code fences
+  cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
 
   const firstBrace = cleanJson.indexOf('{');
   const firstBracket = cleanJson.indexOf('[');
@@ -19,17 +17,61 @@ function parseJsonResponse(raw: string) {
     const lastBrace = cleanJson.lastIndexOf('}');
     if (lastBrace !== -1) {
       cleanJson = cleanJson.substring(startIdx, lastBrace + 1);
+    } else {
+      cleanJson = cleanJson.substring(startIdx);
     }
   } else if (firstBracket !== -1) {
     startIdx = firstBracket;
     const lastBracket = cleanJson.lastIndexOf(']');
     if (lastBracket !== -1) {
       cleanJson = cleanJson.substring(startIdx, lastBracket + 1);
+    } else {
+      cleanJson = cleanJson.substring(startIdx);
     }
   }
 
-  return JSON.parse(cleanJson);
+  // 1. Try direct parse
+  try {
+    return JSON.parse(cleanJson);
+  } catch (e1) {
+    // 2. Common JSON repairs: remove trailing commas, unescaped newlines in strings
+    let sanitized = cleanJson
+      // Remove trailing commas before closing braces/brackets
+      .replace(/,\s*([}\]])/g, "$1")
+      // Replace non-standard single quotes or smart quotes around keys
+      .replace(/([{,]\s*)'([^']+)'(\s*:)/g, '$1"$2"$3');
+
+    // Balance unclosed quotes if truncated
+    const quoteCount = (sanitized.match(/"/g) || []).length;
+    if (quoteCount % 2 !== 0) {
+      sanitized += '"';
+    }
+
+    // Balance braces if truncated
+    const openBraces = (sanitized.match(/{/g) || []).length;
+    const closeBraces = (sanitized.match(/}/g) || []).length;
+    if (openBraces > closeBraces) {
+      sanitized += "}".repeat(openBraces - closeBraces);
+    }
+    const openBrackets = (sanitized.match(/\[/g) || []).length;
+    const closeBrackets = (sanitized.match(/\]/g) || []).length;
+    if (openBrackets > closeBrackets) {
+      sanitized += "]".repeat(openBrackets - closeBrackets);
+    }
+
+    try {
+      return JSON.parse(sanitized);
+    } catch (e2) {
+      // Throw original error so caller can trigger semantic fallback
+      throw e1;
+    }
+  }
 }
+
+function parseJsonResponse(raw: string) {
+  return robustParseJson(raw);
+}
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -286,8 +328,83 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura:
 }`;
 
       const response = await chatCompletion(body, prompt, { temperature: 0.75 });
-      return NextResponse.json(parseJsonResponse(response));
+      try {
+        const parsed = parseJsonResponse(response);
+        if (parsed && Array.isArray(parsed.scenes) && parsed.scenes.length > 0) {
+          return NextResponse.json(parsed);
+        }
+        if (parsed) {
+          return NextResponse.json(parsed);
+        }
+      } catch (parseErr) {
+        console.warn("[API generate-kids] JSON parse failed in full_from_script, running fallback extraction...", parseErr);
+      }
+
+      // FALLBACK PARSER: Si el JSON vino truncado o con sintaxis inválida, rescatamos las escenas y datos
+      try {
+        const titleMatch = response.match(/"title"\s*:\s*"([^"]+)"/i);
+        const musicMatch = response.match(/"music_recommendation"\s*:\s*"([^"]+)"/i);
+        const learningMatch = response.match(/"learning_value"\s*:\s*"([^"]+)"/i);
+
+        // Extraer escenas mediante bloques regex
+        const scenes: any[] = [];
+        const sceneRegex = /\{\s*"scene_number"\s*:\s*(\d+)[\s\S]*?"narration"\s*:\s*"([^"]*)"[\s\S]*?"visual_concept"\s*:\s*"([^"]*)"[\s\S]*?"image_prompt"\s*:\s*"([^"]*)"[\s\S]*?"animation_prompt"\s*:\s*"([^"]*)"/gi;
+        
+        let match;
+        let count = 1;
+        while ((match = sceneRegex.exec(response)) !== null) {
+          scenes.push({
+            scene_number: Number(match[1]) || count,
+            timestamp: `0:0${(count - 1) * 8}-0:0${count * 8}`,
+            narration: match[2] || "",
+            text_overlay: "",
+            visual_concept: match[3] || "",
+            camera_movement: "Smooth camera motion",
+            audio_cues: "Sonido alegre infantil",
+            image_prompt: match[4] || `${styleDescriptor}, cute wholesome scene`,
+            animation_prompt: match[5] || "Smooth Disney style character movement",
+          });
+          count++;
+        }
+
+        // Si la regex estricta no encontró escenas, dividir el guion en escenas automáticamente
+        if (scenes.length === 0) {
+          const scriptLines = String(customScript || "")
+            .split(/\n+/)
+            .map(l => l.trim())
+            .filter(l => l.length > 10);
+
+          const total = Math.min(Math.max(scriptLines.length, 3), 6);
+          for (let i = 0; i < total; i++) {
+            const line = scriptLines[i] || `Parte ${i + 1} de la aventura educativa`;
+            scenes.push({
+              scene_number: i + 1,
+              timestamp: `0:0${i * 8}-0:0${(i + 1) * 8}`,
+              narration: line,
+              text_overlay: line.length > 30 ? line.substring(0, 30) + "..." : line,
+              visual_concept: `Escena tierna ilustrando: ${line}`,
+              camera_movement: "Suave paneo cinematográfico",
+              audio_cues: i === 0 ? "Campanita alegre" : "Tic-tac suave y ding de respuesta",
+              image_prompt: `${styleDescriptor}, ${line}. Wholesome, cheerful atmosphere, 8k, vertical 9:16`,
+              animation_prompt: `Smooth character movement, friendly blinking and smiling, warm lighting, Disney quality.`,
+            });
+          }
+        }
+
+        return NextResponse.json({
+          title: titleMatch ? titleMatch[1] : "Aventura y Reto Infantil",
+          music_recommendation: musicMatch ? musicMatch[1] : "Marimba alegre infantil",
+          hashtags: ["#paraniños", "#youtubekids", "#adivinanzas", "#retosinfantiles"],
+          learning_value: learningMatch ? learningMatch[1] : "Conocimiento, agilidad mental y diversión",
+          scenes,
+        });
+      } catch (fallbackErr) {
+        console.error("[API generate-kids] Fallback also failed:", fallbackErr);
+        throw fallbackErr;
+      }
     }
+
+
 
     // 5. REGENERAR PROMPT INDIVIDUAL
     if (action === "single_prompt") {

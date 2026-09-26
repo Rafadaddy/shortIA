@@ -1369,10 +1369,27 @@ export default function VideosInfantilesPage() {
 
                     {/* Locución y concepto visual */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800/70 space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-pink-400">
-                          🎙️ Locución / Voz
-                        </span>
+                      <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800/70 space-y-1.5 relative group">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-400">
+                            🎙️ Locución / Voz
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleCopy(scene.narration, `narration_${idx}`);
+                              showToast("Locución de escena copiada", "success");
+                            }}
+                            className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                            title="Copiar voz de esta escena"
+                          >
+                            {copiedStates[`narration_${idx}`] ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 text-slate-400 hover:text-white" />
+                            )}
+                          </button>
+                        </div>
                         <p className="text-sm text-slate-200 font-medium leading-relaxed">
                           "{scene.narration}"
                         </p>
