@@ -252,37 +252,54 @@ Responde ÚNICAMENTE con un JSON válido:
 
     // 4. DESGLOSAR EN ESCENAS Y PROMPTS
     if (action === "full_from_script") {
-      const style = visualStyle || "3D Pixar / Disney Tierno";
+      const style = visualStyle || "🎯 Super Quiz / Trivia Show (Fotografía Real y Diagrama Científico)";
+      const isTriviaOrQuiz = (formatType || "").toLowerCase().includes("trivia") || 
+                             (formatType || "").toLowerCase().includes("escolar") ||
+                             (formatType || "").toLowerCase().includes("matemáticas") ||
+                             style.includes("Super Quiz") ||
+                             style.includes("Quiz Escolar");
       
-      let styleDescriptor = "3D Pixar animation style, adorable cute fluffy character, big sparkling expressive eyes, soft rounded shapes, subsurface scattering, vibrant joyful pastel palette, volumetric warm sunlight, Unreal Engine 5 render, wholesome, Disney quality, 8k";
-      if (style.includes("Acuarela") || style.includes("Ilustrado")) {
+      let styleDescriptor = "High quality documentary photograph or scientific educational diagram for quiz display, crisp macro detail, authentic natural colors, clean isolated framing, textbook editorial quality, 8k, National Geographic aesthetic, no cartoons, no fictional furry characters";
+      
+      if (style.includes("Super Quiz") || style.includes("Quiz Escolar")) {
+        styleDescriptor = "Clean professional educational quiz showcase image, authentic realistic documentary photography or clear 3D astronomical/scientific diagram, vivid sharp focus, studio lighting, highly informative and didactic visual, 8k, ultra-clean aesthetic, absolutely no teddy bears or cartoon mascots";
+      } else if (style.includes("Pixar") || style.includes("Disney")) {
+        styleDescriptor = "3D Pixar animation style, adorable cute character, big sparkling expressive eyes, soft rounded shapes, subsurface scattering, vibrant joyful pastel palette, volumetric warm sunlight, Unreal Engine 5 render, wholesome, Disney quality, 8k";
+      } else if (style.includes("Acuarela") || style.includes("Ilustrado")) {
         styleDescriptor = "Whimsical children's picture book illustration, soft watercolor and ink textures, delicate pencil lines on textured paper, sweet gentle pastel colors, storybook warmth, charming and adorable nursery art style";
       } else if (style.includes("Plastilina") || style.includes("Claymation")) {
         styleDescriptor = "Charming claymation 3D stop-motion style, handcrafted plasticine texture, subtle organic fingerprints, cute chunky proportions, warm studio lighting, playful tactile feel, Aardman inspired animation style";
       } else if (style.includes("Fieltro") || style.includes("Lana")) {
         styleDescriptor = "Adorable handcrafted wool felt puppet in a miniature cozy diorama, fluffy needle-felted textures, warm woven fabric details, soft glowing background, ultra-cute handmade tactile craftsmanship";
       } else if (style.includes("Kawaii") || style.includes("2D")) {
-        styleDescriptor = "Ultra cute 2D kawaii children vector illustration, bold clean outlines, vibrant pastel flat colors, adorable smiling chibi character, sparkling joyful atmosphere, playful and welcoming nursery design";
+        styleDescriptor = "Ultra cute 2D kawaii children vector illustration, bold clean outlines, vibrant pastel flat colors, sparkling joyful atmosphere, playful and welcoming design";
       }
 
-      const prompt = `Eres un director de arte y animación especializado en contenido infantil para YouTube Kids, Disney y Nickelodeon.
-Desglosa el siguiente guion infantil en 5 o 6 escenas secuenciales adorables.
+      const promptRules = isTriviaOrQuiz
+        ? `REGLAS DE GENERACIÓN DE PROMPTS (ESTILO SUPER QUIZ / TRIVIA VISUAL):
+- El video es un SHOW DE QUIZ / TRIVIA EDUCATIVA (como Super Quiz, Trivia Show, canales de adivinanzas con recuadro de imagen y opciones A, B, C).
+- CERO PERSONAJES DE PELUCHE, CERO OSITOS, CERO BOTARGAS. El protagonista es el RETO INTELECTUAL.
+- image_prompt: En INGLÉS para Midjourney v6 / Flux / Imagen. Describe la IMAGEN FOTOGRÁFICA o DIAGRAMA CIENTÍFICO REALISTA que va dentro del recuadro de la pregunta (ej. fotografía de la Estatua de la Libertad en ángulo icónico, fotografía macro de una hoja con venas iluminadas para fotosíntesis, diagrama del Sistema Solar con órbitas y planetas detallados, foto de satélite de la Tierra, etc.). CERO texto en la imagen. Estilo: ${styleDescriptor}.
+- animation_prompt: En INGLÉS para Runway Gen-3 / Kling. Describe un movimiento de cámara lento y sutil sobre el objeto o elemento científico/histórico (ej. "Slow subtle cinematic camera zoom in on the Statue of Liberty with soft moving clouds", "Slow slow-motion rotation of the planet Earth revealing sun rays").
+- narration: Locución limpia del presentador/narrador en español neutro (lee la pregunta, menciona las 3 opciones, y tras la pausa revela la respuesta ganadora).
+- text_overlay: Texto exacto en pantalla ("¿Cuál es la posición de la Tierra?", "A) La primera | B) La segunda | C) La tercera", "⏳ Conteo regresivo", "✅ Correcta: C) La tercera").`
+        : `REGLAS DE GENERACIÓN DE PROMPTS:
+- image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato vertical 9:16. Describe al personaje, sus colores, la iluminación soleada y suave, y el entorno alegre. CERO textos en la imagen.
+- animation_prompt: En INGLÉS para Runway Gen-3 / Kling / Luma. Describe movimientos suaves, simpáticos y naturales.
+- narration: Asigna el fragmento exacto del guion a cada escena.
+- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla.`;
 
-GUION INFANTIL:
+      const prompt = `Eres un director visual de trivias educativas de alto nivel para YouTube, Shorts y TikTok (estilo canales como Super Quiz).
+Desglosa el siguiente guion en 5 o 6 escenas secuenciales impecables para el video.
+
+GUION:
 "${customScript}"
 
 ESTILO VISUAL SOLICITADO:
 ${styleDescriptor}
 
-REGLAS DE GENERACIÓN DE PROMPTS:
-- image_prompt: En INGLÉS fotográfico/artístico impecable para Midjourney v6 / Flux. Formato vertical 9:16. Describe al personaje, sus ojos tiernos y grandes, sus colores, la iluminación soleada y suave, y el entorno alegre (flores, bosque mágico, habitación acogedora, cielo estrellado). CERO textos en la imagen.
-- animation_prompt: En INGLÉS para Runway Gen-3 / Kling / Luma. Describe movimientos suaves, simpáticos y naturales (parpadear con alegría, saludar con la patita/mano a la cámara, sonreír, dar saltitos juguetones).
-- narration: Asigna el fragmento exacto del guion a cada escena.
-- text_overlay: Texto cortito y divertido en español que pueda aparecer en pantalla (ej. "¡Pregunta Escolar! 🎓", "A) Benito Juárez | B) Cristóbal Colón | C) Miguel Hidalgo", "⏳ 10... 9... 8...", "✅ ¡Opción B Correcta!", "¡Es el Elefantito! 🐘").
-  * Si la escena es la pregunta con opciones: enumera las opciones ("A) ... B) ... C) ...").
-  * Si la escena es la cuenta regresiva: contador visual con opciones activas ("⏳ 10s... 9s... [A, B, C]").
-  * Si la escena es la revelación: marca con palomita y resalta la opción ganadora ("✅ Correcta: Opción [Letra]").
-- audio_cues: Efectos de sonido sugeridos (reloj tic-tac con suspenso infantil, campanita mágica triunfal de acierto 'ding!', xilófono alegre, pop).
+${promptRules}
+- audio_cues: Efectos de sonido sugeridos (reloj tic-tac con suspenso de 5 a 10s, campanita ding de acierto, sonido de zumbido o acierto).
 
 Responde ÚNICAMENTE con un JSON válido con esta estructura:
 {
@@ -409,9 +426,15 @@ Responde ÚNICAMENTE con un JSON válido con esta estructura:
     // 5. REGENERAR PROMPT INDIVIDUAL
     if (action === "single_prompt") {
       const { narration, visual_concept, prompt_type, visualStyle } = body;
+      const isQuiz = (visualStyle || "").includes("Super Quiz") || (visualStyle || "").includes("Quiz Escolar");
+      
       const prompt = prompt_type === "animation"
-        ? `Create an advanced Runway Gen-3 / Kling animation prompt for this wholesome children's scene: "${visual_concept || narration}". Style: Smooth Disney-quality character animation, gentle motion, waving, smiling, sparkling eyes, warm lighting, kid-safe and delightful.`
-        : `Create an advanced Midjourney v6 image prompt for this wholesome children's scene: "${visual_concept || narration}". Style: ${visualStyle || '3D Pixar Disney style'}, adorable cute character with huge sparkling eyes, soft warm pastel lighting, whimsical joyful background, 8k, vertical 9:16 aspect ratio.`;
+        ? (isQuiz
+            ? `Create a cinematic, subtle Runway Gen-3 / Kling camera animation prompt for this educational quiz visual: "${visual_concept || narration}". Style: Slow cinematic camera movement, slow motion reveal or gentle rotation, clean studio lighting, realistic documentary quality, absolutely no cartoon characters.`
+            : `Create an advanced Runway Gen-3 / Kling animation prompt for this children's scene: "${visual_concept || narration}". Style: Smooth Disney-quality character animation, gentle motion, kid-safe and delightful.`)
+        : (isQuiz
+            ? `Create an advanced Midjourney v6 / Flux prompt for an educational quiz showcase visual about: "${visual_concept || narration}". Style: Authentic high-detail documentary photography or ultra-sharp 3D scientific/astronomy diagram, National Geographic textbook quality, vivid lighting, crisp focus, isolated frame for quiz display, 8k, horizontal/vertical format, no cartoons, no text.`
+            : `Create an advanced Midjourney v6 image prompt for this wholesome scene: "${visual_concept || narration}". Style: ${visualStyle || '3D Pixar Disney style'}, warm pastel lighting, joyful background, 8k, vertical 9:16 aspect ratio.`);
 
       const response = await chatCompletion(body, `${prompt}\nRespond ONLY with valid JSON: { "${prompt_type === 'animation' ? 'animation_prompt' : 'image_prompt'}": "..." }`, { temperature: 0.8 });
       return NextResponse.json(parseJsonResponse(response));

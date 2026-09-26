@@ -109,6 +109,8 @@ const SCHOOL_TOPIC_CHIPS = [
 ];
 
 const VISUAL_STYLES = [
+  "🎯 Super Quiz / Trivia Show (Fotografía Real y Diagrama Científico)",
+  "🧪 Quiz Escolar / Enciclopedia Visual (Documental HD)",
   "🎨 3D Pixar / Disney Tierno",
   "📖 Libro Ilustrado / Acuarela Suave",
   "🧸 Plastilina / Claymation 3D",
@@ -1230,87 +1232,130 @@ export default function VideosInfantilesPage() {
                     </div>
                   )}
 
-                  {/* Tarjeta de simulación estilo Short vertical en miniatura */}
-                  <div className="max-w-md mx-auto bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden space-y-5">
-                    {/* Cronómetro flotante y número de ronda */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5" />
-                        RONDA {simQuestionIndex + 1} DE {questionsList.length}
-                      </span>
-                      <div className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 transition-all ${
-                        simIsRunning
-                          ? "bg-amber-500 text-slate-950 scale-105 shadow-md shadow-amber-500/40"
-                          : simRevealed
-                          ? "bg-emerald-500 text-slate-950"
-                          : "bg-slate-800 text-slate-300"
-                      }`}>
-                        <span>⏱️</span>
-                        <span>
-                          {simIsRunning 
-                            ? `${simTimer}s` 
-                            : simRevealed 
-                            ? "¡TIEMPO!" 
-                            : `${countdownSeconds || 10}s`}
+                  {/* Tarjeta de simulación estilo Super Quiz Show (con recuadro de imagen, barra de progreso y opciones limpias) */}
+                  <div className="max-w-2xl mx-auto bg-gradient-to-b from-fuchsia-950/70 via-slate-950 to-indigo-950/70 border-2 border-fuchsia-500/40 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden space-y-6">
+                    
+                    {/* Header con Número de Pregunta estilo Badge circular e Interrogante */}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-fuchsia-600 to-pink-500 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-pink-600/30 flex-shrink-0">
+                        {simQuestionIndex + 1}
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-fuchsia-400">
+                          PREGUNTA {simQuestionIndex + 1} DE {questionsList.length}
                         </span>
+                        <h4 className="text-lg md:text-xl font-black text-white leading-snug">
+                          {currentQ.question}
+                        </h4>
                       </div>
                     </div>
 
-                    {/* Pregunta */}
-                    <div className="text-center py-2">
-                      <h4 className="text-base md:text-lg font-black text-white leading-snug">
-                        {currentQ.question}
-                      </h4>
+                    {/* Contenedor Central: Imagen Temática Educativa (Izquierda) + Opciones A, B, C (Derecha) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                      
+                      {/* Recuadro de Imagen Ilustrativa / Fotografía Científica */}
+                      <div className="aspect-[4/3] rounded-2xl border-2 border-white/20 bg-slate-900/90 overflow-hidden relative shadow-xl flex items-center justify-center group">
+                        {data?.scenes && data.scenes[simQuestionIndex] && generatedImages[simQuestionIndex] ? (
+                          <img
+                            src={generatedImages[simQuestionIndex]}
+                            alt="Visual de la pregunta"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="p-4 text-center space-y-2">
+                            <div className="w-12 h-12 mx-auto rounded-xl bg-fuchsia-500/20 border border-fuchsia-500/40 flex items-center justify-center text-fuchsia-300">
+                              <ImageIcon className="w-6 h-6" />
+                            </div>
+                            <span className="text-xs font-bold text-slate-300 block">
+                              Recuadro Fotográfico Temático
+                            </span>
+                            <p className="text-[11px] text-slate-400 leading-tight">
+                              {data?.scenes?.[simQuestionIndex]?.visual_concept || "Foto real / Diagrama científico"}
+                            </p>
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-white border border-white/10">
+                          SUPER QUIZ
+                        </div>
+                      </div>
+
+                      {/* 3 Opciones Estilo Super Quiz (A, B, C) */}
+                      <div className="space-y-3">
+                        {(currentQ.options || [
+                          { letter: "A", text: "Opción A", is_correct: false },
+                          { letter: "B", text: "Opción B (Correcta)", is_correct: true },
+                          { letter: "C", text: "Opción C", is_correct: false }
+                        ]).map((opt) => {
+                          const isCorrect = opt.is_correct;
+                          let containerStyle = "bg-white text-slate-900 border-white hover:bg-slate-100 shadow-md";
+                          let circleStyle = "bg-fuchsia-600 text-white font-black";
+
+                          if (simRevealed) {
+                            if (isCorrect) {
+                              containerStyle = "bg-emerald-500 text-white border-emerald-400 font-black shadow-lg shadow-emerald-500/40 scale-102 ring-4 ring-emerald-400/40 animate-pulse";
+                              circleStyle = "bg-white text-emerald-700 font-black";
+                            } else {
+                              containerStyle = "bg-slate-900/60 border-slate-800 text-slate-500 opacity-40";
+                              circleStyle = "bg-slate-800 text-slate-600";
+                            }
+                          } else if (selectedUserOption === opt.letter) {
+                            containerStyle = "bg-fuchsia-100 text-slate-950 border-fuchsia-500 ring-2 ring-fuchsia-500/50 shadow-lg";
+                            circleStyle = "bg-fuchsia-700 text-white";
+                          }
+
+                          return (
+                            <div
+                              key={opt.letter}
+                              onClick={() => {
+                                if (!simRevealed) setSelectedUserOption(opt.letter);
+                              }}
+                              className={`p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 font-sans ${containerStyle}`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-black shadow-sm ${circleStyle}`}>
+                                  {opt.letter}
+                                </span>
+                                <span className="text-sm font-bold tracking-tight">
+                                  {opt.text}
+                                </span>
+                              </div>
+                              {simRevealed && isCorrect && (
+                                <span className="text-xs bg-white text-emerald-800 font-black px-2.5 py-1 rounded-lg shadow-sm">
+                                  ✅ CORRECTA
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    {/* 3 Opciones (A, B, C) */}
-                    <div className="space-y-3">
-                      {(currentQ.options || [
-                        { letter: "A", text: "Opción A", is_correct: false },
-                        { letter: "B", text: "Opción B (Correcta)", is_correct: true },
-                        { letter: "C", text: "Opción C", is_correct: false }
-                      ]).map((opt) => {
-                        const isCorrect = opt.is_correct;
-                        let btnStyle = "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:border-slate-500";
-                        let letterStyle = "bg-slate-800 text-slate-200 border-slate-700";
-
-                        if (simRevealed) {
-                          if (isCorrect) {
-                            btnStyle = "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white font-black shadow-lg shadow-emerald-600/30 scale-102 animate-bounce";
-                            letterStyle = "bg-white text-emerald-700 font-black border-transparent";
-                          } else {
-                            btnStyle = "bg-slate-950/60 border-slate-900 text-slate-500 opacity-40 line-through";
-                            letterStyle = "bg-slate-900 text-slate-600 border-slate-800";
-                          }
-                        } else if (selectedUserOption === opt.letter) {
-                          btnStyle = "bg-indigo-950/80 border-indigo-400 text-white shadow-md shadow-indigo-600/20";
-                          letterStyle = "bg-indigo-600 text-white border-indigo-400";
-                        }
-
-                        return (
-                          <div
-                            key={opt.letter}
-                            onClick={() => {
-                              if (!simRevealed) setSelectedUserOption(opt.letter);
-                            }}
-                            className={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${btnStyle}`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black border transition-all ${letterStyle}`}>
-                                {opt.letter}
-                              </span>
-                              <span className="text-sm font-bold">
-                                {opt.text}
-                              </span>
-                            </div>
-                            {simRevealed && isCorrect && (
-                              <span className="text-xs bg-white text-emerald-800 font-black px-2 py-0.5 rounded-md shadow">
-                                ✅ ¡CORRECTO!
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
+                    {/* Barra Animada de Tiempo estilo Super Quiz */}
+                    <div className="space-y-1.5 pt-2">
+                      <div className="flex items-center justify-between text-xs font-black">
+                        <span className="text-slate-400 flex items-center gap-1.5">
+                          ⏳ Tiempo de Respuesta:
+                        </span>
+                        <span className={simIsRunning ? "text-amber-400 font-mono text-sm" : simRevealed ? "text-emerald-400" : "text-slate-300"}>
+                          {simIsRunning ? `${simTimer} segundos` : simRevealed ? "¡TIEMPO AGOTADO!" : `${countdownSeconds || 10} segundos`}
+                        </span>
+                      </div>
+                      <div className="w-full h-4 bg-slate-900 rounded-full p-0.5 border border-slate-700/80 overflow-hidden shadow-inner">
+                        <div
+                          className={`h-full rounded-full transition-all duration-1000 ${
+                            simRevealed 
+                              ? "bg-emerald-500 w-full" 
+                              : "bg-gradient-to-r from-emerald-500 via-lime-400 to-green-500"
+                          }`}
+                          style={{
+                            width: simIsRunning 
+                              ? `${((simTimer ?? 0) / Number(countdownSeconds || 10)) * 100}%` 
+                              : simRevealed 
+                              ? "100%" 
+                              : "100%"
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* Explicación didáctica al revelar */}
@@ -1320,7 +1365,7 @@ export default function VideosInfantilesPage() {
                           🎉 ¡Respuesta Revelada!
                         </span>
                         <p className="leading-relaxed">
-                          {currentQ.explanation || data.learning_value || "¡Esa es la opción correcta! En tu video, resalta esta opción en verde."}
+                          {currentQ.explanation || data?.learning_value || "¡Esa es la opción correcta! En tu video, resalta esta opción en verde."}
                         </p>
                       </div>
                     )}
@@ -1329,7 +1374,7 @@ export default function VideosInfantilesPage() {
                     <div className="text-[11px] text-slate-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-start gap-2">
                       <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                       <span>
-                        <strong>Pauta para edición (CapCut / Premiere):</strong> Mantén fijas las cajas A, B y C durante la ronda {simQuestionIndex + 1} ({countdownSeconds || 10}s con tic-tac). Al llegar a 0s, rellena en verde la opción ganadora con sonido ding.
+                        <strong>Pauta de edición (Estilo Super Quiz):</strong> Coloca la foto temática en el recuadro, las opciones A, B y C limpias en blanco a la derecha y la barra verde abajo con el tic-tac. Al llegar a 0s, rellena la correcta de verde y la locución confirma la respuesta.
                       </span>
                     </div>
                   </div>
