@@ -30,14 +30,14 @@ const TONES = [
 ];
 
 const VISUAL_STYLES = [
-  "Que la IA decida (Recomendado)",
-  "Minimalista Claro (Fondo beige, verde salvia)",
-  "Modo Oscuro Elegante (Fondo negro, dorado)",
-  "Cyberpunk Neón (Oscuro, cyan, magenta)",
-  "Retro / Vintage (Tonos sepia y papel desgastado)",
+  "🌲 Paisaje Bosque & Niebla (Naturaleza cinematográfica, texto blanco nítido)",
+  "🌅 Paisaje Atardecer & Carretera (Golden Hour con filtro oscuro sutil)",
+  "🌊 Paisaje Marino Minimalista (Océano y nubes suaves, alto contraste)",
+  "🏙️ Paisaje Urbano / Arquitectura Nórdica (Elegante y sobrio con texto blanco)",
+  "Minimalista Claro (Fondo beige y verde salvia)",
+  "Modo Oscuro Elegante (Fondo negro y dorado)",
   "Pastel Aesthetic (Tonos suaves y rosados)",
-  "Corporativo Moderno (Azul marino y blanco)",
-  "Brutalista (Tipografía gigante, blanco y negro)"
+  "Retro / Vintage (Tonos sepia y papel texturizado)"
 ];
 
 const FORMATS = [

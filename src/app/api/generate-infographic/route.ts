@@ -65,8 +65,16 @@ export async function POST(req: NextRequest) {
         "4. El campo label debe tener de 3 a 6 palabras maximo.",
         "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
         "6. POLÍTICA DE SEGURIDAD Y LEGALIDAD: Ningún punto debe promover actividades ilegales, fraudes, robo de información o manipulación dañina. Enfócalo en hábitos, psicología defensiva o educación financiera legal.",
-        `7. Genera un image_prompt para la PORTADA en ENGLISH para Ideogram/DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista y tipografico'}". INCLUYE EL TITULO PRINCIPAL ("${title}"). NO decoraciones. Asegúrate de que las palabras del prompt sean 100% seguras y libres de censura (NO uses palabras como hack, stolen, illegal, manipulation).`,
-        `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista'}". Este prompt debe incluir el texto exacto del punto (Label + Text). Formato para cada punto: 'An ultra-minimalist ${format || 'Vertical'} infographic poster about [TEMA], [ESTILO]. Purely typographical layout, NO decorations, clean solid background, massive bold readable text containing exactly: [NUM]. [LABEL]. [TEXT]'.`,
+        `7. REGLA ESTRICTA DE LA PORTADA: Genera un 'image_prompt' para la PORTADA en ENGLISH para Ideogram / Midjourney v6 / DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Paisaje cinematográfico con texto limpio'}".`,
+        `   - EN LA PORTADA SOLO DEBE IR EL TÍTULO PRINCIPAL ("${title}") Y NADA MÁS.`,
+        `   - PROHIBIDO TERMINANTEMENTE colocar los 10 puntos, listas, números o párrafos dentro de la portada. Es EXCLUSIVAMENTE una portada tipo revista o portada de video con el título centrado y limpio.`,
+        `   - Si el estilo es de paisaje (bosque, atardecer, mar, montaña): describe una fotografía cinematográfica con niebla suave, atardecer o naturaleza, con un velo oscuro o viñeta sutil (dim dark gradient overlay) para que la tipografía blanca nítida resalte con contraste perfecto y máxima legibilidad.`,
+        `   - Tipografía: Proporciones equilibradas, medianas y elegantes (editorial aesthetic, Swiss style typography), NUNCA tipografías deformadas o saturadas.`,
+        `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH:`,
+        `   - Cada punto es una tarjeta vertical separada.`,
+        `   - Contiene únicamente el número ("01", "02", etc.), el Label y el Text del punto correspondiente.`,
+        `   - Tamaño de letra: Proporción armónica y estilizada, dejando mucho aire y espacio negativo (clean breathing room, elegant medium-sized typography, not overcrowded).`,
+        `   - Fondo: Coherente con el estilo ("${visualStyle}"), si es paisaje con velo oscuro y texto en blanco brillante con contraste 100% legible.`,
         `9. Genera un campo 'narration_script' con el GUION COMPLETO DE LOCUCIÓN listo para que un narrador lo lea de corrido, diciendo punto por punto de forma fluida y natural (ejemplo: "Aquí tienes ${title}. Punto número uno: [Label], [Explicación ampliada y cautivadora]. Punto número dos: [Label]...").`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
@@ -75,14 +83,14 @@ export async function POST(req: NextRequest) {
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
           narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\nNúmero dos: ...`,
-          image_prompt: `A highly aesthetic vertical infographic poster about finance, sleek dark mode style. Massive bold typography dominating the layout, containing exactly this text: '${title}'`,
+          image_prompt: `A highly aesthetic vertical cover poster about [THEME], [STYLE]. Clean cinematic background with a subtle dark gradient overlay, featuring ONLY this single title text centered in clean medium-sized white typography: '${title}'. No lists, no item numbers, no extra text, ultra-clean editorial layout.`,
           items: [
             {
               num: "01",
               emoji: "emoji",
               label: "Titulo corto 3-6 palabras",
               text: "Descripcion practica max 15 palabras.",
-              image_prompt: "An ultra-minimalist vertical infographic poster... containing exactly: '1. Title. Description...'"
+              image_prompt: "An elegant vertical slide poster... clean cinematic background with subtle dark contrast overlay, medium-sized readable typography with plenty of breathing room, containing exactly: '01. Title. Description...'"
             }
           ],
           cta: "Call to action especifico",
