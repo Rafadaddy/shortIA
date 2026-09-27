@@ -165,13 +165,44 @@ export default function ListasViralesPage() {
     showToast("Copiado al portapapeles", "success");
   };
 
-  // GUION NARRADO COMPLETO PUNTO POR PUNTO
+  // GUION NARRADO COMPLETO PUNTO POR PUNTO (CON PALABRAS: Número uno, Número dos...)
   const getFullScript = (): string => {
     if (!data) return "";
-    if (data.narration_script) return data.narration_script;
+
+    const NUMBER_WORDS: Record<number, string> = {
+      1: "uno",
+      2: "dos",
+      3: "tres",
+      4: "cuatro",
+      5: "cinco",
+      6: "seis",
+      7: "siete",
+      8: "ocho",
+      9: "nueve",
+      10: "diez",
+      11: "once",
+      12: "doce",
+      13: "trece",
+      14: "catorce",
+      15: "quince"
+    };
+
+    if (data.narration_script) {
+      // Sanitizar por si contiene dígitos como "01.", "01:", "Punto 1:"
+      let text = data.narration_script;
+      Object.entries(NUMBER_WORDS).forEach(([numStr, word]) => {
+        const n = Number(numStr);
+        const pad = String(n).padStart(2, "0");
+        const rx = new RegExp(`(?:Punto\\s+n[uú]mero|Punto|N[uú]mero)\\s+(?:${pad}|${n})\\s*[:\\.-]?|\\b${pad}\\s*[:\\.-]\\s*`, "gi");
+        text = text.replace(rx, `Número ${word}: `);
+      });
+      return text.trim();
+    }
+
     let script = `${data.title}. ${data.subhook ? data.subhook + "." : ""}\n\n`;
     data.items.forEach((item, i) => {
-      script += `Punto número ${i + 1}: ${item.label}. ${item.text}\n\n`;
+      const word = NUMBER_WORDS[i + 1] || String(i + 1);
+      script += `Número ${word}: ${item.label}. ${item.text}\n\n`;
     });
     if (data.cta) {
       script += `${data.cta}`;

@@ -75,14 +75,18 @@ export async function POST(req: NextRequest) {
         `   - Contiene únicamente el número ("01", "02", etc.), el Label y el Text del punto correspondiente.`,
         `   - Tamaño de letra: Proporción armónica y estilizada, dejando mucho aire y espacio negativo (clean breathing room, elegant medium-sized typography, not overcrowded).`,
         `   - Fondo: Coherente con el estilo ("${visualStyle}"), si es paisaje con velo oscuro y texto en blanco brillante con contraste 100% legible.`,
-        `9. Genera un campo 'narration_script' con el GUION COMPLETO DE LOCUCIÓN listo para que un narrador lo lea de corrido, diciendo punto por punto de forma fluida y natural (ejemplo: "Aquí tienes ${title}. Punto número uno: [Label], [Explicación ampliada y cautivadora]. Punto número dos: [Label]...").`,
+        `9. REGLA ESTRICTA DE LOCUCIÓN PARA EL NARRADOR (Campo 'narration_script'):`,
+        `   - El guion de locución debe estar redactado en PALABRAS COMPLETAS para que suene 100% natural al leerse.`,
+        `   - PROHIBIDO TERMINANTEMENTE escribir números como dígitos o con cero por delante (PROHIBIDO "01", "02", "1.", "2."). Si dejas "01", la voz de IA lee literalmente "cero uno".`,
+        `   - DEBES ESCRIBIRLO OBLIGATORIAMENTE CON PALABRAS: "Número uno:", "Número dos:", "Número tres:", "Número cuatro:", "Número cinco:", "Número seis:", "Número siete:", "Número ocho:", "Número nueve:", "Número diez:", "Número once:", "Número doce:".`,
+        `   - Ejemplo exacto: "Aquí tienes ${title}.\n\nNúmero uno: [Título del punto]. [Explicación concisa y natural].\n\nNúmero dos: [Título del punto]. [Explicación]..."`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
-          narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\nNúmero dos: ...`,
+          narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\n\nNúmero dos: ...`,
           image_prompt: `A highly aesthetic vertical cover poster about [THEME], [STYLE]. Clean cinematic background with a subtle dark gradient overlay, featuring ONLY this single title text centered in clean medium-sized white typography: '${title}'. No lists, no item numbers, no extra text, ultra-clean editorial layout.`,
           items: [
             {
@@ -112,16 +116,52 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      const NUMBER_WORDS: Record<number, string> = {
+        1: "uno",
+        2: "dos",
+        3: "tres",
+        4: "cuatro",
+        5: "cinco",
+        6: "seis",
+        7: "siete",
+        8: "ocho",
+        9: "nueve",
+        10: "diez",
+        11: "once",
+        12: "doce",
+        13: "trece",
+        14: "catorce",
+        15: "quince"
+      };
+
       // Si no generó narration_script o vino vacío, construirlo automáticamente
       if (!parsed.narration_script && Array.isArray(parsed.items)) {
         let script = `${parsed.title}. ${parsed.subhook ? parsed.subhook + "." : ""}\n\n`;
         parsed.items.forEach((item: any, i: number) => {
-          script += `Punto número ${i + 1}: ${item.label}. ${item.text}\n\n`;
+          const word = NUMBER_WORDS[i + 1] || String(i + 1);
+          script += `Número ${word}: ${item.label}. ${item.text}\n\n`;
         });
         if (parsed.cta) {
           script += `${parsed.cta}`;
         }
         parsed.narration_script = script.trim();
+      } else if (parsed.narration_script) {
+        // Sanitizar el texto para que NUNCA diga "01", "02", "Punto 01", etc.
+        let sanitized = parsed.narration_script;
+        // Reemplazar patrones como "01.", "01:", "01 -", "Punto 01", "Punto 1", "Punto número 1" por "Número uno:"
+        Object.entries(NUMBER_WORDS).forEach(([numStr, word]) => {
+          const n = Number(numStr);
+          const pad = String(n).padStart(2, "0");
+          // Reemplaza "Punto número 01:", "Punto 01:", "Número 01:", "01.", "01:"
+          const regexList = [
+            new RegExp(`(?:Punto\\s+n[uú]mero|Punto|N[uú]mero)\\s+(?:${pad}|${n})\\s*[:\\.-]?`, "gi"),
+            new RegExp(`\\b${pad}\\s*[:\\.-]\\s*`, "gi"),
+          ];
+          regexList.forEach(rx => {
+            sanitized = sanitized.replace(rx, `Número ${word}: `);
+          });
+        });
+        parsed.narration_script = sanitized.trim();
       }
 
       return NextResponse.json(parsed);
