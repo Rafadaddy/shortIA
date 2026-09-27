@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon } from "lucide-react";
+import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
@@ -65,6 +65,7 @@ interface InfographicData {
   title: string;
   category: string;
   subhook: string;
+  narration_script?: string;
   image_prompt?: string;
   items: ListItem[];
   cta: string;
@@ -161,22 +162,60 @@ export default function ListasViralesPage() {
     copyToClipboard(text, key);
     setCopiedStates(prev => ({ ...prev, [key]: true }));
     setTimeout(() => setCopiedStates(prev => ({ ...prev, [key]: false })), 2000);
-    showToast("Copiado", "success");
+    showToast("Copiado al portapapeles", "success");
+  };
+
+  // GUION NARRADO COMPLETO PUNTO POR PUNTO
+  const getFullScript = (): string => {
+    if (!data) return "";
+    if (data.narration_script) return data.narration_script;
+    let script = `${data.title}. ${data.subhook ? data.subhook + "." : ""}\n\n`;
+    data.items.forEach((item, i) => {
+      script += `Punto número ${i + 1}: ${item.label}. ${item.text}\n\n`;
+    });
+    if (data.cta) {
+      script += `${data.cta}`;
+    }
+    return script.trim();
+  };
+
+  const handleCopyScript = () => {
+    const script = getFullScript();
+    if (!script) return;
+    handleCopy(script, "script");
+  };
+
+  // HASHTAGS LIMPIOS LISTOS PARA COPIAR
+  const getHashtagsText = (): string => {
+    if (!data) return "";
+    if (data.hashtags && data.hashtags.length > 0) {
+      return data.hashtags.join(" ");
+    }
+    return `#${niche.replace(/\s+/g, "")} #ListasVirales #Finanzas #Productividad #AprendeEnTikTok #ViralReels`;
+  };
+
+  const handleCopyHashtags = () => {
+    const tags = getHashtagsText();
+    if (!tags) return;
+    handleCopy(tags, "hashtags");
   };
 
   const handleCopyAll = () => {
     if (!data) return;
-    const text = `[${data.category}]\n${data.title}\n${data.subhook}\n\n` +
-      data.items.map(i => `${i.num}. ${i.emoji} ${i.label}: ${i.text}`).join("\n") +
-      `\n\n${data.cta}`;
+    const text = `🎬 TÍTULO: ${data.title}\n` +
+      `🔥 SUB-HOOK: ${data.subhook}\n\n` +
+      `🎙️ GUION PARA NARRADOR:\n${getFullScript()}\n\n` +
+      `📌 HASHTAGS:\n${getHashtagsText()}\n\n` +
+      `🎵 MÚSICA RECOMENDADA: ${data.music || 'Fondo lofi / synthwave suave'}\n\n` +
+      `--- PROMPT PORTADA ---\n${data.image_prompt || ''}`;
     handleCopy(text, "all");
   };
 
   const handleCopyAllPrompts = () => {
     if (!data) return;
-    let text = `--- PORTADA ---\n${data.image_prompt}\n\n`;
+    let text = `--- PORTADA PRINCIPAL ---\n${data.image_prompt || ""}\n\n`;
     data.items.forEach((item) => {
-      text += `--- PUNTO ${item.num} ---\n${item.image_prompt || ""}\n\n`;
+      text += `--- IMAGEN PUNTO #${item.num} (${item.label}) ---\n${item.image_prompt || ""}\n\n`;
     });
     handleCopy(text, "all_prompts");
   };
@@ -281,13 +320,19 @@ export default function ListasViralesPage() {
         {data && (
           <div className="space-y-6">
 
-            {/* Info general */}
-            <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+            {/* Info general y Botones Globales */}
+            <div className="bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <ListOrdered className="w-5 h-5 text-emerald-400" /> Datos de la Lista
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={handleCopyScript}
+                    className="flex items-center gap-2 bg-emerald-600 text-white py-2 px-4 rounded-xl text-sm font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-600/20"
+                  >
+                    {copiedStates["script"] ? <><Check className="w-4 h-4" /> ¡Guion Copiado!</> : <><Mic className="w-4 h-4" /> Copiar Guion Completo</>}
+                  </button>
                   <button
                     onClick={handleCopyAllPrompts}
                     className="flex items-center gap-2 bg-blue-600/20 text-blue-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-blue-600/40 transition-colors border border-blue-500/30"
@@ -295,32 +340,93 @@ export default function ListasViralesPage() {
                     {copiedStates["all_prompts"] ? <><Check className="w-4 h-4" /> Prompts Copiados</> : <><ImageIcon className="w-4 h-4" /> Copiar Todos los Prompts</>}
                   </button>
                   <button
-                    onClick={handleCopyAll}
-                    className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-emerald-600/40 transition-colors"
+                    onClick={handleCopyHashtags}
+                    className="flex items-center gap-2 bg-purple-600/20 text-purple-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-purple-600/40 transition-colors border border-purple-500/30"
                   >
-                    {copiedStates["all"] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
+                    {copiedStates["hashtags"] ? <><Check className="w-4 h-4" /> Hashtags Copiados</> : <><Hash className="w-4 h-4" /> Copiar Hashtags</>}
+                  </button>
+                  <button
+                    onClick={handleCopyAll}
+                    className="flex items-center gap-2 bg-slate-800 text-slate-300 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-slate-700 transition-colors border border-slate-700"
+                  >
+                    {copiedStates["all"] ? <><Check className="w-4 h-4" /> Todo Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {/* Título y Subhook */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                   <span className="text-xs font-bold text-emerald-500 tracking-wider">TÍTULO PRINCIPAL</span>
                   <p className="text-white font-bold text-lg mt-1">{data.title}</p>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                  <span className="text-xs font-bold text-emerald-500 tracking-wider">SUB-HOOK</span>
+                  <span className="text-xs font-bold text-emerald-500 tracking-wider">SUB-HOOK (GANCHO)</span>
                   <p className="text-slate-300 italic mt-1">&quot;{data.subhook}&quot;</p>
                 </div>
               </div>
 
-              {data.hashtags && (
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                  <span className="text-xs font-bold text-emerald-500 tracking-wider">HASHTAGS · {data.cta}</span>
-                  <p className="text-emerald-400 mt-1 text-sm">{data.hashtags.join(" ")}</p>
-                  {data.music && <p className="text-slate-400 mt-1 text-sm italic">🎵 {data.music}</p>}
+              {/* GUION COMPLETO PARA EL NARRADOR (LISTO PARA COPIAR PUNTO POR PUNTO) */}
+              <div className="bg-gradient-to-br from-emerald-950/40 via-slate-950 to-slate-950 p-5 rounded-2xl border-2 border-emerald-500/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                      <Mic className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                        🎙️ Guion Completo de Locución (Punto por Punto)
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        Listo para leer de corrido o pegar directamente en ElevenLabs / tu editor de voz.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCopyScript}
+                    className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-md shadow-emerald-600/30"
+                  >
+                    {copiedStates["script"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Guion</>}
+                  </button>
                 </div>
-              )}
+                <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap select-all max-h-72 overflow-y-auto">
+                  {getFullScript()}
+                </div>
+              </div>
+
+              {/* HASHTAGS Y MÚSICA RECOMENDADA LISTOS PARA COPIAR */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+                      <Hash className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                        📌 Hashtags Listos para Copiar
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        Optimiza el algoritmo en TikTok, Shorts, Instagram Reels y Facebook.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCopyHashtags}
+                    className="flex items-center gap-1.5 bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 text-xs font-bold py-2 px-3.5 rounded-xl transition-all"
+                  >
+                    {copiedStates["hashtags"] ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copiados</> : <><Copy className="w-3.5 h-3.5" /> Copiar Hashtags</>}
+                  </button>
+                </div>
+
+                <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 text-sm text-purple-300 font-mono select-all">
+                  {getHashtagsText()}
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
+                  <span><strong>Llamado a la acción (CTA):</strong> {data.cta}</span>
+                  {data.music && <span><strong>🎵 Música:</strong> {data.music}</span>}
+                </div>
+              </div>
             </div>
 
             {/* Items con prompts */}

@@ -67,12 +67,14 @@ export async function POST(req: NextRequest) {
         "6. POLÍTICA DE SEGURIDAD Y LEGALIDAD: Ningún punto debe promover actividades ilegales, fraudes, robo de información o manipulación dañina. Enfócalo en hábitos, psicología defensiva o educación financiera legal.",
         `7. Genera un image_prompt para la PORTADA en ENGLISH para Ideogram/DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista y tipografico'}". INCLUYE EL TITULO PRINCIPAL ("${title}"). NO decoraciones. Asegúrate de que las palabras del prompt sean 100% seguras y libres de censura (NO uses palabras como hack, stolen, illegal, manipulation).`,
         `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Ultra minimalista'}". Este prompt debe incluir el texto exacto del punto (Label + Text). Formato para cada punto: 'An ultra-minimalist ${format || 'Vertical'} infographic poster about [TEMA], [ESTILO]. Purely typographical layout, NO decorations, clean solid background, massive bold readable text containing exactly: [NUM]. [LABEL]. [TEXT]'.`,
+        `9. Genera un campo 'narration_script' con el GUION COMPLETO DE LOCUCIÓN listo para que un narrador lo lea de corrido, diciendo punto por punto de forma fluida y natural (ejemplo: "Aquí tienes ${title}. Punto número uno: [Label], [Explicación ampliada y cautivadora]. Punto número dos: [Label]...").`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
+          narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\nNúmero dos: ...`,
           image_prompt: `A highly aesthetic vertical infographic poster about finance, sleek dark mode style. Massive bold typography dominating the layout, containing exactly this text: '${title}'`,
           items: [
             {
@@ -84,7 +86,7 @@ export async function POST(req: NextRequest) {
             }
           ],
           cta: "Call to action especifico",
-          hashtags: ["#Tag1", "#Tag2", "#Tag3"],
+          hashtags: ["#Tag1", "#Tag2", "#Tag3", "#ListasVirales", "#ViralReels"],
           music: "Tipo de musica sugerida"
         }, null, 2)
       ].join("\n");
@@ -101,6 +103,19 @@ export async function POST(req: NextRequest) {
           item.num = String(i + 1).padStart(2, "0");
         });
       }
+
+      // Si no generó narration_script o vino vacío, construirlo automáticamente
+      if (!parsed.narration_script && Array.isArray(parsed.items)) {
+        let script = `${parsed.title}. ${parsed.subhook ? parsed.subhook + "." : ""}\n\n`;
+        parsed.items.forEach((item: any, i: number) => {
+          script += `Punto número ${i + 1}: ${item.label}. ${item.text}\n\n`;
+        });
+        if (parsed.cta) {
+          script += `${parsed.cta}`;
+        }
+        parsed.narration_script = script.trim();
+      }
+
       return NextResponse.json(parsed);
     }
 
