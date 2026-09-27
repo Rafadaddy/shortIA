@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash } from "lucide-react";
+import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash, Award } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
@@ -61,6 +61,12 @@ interface ListItem {
   image_prompt?: string;
 }
 
+interface FinalMessage {
+  title: string;
+  text: string;
+  image_prompt?: string;
+}
+
 interface InfographicData {
   title: string;
   category: string;
@@ -68,6 +74,7 @@ interface InfographicData {
   narration_script?: string;
   image_prompt?: string;
   items: ListItem[];
+  final_message?: FinalMessage;
   cta: string;
   hashtags?: string[];
   music?: string;
@@ -204,6 +211,9 @@ export default function ListasViralesPage() {
       const word = NUMBER_WORDS[i + 1] || String(i + 1);
       script += `Número ${word}: ${item.label}. ${item.text}\n\n`;
     });
+    if (data.final_message?.text) {
+      script += `Y como mensaje final: ${data.final_message.text}\n\n`;
+    }
     if (data.cta) {
       script += `${data.cta}`;
     }
@@ -233,12 +243,22 @@ export default function ListasViralesPage() {
 
   const handleCopyAll = () => {
     if (!data) return;
-    const text = `🎬 TÍTULO: ${data.title}\n` +
+    let text = `🎬 TÍTULO: ${data.title}\n` +
       `🔥 SUB-HOOK: ${data.subhook}\n\n` +
-      `🎙️ GUION PARA NARRADOR:\n${getFullScript()}\n\n` +
-      `📌 HASHTAGS:\n${getHashtagsText()}\n\n` +
+      `🎙️ GUION PARA NARRADOR:\n${getFullScript()}\n\n`;
+    
+    if (data.final_message) {
+      text += `💡 ${data.final_message.title}:\n"${data.final_message.text}"\n\n`;
+    }
+
+    text += `📌 HASHTAGS:\n${getHashtagsText()}\n\n` +
       `🎵 MÚSICA RECOMENDADA: ${data.music || 'Fondo lofi / synthwave suave'}\n\n` +
-      `--- PROMPT PORTADA ---\n${data.image_prompt || ''}`;
+      `--- PROMPT PORTADA ---\n${data.image_prompt || ''}\n\n`;
+
+    if (data.final_message?.image_prompt) {
+      text += `--- PROMPT MENSAJE FINAL ---\n${data.final_message.image_prompt}`;
+    }
+
     handleCopy(text, "all");
   };
 
@@ -248,6 +268,9 @@ export default function ListasViralesPage() {
     data.items.forEach((item) => {
       text += `--- IMAGEN PUNTO #${item.num} (${item.label}) ---\n${item.image_prompt || ""}\n\n`;
     });
+    if (data.final_message?.image_prompt) {
+      text += `--- IMAGEN MENSAJE FINAL (SLIDE DE CIERRE) ---\n${data.final_message.image_prompt}\n\n`;
+    }
     handleCopy(text, "all_prompts");
   };
 
@@ -519,6 +542,57 @@ export default function ListasViralesPage() {
                   </div>
                 ))}
               </div>
+
+              {/* SLIDE / TARJETA DE MENSAJE FINAL TRAS LOS PUNTOS */}
+              {data.final_message && (
+                <div className="mt-8 bg-gradient-to-br from-amber-950/30 via-slate-950 to-slate-900 border-2 border-amber-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">
+                          Slide de Cierre (Última Imagen)
+                        </span>
+                        <h3 className="text-base font-bold text-white">
+                          💡 {data.final_message.title}
+                        </h3>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleCopy(data.final_message!.text, "final_msg_text")}
+                      className="flex items-center gap-1.5 bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 text-xs font-bold py-1.5 px-3 rounded-xl transition-all"
+                    >
+                      {copiedStates["final_msg_text"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Mensaje</>}
+                    </button>
+                  </div>
+
+                  <p className="text-slate-200 text-sm font-medium leading-relaxed italic bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+                    &quot;{data.final_message.text}&quot;
+                  </p>
+
+                  {data.final_message.image_prompt && (
+                    <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 flex justify-between items-start gap-3">
+                      <div className="flex-1">
+                        <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider block mb-1">
+                          🖼️ Prompt Imagen para el Mensaje Final (Slide de Cierre)
+                        </span>
+                        <p className="text-xs text-slate-300 font-mono leading-relaxed select-all">
+                          {data.final_message.image_prompt}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleCopy(data.final_message!.image_prompt!, "final_msg_prompt")}
+                        className="shrink-0 bg-slate-800 text-blue-300 p-2.5 rounded-lg hover:bg-slate-700 transition-colors"
+                        title="Copiar prompt del mensaje final"
+                      >
+                        {copiedStates["final_msg_prompt"] ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {data.image_prompt && (
                 <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col items-center gap-6">

@@ -73,20 +73,25 @@ export async function POST(req: NextRequest) {
         `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH:`,
         `   - Cada punto es una tarjeta vertical separada.`,
         `   - Contiene únicamente el número ("01", "02", etc.), el Label y el Text del punto correspondiente.`,
-        `   - Tamaño de letra: Proporción armónica y estilizada, dejando mucho aire y espacio negativo (clean breathing room, elegant medium-sized typography, not overcrowded).`,
+        `   - TAMAÑO DE LOS NÚMEROS Y LETRAS UNIFORME: Todos los números ("01.", "02.", "03."...) DEBEN tener exactamente el MISMO TAMAÑO mediano, nítido y legible en todas las imágenes. NO hagas números gigantes ni minúsculos; mantén un tamaño uniforme de escala editorial suiza ("medium-large uniform number header, identical font size across all slides").`,
         `   - Fondo: Coherente con el estilo ("${visualStyle}"), si es paisaje con velo oscuro y texto en blanco brillante con contraste 100% legible.`,
-        `9. REGLA ESTRICTA DE LOCUCIÓN PARA EL NARRADOR (Campo 'narration_script'):`,
+        `9. MENSAJE FINAL DE CIERRE / REFLEXIÓN (Slide de cierre):`,
+        `   - Genera un objeto 'final_message' para una última tarjeta/imagen que cierre el video con broche de oro tras los ${count} puntos.`,
+        `   - 'title': Título inspirador o contundente (ej. "LA REGLA DE ORO", "MENSAJE FINAL", "RECUERDA ESTO").`,
+        `   - 'text': Reflexión o conclusión poderosa de 15 a 25 palabras que deje pensando al espectador y refuerce el valor de la lista.`,
+        `   - 'image_prompt': Prompt para generar esta última imagen de cierre con su fondo cinematográfico coherente y el texto del mensaje final centrado y elegante.`,
+        `10. REGLA ESTRICTA DE LOCUCIÓN PARA EL NARRADOR (Campo 'narration_script'):`,
         `   - El guion de locución debe estar redactado en PALABRAS COMPLETAS para que suene 100% natural al leerse.`,
         `   - PROHIBIDO TERMINANTEMENTE escribir números como dígitos o con cero por delante (PROHIBIDO "01", "02", "1.", "2."). Si dejas "01", la voz de IA lee literalmente "cero uno".`,
         `   - DEBES ESCRIBIRLO OBLIGATORIAMENTE CON PALABRAS: "Número uno:", "Número dos:", "Número tres:", "Número cuatro:", "Número cinco:", "Número seis:", "Número siete:", "Número ocho:", "Número nueve:", "Número diez:", "Número once:", "Número doce:".`,
-        `   - Ejemplo exacto: "Aquí tienes ${title}.\n\nNúmero uno: [Título del punto]. [Explicación concisa y natural].\n\nNúmero dos: [Título del punto]. [Explicación]..."`,
+        `   - Incluye al final la locución del MENSAJE DE CIERRE: "Y como mensaje final: [texto del mensaje final]. [Llamado a la acción]".`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
           subhook: "Frase gancho pequenya",
-          narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\n\nNúmero dos: ...`,
+          narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\n\nNúmero dos: ...\n\nY como mensaje final: ...`,
           image_prompt: `A highly aesthetic vertical cover poster about [THEME], [STYLE]. Clean cinematic background with a subtle dark gradient overlay, featuring ONLY this single title text centered in clean medium-sized white typography: '${title}'. No lists, no item numbers, no extra text, ultra-clean editorial layout.`,
           items: [
             {
@@ -94,9 +99,14 @@ export async function POST(req: NextRequest) {
               emoji: "emoji",
               label: "Titulo corto 3-6 palabras",
               text: "Descripcion practica max 15 palabras.",
-              image_prompt: "An elegant vertical slide poster... clean cinematic background with subtle dark contrast overlay, medium-sized readable typography with plenty of breathing room, containing exactly: '01. Title. Description...'"
+              image_prompt: "An elegant vertical slide poster... clean cinematic background with subtle dark contrast overlay, uniform medium-large number header '01.' (consistent typography size), readable clear white text containing exactly: '01. Title. Description...'"
             }
           ],
+          final_message: {
+            title: "MENSAJE FINAL",
+            text: "Frase de reflexion y conclusion poderosa para cerrar el video.",
+            image_prompt: "An elegant vertical closing slide poster... clean cinematic background with subtle dark contrast overlay, featuring a powerful final thought centered in clean white typography: 'MENSAJE FINAL: [Text]'. Minimalist and inspiring layout."
+          },
           cta: "Call to action especifico",
           hashtags: ["#Tag1", "#Tag2", "#Tag3", "#ListasVirales", "#ViralReels"],
           music: "Tipo de musica sugerida"
@@ -114,6 +124,15 @@ export async function POST(req: NextRequest) {
         parsed.items.forEach((item: any, i: number) => {
           item.num = String(i + 1).padStart(2, "0");
         });
+      }
+
+      // Si no generó final_message, crear uno predeterminado elegante
+      if (!parsed.final_message) {
+        parsed.final_message = {
+          title: "MENSAJE FINAL",
+          text: parsed.cta || "El cambio real no empieza cuando sabes qué hacer, sino cuando decides aplicarlo todos los días.",
+          image_prompt: `An elegant vertical closing slide poster... clean cinematic background with subtle dark contrast overlay, featuring a powerful final takeaway centered in clean white typography: 'MENSAJE FINAL: ${parsed.cta || "Aplica esto en tu vida"}'. Minimalist and inspiring layout.`
+        };
       }
 
       const NUMBER_WORDS: Record<number, string> = {
@@ -141,6 +160,9 @@ export async function POST(req: NextRequest) {
           const word = NUMBER_WORDS[i + 1] || String(i + 1);
           script += `Número ${word}: ${item.label}. ${item.text}\n\n`;
         });
+        if (parsed.final_message?.text) {
+          script += `Y como mensaje final: ${parsed.final_message.text}\n\n`;
+        }
         if (parsed.cta) {
           script += `${parsed.cta}`;
         }
