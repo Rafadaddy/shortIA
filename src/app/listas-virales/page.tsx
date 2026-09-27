@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash, Award } from "lucide-react";
+import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash, Award, RefreshCw, Wand2 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
@@ -147,21 +147,23 @@ export default function ListasViralesPage() {
     }
   };
 
-  const generateImage = async () => {
-    if (!data?.image_prompt) return;
-    setIsGeneratingImage(true);
-    setGeneratedImage(null);
+  const [generatedImages, setGeneratedImages] = useState<Record<string, string>>({});
+  const [generatingCardImages, setGeneratingCardImages] = useState<Record<string, boolean>>({});
+
+  const generateCardImage = async (prompt: string, cardKey: string) => {
+    if (!prompt) return;
+    setGeneratingCardImages(prev => ({ ...prev, [cardKey]: true }));
     try {
-      const res = await aiFetch("/api/generate-image", { prompt: data.image_prompt, aspectRatio: "9:16" });
+      const res = await aiFetch("/api/generate-image", { prompt, aspectRatio: "9:16" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error generando imagen");
-      setGeneratedImage(json.imageBase64);
-      showToast("¡Imagen generada!", "success");
+      setGeneratedImages(prev => ({ ...prev, [cardKey]: json.imageBase64 }));
+      showToast(`¡Imagen ${cardKey} generada!`, "success");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Error al generar imagen";
       showToast(msg, "error");
     } finally {
-      setIsGeneratingImage(false);
+      setGeneratingCardImages(prev => ({ ...prev, [cardKey]: false }));
     }
   };
 
@@ -490,45 +492,89 @@ export default function ListasViralesPage() {
                 <h2 className="text-xl font-bold text-white">Contenido de la Lista</h2>
               </div>
 
-              {/* Single Image Prompt para todo el poster */}
+              {/* Single Image Prompt para la Portada */}
               {data.image_prompt && (
-                <div className="mb-8 border border-blue-500/30 bg-blue-500/5 rounded-2xl p-5">
+                <div className="mb-8 border border-blue-500/30 bg-blue-500/5 rounded-2xl p-5 space-y-4">
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex-1">
                       <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2 uppercase tracking-wider mb-2">
-                        <ImageIcon className="w-4 h-4" /> Prompt para Poster de Fondo
+                        <ImageIcon className="w-4 h-4" /> Portada Principal (Slide 0)
                       </h3>
-                      <p className="text-slate-300 text-sm font-mono leading-relaxed">{data.image_prompt}</p>
-                      <p className="text-xs text-slate-500 mt-2">Copia este prompt en Midjourney/DALL-E para crear la imagen de fondo donde escribirás la lista.</p>
+                      <p className="text-slate-300 text-sm font-mono leading-relaxed select-all">{data.image_prompt}</p>
+                      <p className="text-xs text-slate-500 mt-2">Portada limpia con el título centrado. Copia en Midjourney/Ideogram o genera directamente abajo:</p>
                     </div>
-                    <button
-                      onClick={() => handleCopy(data.image_prompt!, "global_img")}
-                      className="shrink-0 bg-blue-600/20 text-blue-400 p-3 rounded-xl hover:bg-blue-600/40 transition-colors"
-                    >
-                      {copiedStates["global_img"] ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleCopy(data.image_prompt!, "global_img")}
+                        className="bg-blue-600/20 text-blue-400 p-2.5 rounded-xl hover:bg-blue-600/40 transition-colors"
+                        title="Copiar prompt portada"
+                      >
+                        {copiedStates["global_img"] ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => generateCardImage(data.image_prompt!, "cover")}
+                        disabled={generatingCardImages["cover"]}
+                        className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 px-3.5 rounded-xl transition-all shadow-md shadow-blue-600/30 disabled:opacity-50"
+                      >
+                        {generatingCardImages["cover"] ? (
+                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                        ) : (
+                          <><Wand2 className="w-3.5 h-3.5" /> Generar Portada</>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
+                  {generatedImages["cover"] && (
+                    <div className="pt-3 border-t border-blue-500/20 flex flex-col sm:flex-row items-center gap-4">
+                      <img
+                        src={`data:image/jpeg;base64,${generatedImages["cover"]}`}
+                        alt="Portada generada"
+                        className="w-36 h-auto rounded-xl border border-slate-700 shadow-xl"
+                      />
+                      <a
+                        href={`data:image/jpeg;base64,${generatedImages["cover"]}`}
+                        download={`portada_${data.title.replace(/\s+/g, "_")}.jpg`}
+                        className="py-2 px-4 rounded-xl font-bold bg-blue-600 text-white flex items-center gap-2 hover:bg-blue-500 transition-colors text-xs"
+                      >
+                        Descargar Portada
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 
               <div className="space-y-4">
                 {data.items.map((item, idx) => (
-                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">{item.emoji}</div>
-                      <div className="flex-1">
-                        <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
-                        <div className="text-slate-300 text-sm mt-1">{item.text}</div>
+                  <div key={idx} className="bg-slate-950 rounded-2xl border border-slate-800 p-5 space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">{item.emoji}</div>
+                        <div className="flex-1">
+                          <div className="text-emerald-400 font-mono text-sm font-bold">#{item.num} — {item.label}</div>
+                          <div className="text-slate-300 text-sm mt-1">{item.text}</div>
+                        </div>
                       </div>
+                      <button
+                        onClick={() => generateCardImage(item.image_prompt!, `item_${idx}`)}
+                        disabled={generatingCardImages[`item_${idx}`]}
+                        className="shrink-0 flex items-center gap-1.5 bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 text-xs font-semibold py-1.5 px-3 rounded-xl transition-all disabled:opacity-50"
+                      >
+                        {generatingCardImages[`item_${idx}`] ? (
+                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                        ) : (
+                          <><ImageIcon className="w-3.5 h-3.5" /> Generar Imagen #{item.num}</>
+                        )}
+                      </button>
                     </div>
 
                     {item.image_prompt && (
-                      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex justify-between items-start gap-3 mt-2">
+                      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex justify-between items-start gap-3">
                         <div className="flex-1">
                           <span className="text-[11px] font-bold text-blue-400 uppercase tracking-wider block mb-1">
                             Prompt Imagen Punto #{item.num}
                           </span>
-                          <p className="text-xs text-slate-400 font-mono leading-relaxed">{item.image_prompt}</p>
+                          <p className="text-xs text-slate-400 font-mono leading-relaxed select-all">{item.image_prompt}</p>
                         </div>
                         <button
                           onClick={() => handleCopy(item.image_prompt!, `item_prompt_${idx}`)}
@@ -537,6 +583,23 @@ export default function ListasViralesPage() {
                         >
                           {copiedStates[`item_prompt_${idx}`] ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         </button>
+                      </div>
+                    )}
+
+                    {generatedImages[`item_${idx}`] && (
+                      <div className="pt-2 flex flex-col sm:flex-row items-center gap-4 border-t border-slate-800/80">
+                        <img
+                          src={`data:image/jpeg;base64,${generatedImages[`item_${idx}`]}`}
+                          alt={`Punto ${item.num}`}
+                          className="w-32 h-auto rounded-xl border border-slate-700 shadow-lg"
+                        />
+                        <a
+                          href={`data:image/jpeg;base64,${generatedImages[`item_${idx}`]}`}
+                          download={`slide_${item.num}_${item.label.replace(/\s+/g, "_")}.jpg`}
+                          className="py-1.5 px-3 rounded-xl font-medium bg-emerald-700/40 text-emerald-300 border border-emerald-700/50 flex items-center gap-1.5 hover:bg-emerald-700/60 transition-colors text-xs"
+                        >
+                          Descargar Slide #{item.num}
+                        </a>
                       </div>
                     )}
                   </div>
@@ -560,12 +623,25 @@ export default function ListasViralesPage() {
                         </h3>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleCopy(data.final_message!.text, "final_msg_text")}
-                      className="flex items-center gap-1.5 bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 text-xs font-bold py-1.5 px-3 rounded-xl transition-all"
-                    >
-                      {copiedStates["final_msg_text"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Mensaje</>}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleCopy(data.final_message!.text, "final_msg_text")}
+                        className="flex items-center gap-1.5 bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 text-xs font-bold py-1.5 px-3 rounded-xl transition-all"
+                      >
+                        {copiedStates["final_msg_text"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Mensaje</>}
+                      </button>
+                      <button
+                        onClick={() => generateCardImage(data.final_message!.image_prompt!, "final")}
+                        disabled={generatingCardImages["final"]}
+                        className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold py-1.5 px-3 rounded-xl transition-all shadow-md shadow-amber-600/30 disabled:opacity-50"
+                      >
+                        {generatingCardImages["final"] ? (
+                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Creando...</>
+                        ) : (
+                          <><ImageIcon className="w-3.5 h-3.5" /> Generar Slide Final</>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-slate-200 text-sm font-medium leading-relaxed italic bg-slate-950/70 p-4 rounded-xl border border-slate-800">
@@ -591,32 +667,20 @@ export default function ListasViralesPage() {
                       </button>
                     </div>
                   )}
-                </div>
-              )}
 
-              {data.image_prompt && (
-                <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col items-center gap-6">
-                  <button
-                    onClick={generateImage}
-                    disabled={isGeneratingImage}
-                    className="w-full max-w-sm py-4 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                  >
-                    {isGeneratingImage
-                      ? <><Loader2 className="w-5 h-5 animate-spin" /> Creando imagen...</>
-                      : <><ImageIcon className="w-5 h-5" /> Generar Imagen Ahora</>}
-                  </button>
-
-                  {generatedImage && (
-                    <div className="w-full max-w-sm space-y-4">
-                      <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 flex items-center justify-center shadow-2xl">
-                        <img src={`data:image/jpeg;base64,${generatedImage}`} alt="Lista viral generada" className="w-full h-auto object-cover" />
-                      </div>
+                  {generatedImages["final"] && (
+                    <div className="pt-3 border-t border-amber-500/20 flex flex-col sm:flex-row items-center gap-4">
+                      <img
+                        src={`data:image/jpeg;base64,${generatedImages["final"]}`}
+                        alt="Slide final generado"
+                        className="w-36 h-auto rounded-xl border border-slate-700 shadow-xl"
+                      />
                       <a
-                        href={`data:image/jpeg;base64,${generatedImage}`}
-                        download="lista_viral_poster.jpg"
-                        className="w-full py-3 rounded-xl font-bold bg-emerald-700/40 text-emerald-300 border border-emerald-700/50 flex items-center justify-center gap-2 hover:bg-emerald-700/60 transition-colors text-sm"
+                        href={`data:image/jpeg;base64,${generatedImages["final"]}`}
+                        download="slide_final_mensaje.jpg"
+                        className="py-2 px-4 rounded-xl font-bold bg-amber-600 text-white flex items-center gap-2 hover:bg-amber-500 transition-colors text-xs"
                       >
-                        Descargar Poster
+                        Descargar Slide Final
                       </a>
                     </div>
                   )}

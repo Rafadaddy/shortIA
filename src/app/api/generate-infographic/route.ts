@@ -51,46 +51,32 @@ export async function POST(req: NextRequest) {
     if (action === "list") {
       const count = itemCount || 10;
       let title = selectedIdea?.title ?? `${count} Puntos Clave`;
-      // Ensure title reflects itemCount if it had a different number at start
       title = title.replace(/^\d+\s+/, `${count} `);
 
       const prompt = [
         'Eres un estratega de contenido viral para TikTok y Reels. Tu especialidad son las listas infograficas de alta retencion.',
-        `Crea el contenido completo para un video/carrusel basado en este titulo: "${title}".`,
+        `Crea el contenido textual y estructura para un video/carrusel basado en este titulo: "${title}".`,
         "",
         "REGLAS ESTRICTAS DE CANTIDAD Y CONTENIDO:",
-        `1. CANTIDAD EXACTA OBLIGATORIA: Debes generar EXACTAMENTE ${count} puntos numerados del 01 al ${String(count).padStart(2, '0')} dentro del array 'items'. No te detengas hasta completar los ${count} puntos.`,
-        "2. Los primeros 2 items deben ser los mas fuertes y de mayor valor.",
-        "3. El ultimo item debe ser el mas polemico o sorprendente.",
-        "4. El campo label debe tener de 3 a 6 palabras maximo.",
-        "5. El campo text debe ser maximo 15 palabras, concreto y practico.",
-        "6. POLÍTICA DE SEGURIDAD Y LEGALIDAD: Ningún punto debe promover actividades ilegales, fraudes, robo de información o manipulación dañina. Enfócalo en hábitos, psicología defensiva o educación financiera legal.",
-        `7. REGLA ESTRICTA DE LA PORTADA: Genera un 'image_prompt' para la PORTADA en ENGLISH para Ideogram / Midjourney v6 / DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Paisaje cinematográfico con texto limpio'}".`,
-        `   - EN LA PORTADA SOLO DEBE IR EL TÍTULO PRINCIPAL ("${title}") Y NADA MÁS.`,
-        `   - PROHIBIDO TERMINANTEMENTE colocar los 10 puntos, listas, números o párrafos dentro de la portada. Es EXCLUSIVAMENTE una portada tipo revista o portada de video con el título centrado y limpio.`,
-        `   - Si el estilo es de paisaje (bosque, atardecer, mar, montaña): describe una fotografía cinematográfica con niebla suave, atardecer o naturaleza, con un velo oscuro o viñeta sutil (dim dark gradient overlay) para que la tipografía blanca nítida resalte con contraste perfecto y máxima legibilidad.`,
-        `   - Tipografía: Proporciones equilibradas, medianas y elegantes (editorial aesthetic, Swiss style typography), NUNCA tipografías deformadas o saturadas.`,
-        `8. Para CADA UNO DE LOS ${count} PUNTOS de la lista, genera su propio 'image_prompt' INDIVIDUAL en ENGLISH:`,
-        `   - Cada punto es una tarjeta vertical separada.`,
-        `   - Contiene únicamente el número ("01", "02", etc.), el Label y el Text del punto correspondiente.`,
-        `   - TAMAÑO DE LOS NÚMEROS Y LETRAS UNIFORME: Todos los números ("01.", "02.", "03."...) DEBEN tener exactamente el MISMO TAMAÑO mediano, nítido y legible en todas las imágenes. NO hagas números gigantes ni minúsculos; mantén un tamaño uniforme de escala editorial suiza ("medium-large uniform number header, identical font size across all slides").`,
-        `   - Fondo: Coherente con el estilo ("${visualStyle}"), si es paisaje con velo oscuro y texto en blanco brillante con contraste 100% legible.`,
-        `9. MENSAJE FINAL DE CIERRE / REFLEXIÓN (Slide de cierre):`,
-        `   - Genera un objeto 'final_message' para una última tarjeta/imagen que cierre el video con broche de oro tras los ${count} puntos.`,
-        `   - 'title': Título inspirador o contundente (ej. "LA REGLA DE ORO", "MENSAJE FINAL", "RECUERDA ESTO").`,
-        `   - 'text': Reflexión o conclusión poderosa de 15 a 25 palabras que deje pensando al espectador y refuerce el valor de la lista.`,
-        `   - 'image_prompt': Prompt para generar esta última imagen de cierre con su fondo cinematográfico coherente y el texto del mensaje final centrado y elegante.`,
-        `10. REGLA ESTRICTA DE LOCUCIÓN PARA EL NARRADOR (Campo 'narration_script'):`,
-        `   - El guion de locución debe estar redactado en PALABRAS COMPLETAS para que suene 100% natural al leerse.`,
-        `   - PROHIBIDO TERMINANTEMENTE escribir números como dígitos o con cero por delante (PROHIBIDO "01", "02", "1.", "2."). Si dejas "01", la voz de IA lee literalmente "cero uno".`,
-        `   - DEBES ESCRIBIRLO OBLIGATORIAMENTE CON PALABRAS: "Número uno:", "Número dos:", "Número tres:", "Número cuatro:", "Número cinco:", "Número seis:", "Número siete:", "Número ocho:", "Número nueve:", "Número diez:", "Número once:", "Número doce:".`,
-        `   - Incluye al final la locución del MENSAJE DE CIERRE: "Y como mensaje final: [texto del mensaje final]. [Llamado a la acción]".`,
+        `1. CANTIDAD EXACTA OBLIGATORIA: Debes generar EXACTAMENTE ${count} puntos en el array 'items' numerados del 01 al ${String(count).padStart(2, '0')}. Genera TODOS sin saltarte ninguno.`,
+        "2. Los primeros 2 items deben ser los mas fuertes y de mayor impacto.",
+        "3. El ultimo item debe ser el mas sorprendente.",
+        "4. El campo 'label' debe tener entre 3 y 6 palabras.",
+        "5. El campo 'text' debe tener maximo 15 palabras, directo y accionable.",
+        "6. POLÍTICA DE SEGURIDAD Y LEGALIDAD: Ningún punto debe promover delitos, hackeo o estafas. Enfócalo en hábitos, psicología defensiva o educación legal.",
+        `7. PORTADA: Genera 'image_prompt' para la PORTADA en ENGLISH para Ideogram / Midjourney / DALL-E. Formato: ${format || 'Vertical (9:16)'}. Estilo: "${visualStyle || 'Paisaje cinematográfico con texto limpio'}".`,
+        `   - EN LA PORTADA SOLO DEBE IR EL TÍTULO PRINCIPAL ("${title}") Y NADA MÁS. PROHIBIDO poner la lista en la portada.`,
+        `8. MENSAJE FINAL DE CIERRE:`,
+        `   - Objeto 'final_message': { "title": "MENSAJE FINAL", "text": "Frase de reflexion poderosa de 15 a 25 palabras" }`,
+        `9. LOCUCIÓN PARA EL NARRADOR (Campo 'narration_script'):`,
+        `   - Escribe en palabras completas: "Número uno:", "Número dos:", "Número tres:", etc. NUNCA números con cero ni dígitos.`,
+        `   - Incluye al final: "Y como mensaje final: [texto del mensaje final]. [Llamado a la acción]".`,
         "",
         `Responde SOLO con JSON valido. El array 'items' DEBE tener exactamente ${count} objetos:`,
         JSON.stringify({
           title,
           category: "CATEGORIA EN MAYUSCULAS",
-          subhook: "Frase gancho pequenya",
+          subhook: "Frase gancho pequena",
           narration_script: `Aquí tienes ${title}.\n\nNúmero uno: ...\n\nNúmero dos: ...\n\nY como mensaje final: ...`,
           image_prompt: `A highly aesthetic vertical cover poster about [THEME], [STYLE]. Clean cinematic background with a subtle dark gradient overlay, featuring ONLY this single title text centered in clean medium-sized white typography: '${title}'. No lists, no item numbers, no extra text, ultra-clean editorial layout.`,
           items: [
@@ -98,14 +84,12 @@ export async function POST(req: NextRequest) {
               num: "01",
               emoji: "emoji",
               label: "Titulo corto 3-6 palabras",
-              text: "Descripcion practica max 15 palabras.",
-              image_prompt: "An elegant vertical slide poster... clean cinematic background with subtle dark contrast overlay, uniform medium-large number header '01.' (consistent typography size), readable clear white text containing exactly: '01. Title. Description...'"
+              text: "Descripcion practica max 15 palabras."
             }
           ],
           final_message: {
             title: "MENSAJE FINAL",
-            text: "Frase de reflexion y conclusion poderosa para cerrar el video.",
-            image_prompt: "An elegant vertical closing slide poster... clean cinematic background with subtle dark contrast overlay, featuring a powerful final thought centered in clean white typography: 'MENSAJE FINAL: [Text]'. Minimalist and inspiring layout."
+            text: "Frase de reflexion y conclusion poderosa para cerrar el video."
           },
           cta: "Call to action especifico",
           hashtags: ["#Tag1", "#Tag2", "#Tag3", "#ListasVirales", "#ViralReels"],
@@ -117,22 +101,60 @@ export async function POST(req: NextRequest) {
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       const parsed = JSON.parse(cleanJson);
       parsed.title = title;
-      if (Array.isArray(parsed.items)) {
-        if (parsed.items.length > count) {
-          parsed.items = parsed.items.slice(0, count);
+
+      if (!Array.isArray(parsed.items) || parsed.items.length === 0) {
+        parsed.items = [];
+        for (let i = 1; i <= count; i++) {
+          parsed.items.push({
+            num: String(i).padStart(2, "0"),
+            emoji: "💡",
+            label: `Punto Clave ${i}`,
+            text: `Consejo práctico número ${i} para aplicar inmediatamente.`
+          });
         }
-        parsed.items.forEach((item: any, i: number) => {
-          item.num = String(i + 1).padStart(2, "0");
-        });
       }
+
+      // Si vinieron menos items de los solicitados por corte de tokens, rellenar hasta count
+      if (parsed.items.length < count) {
+        const start = parsed.items.length + 1;
+        for (let i = start; i <= count; i++) {
+          parsed.items.push({
+            num: String(i).padStart(2, "0"),
+            emoji: "✨",
+            label: `Regla ${i}`,
+            text: `Enfoque fundamental número ${i} para dominar este tema.`
+          });
+        }
+      } else if (parsed.items.length > count) {
+        parsed.items = parsed.items.slice(0, count);
+      }
+
+      // Función generadora de prompts de alta fidelidad con formato uniforme garantizado
+      const buildItemPrompt = (num: string, label: string, text: string) => {
+        return `An elegant vertical slide poster (aspect ratio 9:16), ${visualStyle || "cinematic nature landscape with soft mist and warm ambient light"}. A subtle dark gradient vignette overlay ensures 100% crystal-clear readability. At the upper third, a medium-large uniform number header '${num}.' in identical font size across all slides. Below the number header, clean modern white Swiss typography displays: '${label}'. Underneath, concise subtitle text: '${text}'. Minimalist, crisp, viral social media carousel slide, 8k resolution, no clutter.`;
+      };
+
+      parsed.items.forEach((item: any, i: number) => {
+        item.num = String(i + 1).padStart(2, "0");
+        if (!item.image_prompt) {
+          item.image_prompt = buildItemPrompt(item.num, item.label, item.text);
+        }
+      });
 
       // Si no generó final_message, crear uno predeterminado elegante
       if (!parsed.final_message) {
         parsed.final_message = {
           title: "MENSAJE FINAL",
-          text: parsed.cta || "El cambio real no empieza cuando sabes qué hacer, sino cuando decides aplicarlo todos los días.",
-          image_prompt: `An elegant vertical closing slide poster... clean cinematic background with subtle dark contrast overlay, featuring a powerful final takeaway centered in clean white typography: 'MENSAJE FINAL: ${parsed.cta || "Aplica esto en tu vida"}'. Minimalist and inspiring layout.`
+          text: parsed.cta || "El cambio real no empieza cuando sabes qué hacer, sino cuando decides aplicarlo todos los días."
         };
+      }
+
+      if (!parsed.final_message.image_prompt) {
+        parsed.final_message.image_prompt = `An elegant vertical closing slide poster (aspect ratio 9:16), ${visualStyle || "cinematic nature landscape with soft mist and golden light"}. Subtle dark contrast vignette overlay. Centered in clean, premium white typography: 'MENSAJE FINAL: ${parsed.final_message.text}'. Minimalist, aesthetic, inspirational outro slide, 8k resolution.`;
+      }
+
+      if (!parsed.image_prompt) {
+        parsed.image_prompt = `A highly aesthetic vertical cover poster (aspect ratio 9:16), ${visualStyle || "cinematic landscape with soft ambient light"}. Clean background with subtle dark contrast overlay, featuring ONLY this single title text centered in clean medium-sized white typography: '${title}'. No lists, no item numbers, no extra text, ultra-clean editorial layout, 8k resolution.`;
       }
 
       const NUMBER_WORDS: Record<number, string> = {
@@ -168,13 +190,10 @@ export async function POST(req: NextRequest) {
         }
         parsed.narration_script = script.trim();
       } else if (parsed.narration_script) {
-        // Sanitizar el texto para que NUNCA diga "01", "02", "Punto 01", etc.
         let sanitized = parsed.narration_script;
-        // Reemplazar patrones como "01.", "01:", "01 -", "Punto 01", "Punto 1", "Punto número 1" por "Número uno:"
         Object.entries(NUMBER_WORDS).forEach(([numStr, word]) => {
           const n = Number(numStr);
           const pad = String(n).padStart(2, "0");
-          // Reemplaza "Punto número 01:", "Punto 01:", "Número 01:", "01.", "01:"
           const regexList = [
             new RegExp(`(?:Punto\\s+n[uú]mero|Punto|N[uú]mero)\\s+(?:${pad}|${n})\\s*[:\\.-]?`, "gi"),
             new RegExp(`\\b${pad}\\s*[:\\.-]\\s*`, "gi"),
@@ -187,6 +206,26 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(parsed);
+    }
+
+    // Acción para regenerar / personalizar el prompt de un item individual o en bloque
+    if (action === "single_prompt") {
+      const { item, title, finalMessage } = body;
+      const buildItemPrompt = (num: string, label: string, text: string) => {
+        return `An elegant vertical slide poster (aspect ratio 9:16), ${visualStyle || "cinematic nature landscape with soft mist and warm ambient light"}. A subtle dark gradient vignette overlay ensures 100% crystal-clear readability. At the upper third, a medium-large uniform number header '${num}.' in identical font size across all slides. Below the number header, clean modern white Swiss typography displays: '${label}'. Underneath, concise subtitle text: '${text}'. Minimalist, crisp, viral social media carousel slide, 8k resolution, no clutter.`;
+      };
+
+      if (finalMessage) {
+        const prompt = `An elegant vertical closing slide poster (aspect ratio 9:16), ${visualStyle || "cinematic nature landscape with soft mist and golden light"}. Subtle dark contrast vignette overlay. Centered in clean, premium white typography: 'MENSAJE FINAL: ${finalMessage.text}'. Minimalist, aesthetic, inspirational outro slide, 8k resolution.`;
+        return NextResponse.json({ image_prompt: prompt });
+      }
+
+      if (item) {
+        const prompt = buildItemPrompt(item.num, item.label, item.text);
+        return NextResponse.json({ image_prompt: prompt });
+      }
+
+      return NextResponse.json({ error: "Faltan datos del item" }, { status: 400 });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
