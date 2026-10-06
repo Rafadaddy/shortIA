@@ -51,6 +51,7 @@ interface ReflectionResult {
   highlight_word: string;
   metaphor_description: string;
   image_prompt: string;
+  image_prompt_clean?: string;
   script_narration: string;
   soundtrack: string;
   hashtags: string[];
@@ -61,6 +62,8 @@ export default function ReflexionesIlustradasPage() {
   const [tone, setTone] = useState(TONES[0]);
   const [customTopic, setCustomTopic] = useState("");
   const [watermark, setWatermark] = useState("Chispas de Inspiración ♡");
+  const [promptMode, setPromptMode] = useState<"with_text" | "clean">("with_text");
+  const [showScript, setShowScript] = useState<boolean>(true);
 
   // Estados de generación
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
@@ -134,13 +137,14 @@ export default function ReflexionesIlustradasPage() {
   };
 
   // 3. Generar la imagen con IA directamente
-  const generateImage = async () => {
-    if (!result?.image_prompt) return;
+  const generateImage = async (customP?: string) => {
+    const activePrompt = customP || (promptMode === "clean" ? (result?.image_prompt_clean || result?.image_prompt) : result?.image_prompt);
+    if (!activePrompt) return;
     setIsGeneratingImage(true);
     setGeneratedImage(null);
     try {
       const res = await aiFetch("/api/generate-image", {
-        prompt: result.image_prompt,
+        prompt: activePrompt,
         aspectRatio: "9:16"
       });
       const data = await res.json();
@@ -381,38 +385,90 @@ export default function ReflexionesIlustradasPage() {
                 </p>
               </div>
 
-              {/* Prompt de Imagen Maestro (En Inglés para Midjourney / Ideogram / App) */}
-              <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
-                    <ImageIcon className="w-4 h-4" /> Prompt de Imagen Maestro (Ideogram / Midjourney / DALL-E)
+              {/* Selector de Modo: Con Frase Integrada vs Limpio sin Texto */}
+              <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-blue-400" /> Formato del Prompt de Imagen
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Elige si quieres que la IA escriba la frase directamente en la imagen o la cree limpia para editar en Canva/CapCut.
+                    </p>
                   </div>
+
+                  {/* Switch con o sin frase */}
+                  <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    <button
+                      onClick={() => setPromptMode("with_text")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        promptMode === "with_text"
+                          ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      ✨ Con Frase Integrada
+                    </button>
+                    <button
+                      onClick={() => setPromptMode("clean")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        promptMode === "clean"
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      🖼️ Limpia (Sin Texto)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-300">
+                    {promptMode === "with_text" ? "Prompt con Frase en la Imagen (Ideogram / Midjourney v6):" : "Prompt Limpio sin Letras (Espacio libre arriba):"}
+                  </span>
                   <button
-                    onClick={() => handleCopy(result.image_prompt, "prompt_block")}
-                    className="text-xs text-blue-300 hover:text-white flex items-center gap-1 transition-colors"
+                    onClick={() => handleCopy(
+                      promptMode === "with_text" ? result.image_prompt : (result.image_prompt_clean || result.image_prompt),
+                      "active_prompt"
+                    )}
+                    className="text-xs text-blue-300 hover:text-white flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 transition-colors"
                   >
-                    {copiedStates["prompt_block"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Prompt
+                    {copiedStates["active_prompt"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Prompt {promptMode === "with_text" ? "con Frase" : "Limpio"}
                   </button>
                 </div>
-                <div className="bg-slate-900/90 rounded-xl p-4 text-xs font-mono text-slate-300 leading-relaxed select-all border border-slate-800">
-                  {result.image_prompt}
+
+                <div className="bg-slate-900/90 rounded-xl p-4 text-xs font-mono text-slate-300 leading-relaxed select-all border border-slate-800 max-h-48 overflow-y-auto">
+                  {promptMode === "with_text" ? result.image_prompt : (result.image_prompt_clean || result.image_prompt)}
                 </div>
-                <p className="text-[11px] text-slate-500">
-                  * Diseñado con espacio negativo en la parte superior para colocar el texto, y consistencia del personaje blanco con mejillas sonrosadas y estilo de libro infantil tierno.
-                </p>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 pt-1">
+                  <span>
+                    {promptMode === "with_text" 
+                      ? "💡 Ideal para Ideogram o DALL-E: Imprime la frase bonita en el tercio superior."
+                      : "💡 Ideal para Canva, CapCut o Photoshop: Te da la imagen sin letras para poner tu propia tipografía."}
+                  </span>
+                  {result.image_prompt_clean && (
+                    <button
+                      onClick={() => handleCopy(result.image_prompt_clean!, "clean_copy")}
+                      className="text-emerald-400 hover:underline"
+                    >
+                      {copiedStates["clean_copy"] ? "¡Copiado limpio!" : "Copiar versión limpia directa"}
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Generador de Imagen Directo con Botón */}
               <div className="border border-slate-800 rounded-2xl p-6 bg-slate-950/60 flex flex-col items-center gap-4">
                 <button
-                  onClick={generateImage}
+                  onClick={() => generateImage()}
                   disabled={isGeneratingImage}
-                  className="w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                  className="w-full sm:w-auto min-w-[280px] flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
                 >
                   {isGeneratingImage ? (
                     <><Loader2 className="w-5 h-5 animate-spin" /> Generando Ilustración con IA...</>
                   ) : (
-                    <><ImageIcon className="w-5 h-5" /> Generar Ilustración Ahora (9:16)</>
+                    <><ImageIcon className="w-5 h-5" /> Generar Ilustración Ahora ({promptMode === "with_text" ? "Con Frase" : "Limpia"})</>
                   )}
                 </button>
 
@@ -436,26 +492,44 @@ export default function ReflexionesIlustradasPage() {
                 )}
               </div>
 
-              {/* Guion de Locución para TikTok / Shorts */}
+              {/* Guion de Locución para TikTok / Shorts (Plegable / Opcional) */}
               <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                    <Mic className="w-4 h-4" /> Guion de Locución para Video Corto (20-30 seg)
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-emerald-400" />
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                      Guion de Locución para Video Corto (20-30 seg)
+                    </h3>
                   </div>
-                  <button
-                    onClick={() => handleCopy(result.script_narration, "script_block")}
-                    className="text-xs text-emerald-300 hover:text-white flex items-center gap-1 transition-colors"
-                  >
-                    {copiedStates["script_block"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Guion
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowScript(!showScript)}
+                      className="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-900 border border-slate-800"
+                    >
+                      {showScript ? "Ocultar Guion" : "Mostrar Guion"}
+                    </button>
+                    {showScript && (
+                      <button
+                        onClick={() => handleCopy(result.script_narration, "script_block")}
+                        className="text-xs text-emerald-300 hover:text-white flex items-center gap-1 transition-colors"
+                      >
+                        {copiedStates["script_block"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Guion
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="bg-slate-900/90 rounded-xl p-4 text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap select-all border border-slate-800">
-                  {result.script_narration}
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
-                  <span><Music className="w-3.5 h-3.5 inline mr-1 text-amber-400" /><strong>Música recomendada:</strong> {result.soundtrack}</span>
-                  <span><strong>Hashtags:</strong> {result.hashtags.join(" ")}</span>
-                </div>
+
+                {showScript && (
+                  <>
+                    <div className="bg-slate-900/90 rounded-xl p-4 text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap select-all border border-slate-800">
+                      {result.script_narration}
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
+                      <span><Music className="w-3.5 h-3.5 inline mr-1 text-amber-400" /><strong>Música recomendada:</strong> {result.soundtrack}</span>
+                      <span><strong>Hashtags:</strong> {result.hashtags.join(" ")}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
             </div>
