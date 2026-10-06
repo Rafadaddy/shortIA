@@ -929,35 +929,42 @@ export default function ReflexionesIlustradasPage() {
                 <h2 className="text-lg font-bold text-white">Configura el Reel Multiescena (Historia en Secuencia)</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                    Cantidad de Escenas
-                  </label>
-                  <div className="flex bg-slate-950 border border-slate-800 rounded-xl p-1">
-                    <button
-                      onClick={() => setSceneCount(3)}
-                      className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${sceneCount === 3 ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
-                    >
-                      3 Escenas (Rápido)
-                    </button>
-                    <button
-                      onClick={() => setSceneCount(4)}
-                      className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${sceneCount === 4 ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
-                    >
-                      4 Escenas (Completo)
-                    </button>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div className="lg:col-span-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                      Cantidad de Escenas
+                    </label>
+                    <span className="text-xs font-bold text-blue-400 bg-blue-950/60 border border-blue-500/30 px-2.5 py-0.5 rounded-full">
+                      {sceneCount} prompts & imágenes
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-6 gap-1.5 bg-slate-950/80 border border-slate-800 rounded-xl p-1.5">
+                    {[3, 4, 5, 6, 7, 8].map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => setSceneCount(num)}
+                        className={`py-2 px-1 text-xs font-bold rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 ${
+                          sceneCount === num
+                            ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/30"
+                            : "text-slate-400 hover:text-white hover:bg-slate-900"
+                        }`}
+                      >
+                        <span className="text-sm font-black">{num}</span>
+                        <span className="text-[9px] opacity-80">esc</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div>
+                <div className="lg:col-span-3">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                     Tono del Reel
                   </label>
                   <select
                     value={tone}
                     onChange={e => setTone(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-blue-500"
                   >
                     {TONES.map(t => (
                       <option key={t} value={t}>{t}</option>
@@ -965,7 +972,7 @@ export default function ReflexionesIlustradasPage() {
                   </select>
                 </div>
 
-                <div>
+                <div className="lg:col-span-4">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                     Tema o Viaje Emocional (Opcional)
                   </label>
@@ -973,8 +980,8 @@ export default function ReflexionesIlustradasPage() {
                     type="text"
                     value={customTopic}
                     onChange={e => setCustomTopic(e.target.value)}
-                    placeholder="Ej. Dejar de autoexigirse, sanar..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                    placeholder="Ej. Dejar de sobrepensar..."
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -987,7 +994,7 @@ export default function ReflexionesIlustradasPage() {
                 {isGeneratingMultiScene ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {sceneCount} escenas...</>
                 ) : (
-                  <><PlaySquare className="w-4 h-4" /> Generar Reel de {sceneCount} Escenas Consecutivas</>
+                  <><PlaySquare className="w-4 h-4" /> Generar Reel de {sceneCount} Escenas Consecutivas ({sceneCount} Prompts)</>
                 )}
               </button>
             </div>
@@ -1000,7 +1007,7 @@ export default function ReflexionesIlustradasPage() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
                       <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block mb-1">
-                        🎬 Historia en Secuencia ({multiSceneResult.scenes.length} Escenas)
+                        🎬 Historia en Secuencia ({multiSceneResult.scenes.length} Escenas Generadas)
                       </span>
                       <h2 className="text-xl font-bold text-white">{multiSceneResult.title}</h2>
                     </div>
@@ -1015,7 +1022,7 @@ export default function ReflexionesIlustradasPage() {
                   </div>
 
                   {/* Grid de Escenas Consecutivas */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {multiSceneResult.scenes.map((scene) => (
                       <div key={scene.scene_number} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
                         <div className="space-y-3">

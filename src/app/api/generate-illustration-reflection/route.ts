@@ -154,70 +154,81 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(JSON.parse(cleanJson));
     }
 
-    // Acción para generar REEL MULTIESCENA / HISTORIA DE 3-4 ESCENAS CONSECUTIVAS
+    // Acción para generar REEL MULTIESCENA / HISTORIA DE 3 A 8 ESCENAS CONSECUTIVAS
     if (action === "multiscene") {
-      const { sceneCount = 3 } = body;
+      const requestedCount = Math.min(Math.max(Number(body.sceneCount) || 3, 3), 8);
       const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
       const prompt = [
         "Eres un director de cortometrajes virales y animaciones conmovedoras para TikTok, Instagram Reels y YouTube Shorts.",
-        `Crea una historia visual secuencial de exactamente ${sceneCount} escenas con el personaje blanco tierno minimalista (blob).`,
+        `Crea el contenido narrativo para una historia visual secuencial de EXACTAMENTE ${requestedCount} escenas consecutivas con el personaje blanco tierno minimalista (blob).`,
         `Categoría: "${category || 'Superar la Ansiedad y Encontrar Paz'}".`,
         customTopic ? `Tema específico: "${customTopic}".` : "",
         `Tono: "${tone || 'Esperanzador y Cálido'}".`,
         `Semilla: ${seed}.`,
         "",
         "REQUISITOS DE LA HISTORIA MULTIESCENA:",
-        "1. Estructura narrativa de transformación emocional:",
-        "   - Escena 1 (Inicio / Dolor o Pregunta): El personaje enfrentando una carga, duda o soledad.",
-        "   - Escena 2 (El Detalle / Giro): Un hallazgo, un descanso, soltar algo o una pequeña luz.",
-        sceneCount >= 4 ? "   - Escena 3 (Transformación): El proceso de sanar, respirar o levantarse." : "",
-        `   - Escena ${sceneCount} (Cierre / Victoria Emocional): Paz mental, sonrisa serena y conclusión poderosa.`,
-        "2. Para CADA ESCENA genera:",
-        "   - 'scene_number': Número de escena.",
-        "   - 'slide_text': Frase corta que va arriba de la imagen (máximo 8-10 palabras).",
-        "   - 'narration_snippet': Frase de locución que dice la voz en off en esa escena.",
-        "   - 'image_prompt': Prompt maestro con 'SAME CHARACTER LOCKED' manteniendo al personaje idéntico pero cambiando solo su acción/entorno.",
-        "   - 'image_prompt_clean': Versión limpia sin texto de la escena.",
-        "3. 'full_script': El guion completo continuo para leerlo en el video.",
-        "4. 'soundtrack': Música cinematográfica suave.",
-        "5. 'hashtags': 5 hashtags virales.",
+        `1. El array 'scenes' DEBE contener EXACTAMENTE ${requestedCount} objetos ordenados cronológicamente del 1 al ${requestedCount}:`,
+        "   - 'scene_number': Número entero de escena (1, 2, ...).",
+        "   - 'slide_text': Frase corta que va en la imagen (máximo 8 palabras).",
+        "   - 'narration_snippet': Frase que dice la voz en off en esta escena (10-15 palabras).",
+        "   - 'action_description': Descripción breve en inglés de qué hace el personaje y en qué lugar está (ej: 'walking with heavy backpack on a misty road', 'sitting on a hill looking at a flower', 'smiling facing the golden sunset').",
+        "2. 'full_script': El guion de locución completo y fluido.",
+        "3. 'soundtrack': Música cinematográfica recomendada.",
+        "4. 'hashtags': 5 hashtags virales.",
         "",
-        "Responde SOLO con JSON válido:",
+        `Responde SOLO con JSON válido con exactamente ${requestedCount} escenas en 'scenes':`,
         JSON.stringify({
           title: "Aprender a soltar para volver a respirar",
           scenes: [
             {
               scene_number: 1,
               slide_text: "Hay días donde la mente pesa más que el cuerpo.",
-              narration_snippet: "Nos enseñaron que resistir es de fuertes, pero nadie nos dijo que sostener tanto desgasta el alma.",
-              image_prompt: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, sad gentle expression, rosy pink round cheeks, sticker style, wholesome, walking slowly carrying an oversized heavy grey backpack, shoulders down, background is soft photorealistic misty foggy road during cloudy dawn, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, very legible, Text: \"Hay días donde la mente pesa más que el cuerpo.\", in solid black #000000, high contrast against sky.",
-              image_prompt_clean: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, sad gentle expression, rosy pink round cheeks, sticker style, wholesome, walking slowly carrying an oversized heavy grey backpack, shoulders down, background is soft photorealistic misty foggy road during cloudy dawn, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters."
-            },
-            {
-              scene_number: 2,
-              slide_text: "Hasta que entiendes que está bien soltar.",
-              narration_snippet: "Y hoy decides dejar en el camino lo que no te corresponde cargar.",
-              image_prompt: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle peaceful smile, rosy pink round cheeks, sticker style, wholesome, sitting down on a grassy hill having unstrapped the heavy backpack, resting hands peacefully on knees, background is soft photorealistic sun breaking through clouds over golden meadow, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, very legible, Text: \"Hasta que entiendes que está bien soltar.\", in solid black #000000 with warm terracotta #8B3A3A accent.",
-              image_prompt_clean: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle peaceful smile, rosy pink round cheeks, sticker style, wholesome, sitting down on a grassy hill having unstrapped the heavy backpack, resting hands peacefully on knees, background is soft photorealistic sun breaking through clouds over golden meadow, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters."
-            },
-            {
-              scene_number: 3,
-              slide_text: "Respira. Tu paz vale más que cualquier peso.",
-              narration_snippet: "No perdiste nada... hoy por fin te recuperas a ti. Descansa. ♡",
-              image_prompt: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, happy radiant smile, rosy pink round cheeks, sticker style, wholesome, standing with tiny open arms facing a glorious warm golden sunset, breeze blowing softly, background is soft photorealistic stunning golden hour horizon with wildflowers and warm glow, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, very legible, Text: \"Respira. Tu paz vale más que cualquier peso. ♡\", in solid black #000000 with warm pastel peach #F5C48E accent.",
-              image_prompt_clean: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, happy radiant smile, rosy pink round cheeks, sticker style, wholesome, standing with tiny open arms facing a glorious warm golden sunset, breeze blowing softly, background is soft photorealistic stunning golden hour horizon with wildflowers and warm glow, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters."
+              narration_snippet: "Nos enseñaron que resistir siempre es de valientes, pero sostener tanto desgasta el alma.",
+              action_description: "walking slowly carrying an oversized heavy grey backpack, shoulders down, misty road at dawn"
             }
           ],
-          full_script: "Hay días donde la mente pesa más que el cuerpo.\n\nNos enseñaron que resistir siempre es de valientes, pero nadie nos dijo que sostener tanto desgasta el alma.\n\nHasta que entiendes que soltar no es perder. Respira... hoy tu paz vale más que cualquier peso. Mañana será otro día. ♡",
-          soundtrack: "Melodía melancólica de piano que se vuelve esperanzadora hacia el final",
+          full_script: "Hay días donde la mente pesa más que el cuerpo...\n\nHasta que entiendes que soltar no es perder. Respira... hoy tu paz vale más que cualquier peso. Mañana será otro día. ♡",
+          soundtrack: "Melodía melancólica de piano que se vuelve esperanzadora",
           hashtags: ["#ReelsDeSuperación", "#Soltar", "#AmorPropio", "#PazMental", "#ComicsVirales"]
         }, null, 2)
       ].filter(Boolean).join("\n");
 
-      const response = await chatCompletion(body, prompt, { temperature: 0.85 });
+      const response = await chatCompletion(body, prompt, { temperature: 0.8 });
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
-      return NextResponse.json(JSON.parse(cleanJson));
+      const parsed = JSON.parse(cleanJson);
+
+      if (!Array.isArray(parsed.scenes) || parsed.scenes.length === 0) {
+        parsed.scenes = [];
+      }
+
+      // Garantizar que siempre existan exactamente requestedCount escenas
+      while (parsed.scenes.length < requestedCount) {
+        const nextNum = parsed.scenes.length + 1;
+        parsed.scenes.push({
+          scene_number: nextNum,
+          slide_text: nextNum === requestedCount ? "Respira. Tu paz vale más que todo." : `Paso ${nextNum}: Encuentra tu calma interior.`,
+          narration_snippet: nextNum === requestedCount ? "Hoy decides abrazar tu paz y volver a empezar con amor." : "Avanza un paso a la vez, sin prisas y cuidando de ti.",
+          action_description: nextNum === requestedCount ? "standing with tiny open arms facing warm golden sunset, smiling peacefully" : "sitting quietly on a grass meadow looking at a bright glowing flower"
+        });
+      }
+
+      if (parsed.scenes.length > requestedCount) {
+        parsed.scenes = parsed.scenes.slice(0, requestedCount);
+      }
+
+      // Sintetizar con precisión matemática el prompt SAME CHARACTER LOCKED para cada escena
+      parsed.scenes.forEach((sc: any, idx: number) => {
+        sc.scene_number = idx + 1;
+        const actionDesc = sc.action_description || "peacefully walking through a serene natural landscape";
+        const text = sc.slide_text || "Respira profundo y confía.";
+
+        sc.image_prompt = `SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle smile, rosy pink round cheeks, sticker style, wholesome, ${actionDesc}, background is soft photorealistic warm scenic landscape with cinematic lighting, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, very legible, Text: "${text}", in solid black #000000 with warm terracotta #8B3A3A accent, high contrast against sky.`;
+        
+        sc.image_prompt_clean = `SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle smile, rosy pink round cheeks, sticker style, wholesome, ${actionDesc}, background is soft photorealistic warm scenic landscape with cinematic lighting, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters, no text, no typography.`;
+      });
+
+      return NextResponse.json(parsed);
     }
 
     return NextResponse.json({ error: "Acción no válida" }, { status: 400 });
