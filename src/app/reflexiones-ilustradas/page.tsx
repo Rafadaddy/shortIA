@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { 
   HeartHandshake, 
   Sparkles, 
@@ -17,7 +17,8 @@ import {
   Feather, 
   Compass, 
   Download,
-  Share2
+  Share2,
+  ArrowDown
 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
@@ -72,6 +73,7 @@ export default function ReflexionesIlustradasPage() {
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<ReflectionResult | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -112,11 +114,12 @@ export default function ReflexionesIlustradasPage() {
     }
   };
 
-  // 2. Crear la reflexión completa (Prompt + Metáfora + Guion)
+  // 2. Crear la reflexión completa (Prompt + Metáfora + Guion) con auto-scroll
   const createReflection = async (customQuote?: string) => {
     setIsGenerating(true);
     setResult(null);
     setGeneratedImage(null);
+    showToast("Creando reflexión, prompt y guion...");
     try {
       const res = await aiFetch("/api/generate-illustration-reflection", {
         action: "create",
@@ -128,7 +131,10 @@ export default function ReflexionesIlustradasPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al redactar");
       setResult(data);
-      showToast("¡Reflexión y metáfora visual creadas!", "success");
+      showToast("¡Reflexión creada con éxito!", "success");
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
     } catch (e: any) {
       showToast(e.message || "Error al generar reflexión", "error");
     } finally {
@@ -296,42 +302,77 @@ export default function ReflexionesIlustradasPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {ideas.map((item, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    setSelectedIdea(item);
-                    createReflection(item.quote);
-                  }}
-                  className={`cursor-pointer p-5 rounded-2xl border transition-all text-left space-y-2.5 ${
-                    selectedIdea?.quote === item.quote
-                      ? "bg-pink-500/10 border-pink-500 shadow-lg shadow-pink-500/10"
-                      : "bg-slate-950/80 border-slate-800 hover:border-pink-500/50"
-                  }`}
-                >
-                  <div className="text-xs font-bold text-pink-400 uppercase tracking-wider">
-                    Idea #{idx + 1}
+              {ideas.map((item, idx) => {
+                const isThisSelectedAndLoading = isGenerating && selectedIdea?.quote === item.quote;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      if (isGenerating) return;
+                      setSelectedIdea(item);
+                      createReflection(item.quote);
+                    }}
+                    className={`cursor-pointer p-5 rounded-2xl border transition-all text-left space-y-2.5 relative overflow-hidden ${
+                      selectedIdea?.quote === item.quote
+                        ? "bg-pink-500/10 border-pink-500 shadow-lg shadow-pink-500/20 ring-2 ring-pink-500/30"
+                        : "bg-slate-950/80 border-slate-800 hover:border-pink-500/50"
+                    } ${isGenerating && selectedIdea?.quote !== item.quote ? "opacity-50 pointer-events-none" : ""}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-pink-400 uppercase tracking-wider">
+                        Idea #{idx + 1}
+                      </div>
+                      {isThisSelectedAndLoading && (
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-pink-400 bg-pink-500/20 px-2.5 py-1 rounded-full animate-pulse">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Redactando...
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="font-bold text-base text-white leading-snug">
+                      &quot;{item.quote}&quot;
+                    </h3>
+
+                    <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800/80 text-xs text-slate-300">
+                      <span className="font-bold text-amber-400 block mb-0.5">🎨 Metáfora en la Imagen:</span>
+                      {item.visual_metaphor}
+                    </div>
+
+                    <div className="pt-1 flex items-center justify-between text-xs text-slate-400">
+                      <span>Resaltar: <strong className="text-pink-300">{item.highlight}</strong></span>
+                      <span className={`font-semibold flex items-center gap-1 ${isThisSelectedAndLoading ? "text-pink-300" : "text-pink-400 group-hover:underline"}`}>
+                        {isThisSelectedAndLoading ? (
+                          <><Loader2 className="w-3 h-3 animate-spin" /> Creando prompt y guion...</>
+                        ) : (
+                          <>Elegir y Generar →</>
+                        )}
+                      </span>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-base text-white leading-snug">
-                    &quot;{item.quote}&quot;
-                  </h3>
-                  <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800/80 text-xs text-slate-300">
-                    <span className="font-bold text-amber-400 block mb-0.5">🎨 Metáfora en la Imagen:</span>
-                    {item.visual_metaphor}
-                  </div>
-                  <div className="pt-1 flex items-center justify-between text-xs text-slate-400">
-                    <span>Resaltar: <strong className="text-pink-300">{item.highlight}</strong></span>
-                    <span className="text-pink-400 font-semibold group-hover:underline">Elegir y Generar →</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+          </div>
+        )}
+
+        {/* INDICADOR DE CARGA VISIBLE GRANDE MIENTRAS CREA */}
+        {isGenerating && (
+          <div className="bg-gradient-to-r from-pink-950/40 via-slate-900 to-indigo-950/40 border border-pink-500/40 rounded-3xl p-8 text-center space-y-3 animate-pulse shadow-2xl">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-400">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+            <h3 className="text-lg font-bold text-white">
+              Creando tu Reflexión Ilustrada...
+            </h3>
+            <p className="text-sm text-slate-300 max-w-md mx-auto">
+              Diseñando el prompt con el personaje blanco bloqueado, enmarcado elegante con contraste y guion de locución.
+            </p>
           </div>
         )}
 
         {/* PASO 3: RESULTADO FINAL (FRASE, METÁFORA, PROMPT, GUION Y GENERADOR DE IMAGEN) */}
         {result && (
-          <div className="space-y-6">
+          <div ref={resultRef} className="space-y-6 scroll-mt-24">
             <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
               
               {/* Encabezado y Copiar Todo */}
