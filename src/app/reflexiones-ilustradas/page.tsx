@@ -815,7 +815,7 @@ export default function ReflexionesIlustradasPage() {
                       </span>
                       <h2 className="text-xl font-bold text-white">{dialogueResult.title}</h2>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         onClick={() => handleCopy(dialogueResult.dialogue_text, "dial_text")}
                         className="flex items-center gap-1.5 bg-amber-600/20 text-amber-300 border border-amber-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-amber-600/30 transition-all"
@@ -823,10 +823,22 @@ export default function ReflexionesIlustradasPage() {
                         {copiedStates["dial_text"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Diálogo</>}
                       </button>
                       <button
+                        onClick={() => handleCopy(dialogueResult.script_narration, "dial_script")}
+                        className="flex items-center gap-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-emerald-600/30 transition-all"
+                      >
+                        {copiedStates["dial_script"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Mic className="w-3.5 h-3.5" /> Copiar Guion</>}
+                      </button>
+                      <button
                         onClick={() => handleCopy(dialogueResult.image_prompt, "dial_prompt")}
                         className="flex items-center gap-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-blue-600/30 transition-all"
                       >
                         {copiedStates["dial_prompt"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Prompt</>}
+                      </button>
+                      <button
+                        onClick={() => handleCopy(dialogueResult.hashtags.join(" "), "dial_tags")}
+                        className="flex items-center gap-1.5 bg-purple-600/20 text-purple-300 border border-purple-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-purple-600/30 transition-all"
+                      >
+                        {copiedStates["dial_tags"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Hash className="w-3.5 h-3.5" /> Copiar Hashtags</>}
                       </button>
                     </div>
                   </div>
@@ -875,6 +887,39 @@ export default function ReflexionesIlustradasPage() {
                     </div>
                     <div className="bg-slate-900/90 rounded-xl p-4 text-xs font-mono text-slate-300 leading-relaxed select-all border border-slate-800 max-h-48 overflow-y-auto">
                       {dialogueResult.image_prompt}
+                    </div>
+                  </div>
+
+                  {/* Guion y Audio sugerido para el Diálogo */}
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-emerald-400" />
+                        <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                          Guion de Locución / Actuación de Voces
+                        </h3>
+                      </div>
+                      <button
+                        onClick={() => handleCopy(dialogueResult.script_narration, "dial_script_footer")}
+                        className="text-xs text-emerald-300 hover:text-white flex items-center gap-1 transition-colors"
+                      >
+                        {copiedStates["dial_script_footer"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Guion
+                      </button>
+                    </div>
+                    <div className="bg-slate-900/90 rounded-xl p-4 text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap select-all border border-slate-800">
+                      {dialogueResult.script_narration}
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
+                      <span><Music className="w-3.5 h-3.5 inline mr-1 text-amber-400" /><strong>Música sugerida:</strong> {dialogueResult.soundtrack}</span>
+                      <div className="flex items-center gap-2">
+                        <span><strong>Hashtags:</strong> {dialogueResult.hashtags.join(" ")}</span>
+                        <button
+                          onClick={() => handleCopy(dialogueResult.hashtags.join(" "), "dial_tags_footer")}
+                          className="text-[11px] text-purple-300 hover:text-white flex items-center gap-1 ml-1"
+                        >
+                          {copiedStates["dial_tags_footer"] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copiar
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -1011,12 +1056,27 @@ export default function ReflexionesIlustradasPage() {
                       </span>
                       <h2 className="text-xl font-bold text-white">{multiSceneResult.title}</h2>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         onClick={() => handleCopy(multiSceneResult.full_script, "multi_script")}
                         className="flex items-center gap-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-emerald-600/30 transition-all"
                       >
-                        {copiedStates["multi_script"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Mic className="w-3.5 h-3.5" /> Copiar Guion Completo</>}
+                        {copiedStates["multi_script"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Mic className="w-3.5 h-3.5" /> Copiar Guion</>}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const allPrompts = multiSceneResult.scenes.map(s => `--- ESCENA #${s.scene_number} ---\n${s.image_prompt}`).join("\n\n");
+                          handleCopy(allPrompts, "all_scene_prompts");
+                        }}
+                        className="flex items-center gap-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-blue-600/30 transition-all"
+                      >
+                        {copiedStates["all_scene_prompts"] ? <><Check className="w-3.5 h-3.5" /> Copiados</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Todos los Prompts</>}
+                      </button>
+                      <button
+                        onClick={() => handleCopy(multiSceneResult.hashtags.join(" "), "multi_tags")}
+                        className="flex items-center gap-1.5 bg-purple-600/20 text-purple-300 border border-purple-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-purple-600/30 transition-all"
+                      >
+                        {copiedStates["multi_tags"] ? <><Check className="w-3.5 h-3.5" /> Copiados</> : <><Hash className="w-3.5 h-3.5" /> Copiar Hashtags</>}
                       </button>
                     </div>
                   </div>
@@ -1106,7 +1166,15 @@ export default function ReflexionesIlustradasPage() {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
                       <span><Music className="w-3.5 h-3.5 inline mr-1 text-amber-400" /><strong>Música sugerida:</strong> {multiSceneResult.soundtrack}</span>
-                      <span><strong>Hashtags:</strong> {multiSceneResult.hashtags.join(" ")}</span>
+                      <div className="flex items-center gap-2">
+                        <span><strong>Hashtags:</strong> {multiSceneResult.hashtags.join(" ")}</span>
+                        <button
+                          onClick={() => handleCopy(multiSceneResult.hashtags.join(" "), "multi_tags_footer")}
+                          className="text-[11px] text-purple-300 hover:text-white flex items-center gap-1 ml-1"
+                        >
+                          {copiedStates["multi_tags_footer"] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copiar
+                        </button>
+                      </div>
                     </div>
                   </div>
 
