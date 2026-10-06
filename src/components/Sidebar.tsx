@@ -14,7 +14,8 @@ import {
   Flame,
   Swords,
   Baby,
-  FolderArchive
+  FolderArchive,
+  HeartHandshake
 } from "lucide-react";
 
 export function Sidebar() {
@@ -37,6 +38,10 @@ export function Sidebar() {
           <Link href="/reflexiones" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <BookOpen className="w-5 h-5 text-indigo-400" />
             Textos de Reflexión
+          </Link>
+          <Link href="/reflexiones-ilustradas" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors bg-pink-500/10 border border-pink-500/30">
+            <HeartHandshake className="w-5 h-5 text-pink-400" />
+            Reflexiones Ilustradas
           </Link>
           <Link href="/ilustraciones" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <ImageIcon className="w-5 h-5 text-pink-400" />
@@ -118,6 +123,10 @@ export function Sidebar() {
         <Link href="/reflexiones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-indigo-400 active:text-indigo-400 min-w-[4rem] flex-shrink-0">
           <BookOpen className="w-5 h-5" />
           <span className="text-[10px] font-medium">Textos</span>
+        </Link>
+        <Link href="/reflexiones-ilustradas" className="flex flex-col items-center gap-1 p-2 text-pink-400 hover:text-pink-300 active:text-pink-300 min-w-[4rem] flex-shrink-0">
+          <HeartHandshake className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Ilustradas</span>
         </Link>
         <Link href="/ilustraciones" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-pink-400 active:text-pink-400 min-w-[4rem] flex-shrink-0">
           <ImageIcon className="w-5 h-5" />
