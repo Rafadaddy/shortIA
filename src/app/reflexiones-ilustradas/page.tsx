@@ -1232,8 +1232,9 @@ export default function ReflexionesIlustradasPage() {
                           )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                </div>
 
                   {/* Guion completo */}
                   <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
