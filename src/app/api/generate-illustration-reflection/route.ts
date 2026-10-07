@@ -109,49 +109,112 @@ export async function POST(req: NextRequest) {
     // Acción para generar DIÁLOGO / CHAT ENTRE 2 PERSONAJES BLOB
     if (action === "dialogue") {
       const { dialogueDynamic } = body;
+      const sceneCountRequested = Math.min(Math.max(Number(body.dialogueCount) || 3, 2), 6);
       const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
       const prompt = [
-        "Eres un director creativo y guionista especializado en diálogos conmovedores y tiernos entre dos personajes minimalistas estilo 'blob' (monigotes masita blanca con mejillas rosadas).",
+        "Eres un director creativo y guionista especializado en cómics y viñetas de diálogo secuencial entre dos personajes tiernos minimalistas blancos (SAME CHARACTER LOCKED: two cute minimalist white blob characters).",
         `Dinámica del diálogo: "${dialogueDynamic || 'Amigos incondicionales apoyándose'}".`,
         customTopic ? `Tema o dilema específico: "${customTopic}".` : "",
         `Tono: "${tone || 'Conmovedor y Tierno'}".`,
+        `Número exacto de viñetas/imágenes consecutivas: ${sceneCountRequested}.`,
         `Semilla única: ${seed}.`,
         "",
-        "REQUISITOS DEL DIÁLOGO (Alta retención para Reels / TikTok / Carrusel):",
-        "1. Estructura de 3 a 4 réplicas emotivas de ida y vuelta entre 'Personaje A' y 'Personaje B'.",
-        "2. El diálogo debe ser natural, profundo y tierno, tocando temas como la autoexigencia, el cansancio, el amor sincero o superar el miedo.",
-        "3. 'dialogue_text': El diálogo completo formateado línea por línea.",
-        "4. 'image_prompt': Prompt maestro en inglés con los DOS PERSONAJES BLANCOS interactuando tiernamente con la tipografía y el diálogo integrado arriba.",
-        "   - ESTRUCTURA EXACTA:",
-        "     'SAME CHARACTER LOCKED: two cute minimalist white blob characters, bald, no hair, no clothes, no human skin, smooth white bodies, thick bold black outlines, flat simple colors, no shading, 5 to 8 years old child proportions, big round heads, short chubby limbs, tiny closed eyes as simple black curved lines, small smiles, rosy pink round cheeks, sticker style, wholesome, [ACCIÓN DE INTERACCIÓN ENTRE AMBOS PERSONAJES], background is soft photorealistic [FONDO CÁLIDO FOTORREALISTA], 2D flat characters over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, soft organic uneven baseline, very legible, bold weight, dialogue lines with speaker labels in warm terracotta #8B3A3A and dialogue text in crisp black #000000, high contrast against background, serene emotional atmosphere.'",
-        "5. 'image_prompt_clean': Prompt idéntico sin texto para quienes prefieren colocar los bocadillos de diálogo manualmente en Canva o CapCut.",
-        "6. 'script_narration': Guion de locución con voces o narrador para TikTok/Reels.",
-        "7. 'soundtrack': Música recomendada.",
-        "8. 'hashtags': 5 hashtags virales.",
+        "OBJETIVO: Crear una CONVERSACIÓN SECUENCIAL TIPO CÓMIC/CARRUSEL (como en los webcomics virales de parejas y amigos):",
+        "Cada viñeta/escena es una imagen individual consecutiva donde ambos personajes están presentes, pero el bocadillo de diálogo (speech bubble) muestra lo que se dicen en cada turno de la conversación, con poses y expresiones consistentes pero vivas.",
+        "",
+        "ESTRUCTURA DE RESPUESTA EN JSON:",
+        "1. 'title': Título emotivo y llamativo.",
+        "2. 'scenes': Array con exactamente " + sceneCountRequested + " escenas/viñetas consecutivas.",
+        "   Cada escena debe contener:",
+        "   - 'turn_number': Número del turno (1, 2, 3...)",
+        "   - 'speaker': Quién habla en esta viñeta (Ej: 'Personaje Izquierdo' o 'Personaje Derecho', o nombres tiernos como 'Él' / 'Ella', 'Mente' / 'Corazón')",
+        "   - 'speech_text': El texto exacto de lo que dice en este turno (máximo 2 a 3 líneas claras y conmovedoras).",
+        "   - 'listener_reaction': Lo que responde o cómo reacciona el otro personaje en silencio o gestos.",
+        "   - 'characters_pose_action': Descripción en inglés de las poses y expresiones de ambos personajes en esta viñeta (Ej: 'left white blob character looking up with gentle curious smile, right white blob character sitting close with a warm tender gaze resting a hand on its heart').",
+        "3. 'dialogue_text': Todo el diálogo continuo transcripto línea por línea.",
+        "4. 'script_narration': Guion de locución o actuación de voces por si se usa en video/Reels.",
+        "5. 'soundtrack': Música suave recomendada.",
+        "6. 'hashtags': 5 hashtags virales.",
         "",
         "Responde SOLO con JSON válido:",
         JSON.stringify({
-          title: "A veces no tienes que resolver todo hoy",
-          dialogue_lines: [
-            { speaker: "Personaje A", text: "¿Y si nunca es suficiente lo que hago?" },
-            { speaker: "Personaje B", text: "Para mí, que existas ya es suficiente." },
-            { speaker: "Personaje A", text: "¿De verdad?" },
-            { speaker: "Personaje B", text: "De verdad. Las flores no compiten por florecer primero; solo esperan su primavera." }
+          title: "Promesas que se dicen sin hablar",
+          scenes: [
+            {
+              turn_number: 1,
+              speaker: "Personaje Izquierdo",
+              speech_text: "¿Podemos simplemente quedarnos aquí y hablar?",
+              listener_reaction: "Sonríe aliviado y asiente con ternura",
+              characters_pose_action: "two white blob characters sitting together on a soft fluffy cloud against a serene golden sunset, left character looking sideways with tiny closed curved eyes asking softly, right character turning head towards it listening attentively with rosy blushing cheeks"
+            },
+            {
+              turn_number: 2,
+              speaker: "Personaje Derecho",
+              speech_text: "Esperaba que tú fueras quien dijera eso de verdad.",
+              listener_reaction: "Sus mejillas brillan de emoción y felicidad",
+              characters_pose_action: "two white blob characters sitting very close, right character gently leaning in with a wholesome smile, left character blushing happily with hands resting on its chubby lap"
+            },
+            {
+              turn_number: 3,
+              speaker: "Personaje Izquierdo",
+              speech_text: "¿Qué fue lo más importante para ti hoy?",
+              listener_reaction: "La mira a los ojos con profunda paz",
+              characters_pose_action: "left white blob character looking with sweet sparkling curved eyes, right character holding a tiny glowing star between its small hands"
+            },
+            {
+              turn_number: 4,
+              speaker: "Personaje Derecho",
+              speech_text: "Elegir quedarme a tu lado. Y empezar el resto de nuestros días juntos. ♡",
+              listener_reaction: "Ambos se abrazan con ternura infinita",
+              characters_pose_action: "two cute white blob characters warmly embracing each other on the clouds, eyes closed in complete peaceful bliss, tiny pink blushing cheeks"
+            }
           ],
-          dialogue_text: "— ¿Y si nunca es suficiente lo que hago?\n— Para mí, que existas ya es suficiente.\n— ¿De verdad?\n— De verdad. Las flores no compiten por florecer; solo esperan su primavera. ♡",
-          metaphor_description: "Dos personajes blancos sentados juntos al atardecer en una banca de madera; uno cabizbajo y el otro apoyando con ternura su manita sobre su hombro con una sonrisa calmada.",
-          image_prompt: "SAME CHARACTER LOCKED: two cute minimalist white blob characters, bald, no hair, no clothes, no human skin, smooth white bodies, thick bold black outlines, flat simple colors, no shading, 5 to 8 years old child proportions, big round heads, short chubby limbs, tiny closed eyes as simple black curved lines, small smiles, rosy pink round cheeks, sticker style, wholesome, sitting together on a rustic wooden bench during golden hour, left character looking down softly pensive while right character gently places a tiny hand on its shoulder with a loving warm smile, background is soft photorealistic tranquil garden at sunset with golden bokeh and wildflowers, 2D flat characters over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, soft organic uneven baseline, very legible, bold weight, dialogue reading: \"— ¿Y si nunca es suficiente?\\n— Para mí, que existas ya es suficiente. ♡\" in crisp black #000000 with warm terracotta #8B3A3A accent, serene emotional atmosphere.",
-          image_prompt_clean: "SAME CHARACTER LOCKED: two cute minimalist white blob characters, bald, no hair, no clothes, no human skin, smooth white bodies, thick bold black outlines, flat simple colors, no shading, 5 to 8 years old child proportions, big round heads, short chubby limbs, tiny closed eyes as simple black curved lines, small smiles, rosy pink round cheeks, sticker style, wholesome, sitting together on a rustic wooden bench during golden hour, left character looking down softly pensive while right character gently places a tiny hand on its shoulder with a loving warm smile, background is soft photorealistic tranquil garden at sunset with golden bokeh and wildflowers, 2D flat characters over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters, no text, no typography.",
-          script_narration: "A veces la persona que más dudas tiene de ti, eres tú mismo...\n\nCuando sientas que vas tarde o que nada alcanza, recuerda que no tienes que demostrarle nada a nadie para merecer paz.\n\nQuédate con quien te recuerde tu valor en tus días más nublados. ♡",
-          soundtrack: "Piano acústico lofi cálido con brisa suave de fondo",
-          hashtags: ["#AmorPropio", "#AmistadSincera", "#PazMental", "#ReflexionesEnPareja", "#ComicsTiernos"]
+          dialogue_text: "— ¿Podemos simplemente quedarnos aquí y hablar?\n— Esperaba que tú fueras quien dijera eso de verdad.\n— ¿Qué fue lo más importante para ti hoy?\n— Elegir quedarme a tu lado. Y empezar el resto de nuestros días juntos. ♡",
+          script_narration: "A veces no necesitas grandes planes...\nSolo la persona correcta y una conversación sincera al caer la tarde. Quédate con quien haga de tu silencio un lugar seguro. ♡",
+          soundtrack: "Melodía de piano acústico suave y reconfortante",
+          hashtags: ["#ComicsDePareja", "#AmorSano", "#ConversacionesReales", "#BlobsTiernos", "#Webcomics"]
         }, null, 2)
       ].filter(Boolean).join("\n");
 
-      const response = await chatCompletion(body, prompt, { temperature: 0.85 });
+      const response = await chatCompletion(body, prompt, { temperature: 0.82 });
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
-      return NextResponse.json(JSON.parse(cleanJson));
+      const parsed = JSON.parse(cleanJson);
+
+      if (!Array.isArray(parsed.scenes) || parsed.scenes.length === 0) {
+        parsed.scenes = [];
+      }
+
+      // Asegurar que siempre existan las escenas solicitadas
+      while (parsed.scenes.length < sceneCountRequested) {
+        const nextIdx = parsed.scenes.length + 1;
+        parsed.scenes.push({
+          turn_number: nextIdx,
+          speaker: nextIdx % 2 === 1 ? "Personaje A" : "Personaje B",
+          speech_text: nextIdx === sceneCountRequested ? "Aquí estoy, y no me voy a ir. ♡" : "Dime qué sientes, te escucho.",
+          listener_reaction: "Sonríe en calma",
+          characters_pose_action: "two white blob characters sitting closely side by side on a serene background, sharing a peaceful tender moment"
+        });
+      }
+
+      if (parsed.scenes.length > sceneCountRequested) {
+        parsed.scenes = parsed.scenes.slice(0, sceneCountRequested);
+      }
+
+      // Sintetizar prompts individuales para cada viñeta consecutiva con BOCADILLO DE DIÁLOGO (Speech Bubble)
+      parsed.scenes.forEach((sc: any, idx: number) => {
+        sc.turn_number = idx + 1;
+        const poseAction = sc.characters_pose_action || "two cute white blob characters sitting together warmly on a scenic bench";
+        const bubbleText = sc.speech_text || "Te quiero mucho.";
+
+        // Prompt con bocadillo de cómic (estilo viñeta / webcomic como en la referencia de los novios)
+        sc.image_prompt = `SAME CHARACTER LOCKED: two cute minimalist white blob characters, bald, no hair, no clothes, no human skin, smooth white dough bodies, thick bold black outlines, flat simple colors, no shading, 5 to 8 years old child proportions, big round heads, short chubby limbs, tiny closed eyes as simple black curved lines, small smiles, rosy pink round cheeks, sticker webcomic style, wholesome, ${poseAction}, background is soft photorealistic warm cozy room or serene scenic landscape, 2D flat comic characters over photorealistic background, vertical 9:16, Comic Speech Bubble LOCKED: a clean prominent hand-drawn white speech bubble with bold black outline pointing to ${sc.speaker || 'the speaking character'} at top, inside the speech bubble clearly reads handwritten casual bold rounded marker font text: "${bubbleText}", high contrast, adorable comic panel.`;
+
+        // Prompt limpio sin bocadillo (para video/Reel doblado con voz o edición externa)
+        sc.image_prompt_clean = `SAME CHARACTER LOCKED: two cute minimalist white blob characters, bald, no hair, no clothes, no human skin, smooth white dough bodies, thick bold black outlines, flat simple colors, no shading, 5 to 8 years old child proportions, big round heads, short chubby limbs, tiny closed eyes as simple black curved lines, small smiles, rosy pink round cheeks, sticker style, wholesome, ${poseAction}, background is soft photorealistic warm cozy room or serene scenic landscape, 2D flat comic characters over photorealistic background, vertical 9:16, empty space top third, clean background, no letters, no text, no speech bubbles, no typography.`;
+      });
+
+      return NextResponse.json(parsed);
     }
 
     // Acción para generar REEL MULTIESCENA / HISTORIA DE 3 A 8 ESCENAS CONSECUTIVAS

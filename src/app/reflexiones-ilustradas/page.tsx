@@ -76,12 +76,23 @@ interface ReflectionResult {
   hashtags: string[];
 }
 
+interface DialogueSceneItem {
+  turn_number: number;
+  speaker: string;
+  speech_text: string;
+  listener_reaction: string;
+  characters_pose_action: string;
+  image_prompt: string;
+  image_prompt_clean?: string;
+}
+
 interface DialogueResult {
   title: string;
-  dialogue_lines: Array<{ speaker: string; text: string }>;
+  scenes: DialogueSceneItem[];
+  dialogue_lines?: Array<{ speaker: string; text: string }>;
   dialogue_text: string;
-  metaphor_description: string;
-  image_prompt: string;
+  metaphor_description?: string;
+  image_prompt?: string;
   image_prompt_clean?: string;
   script_narration: string;
   soundtrack: string;
@@ -127,6 +138,9 @@ export default function ReflexionesIlustradasPage() {
   // Estados MODO 2: Diálogo
   const [isGeneratingDialogue, setIsGeneratingDialogue] = useState(false);
   const [dialogueResult, setDialogueResult] = useState<DialogueResult | null>(null);
+  const [dialogueCount, setDialogueCount] = useState<number>(3);
+  const [dialogueImages, setDialogueImages] = useState<Record<number, string>>({});
+  const [generatingDialogueIdx, setGeneratingDialogueIdx] = useState<number | null>(null);
 
   // Estados MODO 3: Multiescena
   const [isGeneratingMultiScene, setIsGeneratingMultiScene] = useState(false);
@@ -203,24 +217,26 @@ export default function ReflexionesIlustradasPage() {
     }
   };
 
-  // 3. MODO DIÁLOGO: Crear diálogo de 2 personajes
+  // 3. MODO DIÁLOGO: Crear diálogo de 2 personajes (secuencia de viñetas con bocadillos de diálogo)
   const createDialogue = async () => {
     setIsGeneratingDialogue(true);
     setDialogueResult(null);
+    setDialogueImages({});
     setGeneratedImage(null);
-    showToast("Creando diálogo entre personajes...");
+    showToast("Creando viñetas de diálogo consecutivas...");
     try {
       const res = await aiFetch("/api/generate-illustration-reflection", {
         action: "dialogue",
         dialogueDynamic,
         customTopic,
         tone,
+        dialogueCount,
         watermarkText: watermark
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al redactar diálogo");
       setDialogueResult(data);
-      showToast("¡Diálogo y escena creados!", "success");
+      showToast("¡Diálogo secuencial creado con éxito!", "success");
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 150);
@@ -228,6 +244,26 @@ export default function ReflexionesIlustradasPage() {
       showToast(e.message || "Error al crear diálogo", "error");
     } finally {
       setIsGeneratingDialogue(false);
+    }
+  };
+
+  // Generador de imagen individual para una viñeta del diálogo
+  const generateDialogueImage = async (prompt: string, turnNum: number) => {
+    if (!prompt) return;
+    setGeneratingDialogueIdx(turnNum);
+    try {
+      const res = await aiFetch("/api/generate-image", {
+        prompt,
+        aspectRatio: "9:16"
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error generando viñeta");
+      setDialogueImages(prev => ({ ...prev, [turnNum]: data.imageBase64 }));
+      showToast(`¡Viñeta #${turnNum} generada!`, "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al generar imagen de la viñeta", "error");
+    } finally {
+      setGeneratingDialogueIdx(null);
     }
   };
 
@@ -760,15 +796,42 @@ export default function ReflexionesIlustradasPage() {
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                <div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div className="lg:col-span-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                      Viñetas / Turnos de Diálogo
+                    </label>
+                    <span className="text-xs font-bold text-amber-400 bg-amber-950/60 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                      {dialogueCount} viñetas consecutivas
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-5 gap-1.5 bg-slate-950/80 border border-slate-800 rounded-xl p-1.5">
+                    {[2, 3, 4, 5, 6].map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => setDialogueCount(num)}
+                        className={`py-2 px-1 text-xs font-bold rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 ${
+                          dialogueCount === num
+                            ? "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30"
+                            : "text-slate-400 hover:text-white hover:bg-slate-900"
+                        }`}
+                      >
+                        <span className="text-sm font-black">{num}</span>
+                        <span className="text-[9px] opacity-80">fotos</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="lg:col-span-4">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                     Tono de la Conversación
                   </label>
                   <select
                     value={tone}
                     onChange={e => setTone(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-amber-500"
                   >
                     {TONES.map(t => (
                       <option key={t} value={t}>{t}</option>
@@ -776,7 +839,7 @@ export default function ReflexionesIlustradasPage() {
                   </select>
                 </div>
 
-                <div>
+                <div className="lg:col-span-4">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
                     Tema o Dilema Específico (Opcional)
                   </label>
@@ -784,8 +847,8 @@ export default function ReflexionesIlustradasPage() {
                     type="text"
                     value={customTopic}
                     onChange={e => setCustomTopic(e.target.value)}
-                    placeholder="Ej. Sentir que no encajas, miedo al futuro..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                    placeholder="Ej. Quedarse a hablar, promesas de pareja..."
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -796,9 +859,9 @@ export default function ReflexionesIlustradasPage() {
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-lg shadow-amber-600/20 disabled:opacity-50"
               >
                 {isGeneratingDialogue ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo diálogo y escena...</>
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {dialogueCount} viñetas...</>
                 ) : (
-                  <><MessageSquareQuote className="w-4 h-4" /> Generar Diálogo Ilustrado de 2 Personajes</>
+                  <><MessageSquareQuote className="w-4 h-4" /> Generar Secuencia de {dialogueCount} Viñetas de Diálogo (Estilo Cómic)</>
                 )}
               </button>
             </div>
@@ -811,7 +874,7 @@ export default function ReflexionesIlustradasPage() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
                       <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-1">
-                        💬 Conversación Tierna Ilustrada
+                        💬 Conversación Secuencial en Cómic ({dialogueResult.scenes?.length || 0} Viñetas)
                       </span>
                       <h2 className="text-xl font-bold text-white">{dialogueResult.title}</h2>
                     </div>
@@ -823,16 +886,22 @@ export default function ReflexionesIlustradasPage() {
                         {copiedStates["dial_text"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Diálogo</>}
                       </button>
                       <button
+                        onClick={() => {
+                          const allDialoguePrompts = dialogueResult.scenes?.map(s => {
+                            const p = promptMode === "clean" ? (s.image_prompt_clean || s.image_prompt) : s.image_prompt;
+                            return `--- VIÑETA #${s.turn_number} (${s.speaker.toUpperCase()} - ${promptMode === "clean" ? "LIMPIO SIN TEXTO" : "CON BOCADILLO DE DIÁLOGO"}) ---\n${p}`;
+                          }).join("\n\n") || "";
+                          handleCopy(allDialoguePrompts, "all_dial_prompts");
+                        }}
+                        className="flex items-center gap-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-blue-600/30 transition-all"
+                      >
+                        {copiedStates["all_dial_prompts"] ? <><Check className="w-3.5 h-3.5" /> Copiados</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Todos los Prompts</>}
+                      </button>
+                      <button
                         onClick={() => handleCopy(dialogueResult.script_narration, "dial_script")}
                         className="flex items-center gap-1.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-emerald-600/30 transition-all"
                       >
                         {copiedStates["dial_script"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><Mic className="w-3.5 h-3.5" /> Copiar Guion</>}
-                      </button>
-                      <button
-                        onClick={() => handleCopy(dialogueResult.image_prompt, "dial_prompt")}
-                        className="flex items-center gap-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-blue-600/30 transition-all"
-                      >
-                        {copiedStates["dial_prompt"] ? <><Check className="w-3.5 h-3.5" /> Copiado</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Prompt</>}
                       </button>
                       <button
                         onClick={() => handleCopy(dialogueResult.hashtags.join(" "), "dial_tags")}
@@ -843,99 +912,123 @@ export default function ReflexionesIlustradasPage() {
                     </div>
                   </div>
 
-                  {/* Líneas de chat visual */}
-                  <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                      Líneas del Diálogo
-                    </span>
-                    <div className="space-y-2.5">
-                      {dialogueResult.dialogue_lines.map((dl, idx) => (
-                        <div key={idx} className={`flex items-start gap-3 p-3 rounded-xl ${idx % 2 === 0 ? "bg-slate-900/80 border border-slate-800" : "bg-amber-950/20 border border-amber-500/20"}`}>
-                          <span className="text-xs font-bold text-amber-400 shrink-0 mt-0.5">
-                            {dl.speaker}:
-                          </span>
-                          <span className="text-sm text-slate-200 font-medium">
-                            &quot;{dl.text}&quot;
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Metáfora Visual de la escena */}
-                  <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
-                      <Layers className="w-4 h-4" /> Interacción Visual de Ambos Personajes
-                    </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      {dialogueResult.metaphor_description}
-                    </p>
-                  </div>
-
-                  {/* Switch con o sin texto integrado en Diálogo */}
-                  <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                      <div>
-                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                          <ImageIcon className="w-4 h-4 text-blue-400" /> Formato del Prompt de Imagen
-                        </h3>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {promptMode === "clean" 
-                            ? "✨ Ideal para reels con guion narrado: Imagen limpia y cinematográfica sin textos." 
-                            : "Incluye el texto del diálogo renderizado directamente en la imagen."}
-                        </p>
+                  {/* Selector de modo de prompt: Bocadillo de Diálogo vs Limpio sin texto */}
+                  <div className="bg-slate-950/80 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-amber-400" />
+                        Estilo de Viñetas para el Diálogo
                       </div>
-
-                      <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
-                        <button
-                          onClick={() => setPromptMode("clean")}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            promptMode === "clean"
-                              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          🖼️ Limpia (Sin Texto / Para Guion)
-                        </button>
-                        <button
-                          onClick={() => setPromptMode("with_text")}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            promptMode === "with_text"
-                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          💬 Con Texto Integrado
-                        </button>
-                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {promptMode === "with_text"
+                          ? "💬 Estilo Cómic/Webcomic: Cada imagen incluye su bocadillo de diálogo (speech bubble) integrado con la frase de ese turno."
+                          : "🖼️ Limpio sin bocadillos: Perfecto para videos con voces dobladas en CapCut o TikTok."}
+                      </p>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-blue-300">
-                        {promptMode === "clean" ? "Prompt Limpio sin Letras (Perfecto para narración):" : "Prompt con Diálogo Integrado:"}
-                      </span>
+                    <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
                       <button
-                        onClick={() => handleCopy(
-                          promptMode === "clean" ? (dialogueResult.image_prompt_clean || dialogueResult.image_prompt) : dialogueResult.image_prompt,
-                          "dial_prompt_code"
-                        )}
-                        className="text-xs text-blue-300 hover:text-white flex items-center gap-1 transition-colors"
+                        onClick={() => setPromptMode("with_text")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          promptMode === "with_text"
+                            ? "bg-amber-600 text-white shadow-md shadow-amber-600/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
                       >
-                        {copiedStates["dial_prompt_code"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Prompt {promptMode === "clean" ? "Limpio" : "con Texto"}
+                        💬 Con Bocadillo (Estilo Cómic)
+                      </button>
+                      <button
+                        onClick={() => setPromptMode("clean")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          promptMode === "clean"
+                            ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        🖼️ Limpia (Sin Bocadillo)
                       </button>
                     </div>
-                    <div className="bg-slate-900/90 rounded-xl p-4 text-xs font-mono text-slate-300 leading-relaxed select-all border border-slate-800 max-h-48 overflow-y-auto">
-                      {promptMode === "clean" ? (dialogueResult.image_prompt_clean || dialogueResult.image_prompt) : dialogueResult.image_prompt}
-                    </div>
                   </div>
 
-                  {/* Guion y Audio sugerido para el Diálogo */}
+                  {/* Grid de Viñetas Consecutivas de la Conversación */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {dialogueResult.scenes?.map((scene) => {
+                      const activeDialoguePrompt = promptMode === "clean" ? (scene.image_prompt_clean || scene.image_prompt) : scene.image_prompt;
+
+                      return (
+                        <div key={scene.turn_number} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                Viñeta #{scene.turn_number} · <span className="text-white font-medium">{scene.speaker}</span>
+                              </span>
+                              <button
+                                onClick={() => handleCopy(activeDialoguePrompt, `dial_scene_prompt_${scene.turn_number}`)}
+                                className="text-[11px] text-amber-300 hover:text-white flex items-center gap-1"
+                              >
+                                {copiedStates[`dial_scene_prompt_${scene.turn_number}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Prompt
+                              </button>
+                            </div>
+
+                            {/* Bocadillo de Diálogo en UI */}
+                            <div className="relative bg-slate-900 border border-amber-500/30 rounded-2xl p-3.5 space-y-1 shadow-md">
+                              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                                💬 Lo que dice en esta imagen:
+                              </span>
+                              <p className="text-sm font-bold text-white leading-snug">
+                                &quot;{scene.speech_text}&quot;
+                              </p>
+                              {scene.listener_reaction && (
+                                <p className="text-[11px] text-slate-400 italic pt-1 border-t border-slate-800/80">
+                                  Reacción: {scene.listener_reaction}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Generador individual de esta viñeta */}
+                          <div className="pt-2 border-t border-slate-800 space-y-3">
+                            <button
+                              onClick={() => generateDialogueImage(activeDialoguePrompt, scene.turn_number)}
+                              disabled={generatingDialogueIdx === scene.turn_number}
+                              className="w-full py-2 px-3 rounded-xl text-xs font-bold bg-amber-600/30 hover:bg-amber-600 text-amber-200 hover:text-white border border-amber-500/30 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              {generatingDialogueIdx === scene.turn_number ? (
+                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                              ) : (
+                                <><ImageIcon className="w-3.5 h-3.5" /> Generar Imagen #{scene.turn_number} ({promptMode === "clean" ? "Limpia" : "con Bocadillo"})</>
+                              )}
+                            </button>
+
+                            {dialogueImages[scene.turn_number] && (
+                              <div className="space-y-2">
+                                <img
+                                  src={`data:image/jpeg;base64,${dialogueImages[scene.turn_number]}`}
+                                  alt={`Viñeta ${scene.turn_number}`}
+                                  className="w-full h-auto rounded-xl border border-slate-700 shadow-lg"
+                                />
+                                <a
+                                  href={`data:image/jpeg;base64,${dialogueImages[scene.turn_number]}`}
+                                  download={`vineta_dialogo_${scene.turn_number}.jpg`}
+                                  className="w-full py-1.5 rounded-lg font-bold bg-emerald-600 text-white flex items-center justify-center gap-1 text-[11px]"
+                                >
+                                  <Download className="w-3.5 h-3.5" /> Descargar Viñeta #{scene.turn_number}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Diálogo completo y guion al pie */}
                   <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Mic className="w-4 h-4 text-emerald-400" />
                         <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                          Guion de Locución / Actuación de Voces
+                          Guion Completo y Actuación de Voces
                         </h3>
                       </div>
                       <button
@@ -960,40 +1053,6 @@ export default function ReflexionesIlustradasPage() {
                         </button>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Botón de Generar Imagen */}
-                  <div className="border border-slate-800 rounded-2xl p-6 bg-slate-950/60 flex flex-col items-center gap-4">
-                    <button
-                      onClick={() => generateImage(dialogueResult.image_prompt)}
-                      disabled={isGeneratingImage}
-                      className="w-full sm:w-auto min-w-[280px] flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600 hover:from-amber-500 hover:to-pink-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-amber-600/20 disabled:opacity-50"
-                    >
-                      {isGeneratingImage ? (
-                        <><Loader2 className="w-5 h-5 animate-spin" /> Generando Ilustración con IA...</>
-                      ) : (
-                        <><ImageIcon className="w-5 h-5" /> Generar Ilustración de los 2 Personajes (9:16)</>
-                      )}
-                    </button>
-
-                    {generatedImage && (
-                      <div className="w-full max-w-sm space-y-4 pt-4">
-                        <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
-                          <img
-                            src={`data:image/jpeg;base64,${generatedImage}`}
-                            alt="Diálogo Ilustrado"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                        <a
-                          href={`data:image/jpeg;base64,${generatedImage}`}
-                          download="dialogo_ilustrado.jpg"
-                          className="w-full py-2.5 rounded-xl font-bold bg-amber-600 text-white flex items-center justify-center gap-2 hover:bg-amber-500 transition-colors text-xs shadow-lg shadow-amber-600/20"
-                        >
-                          <Download className="w-4 h-4" /> Descargar Imagen 9:16
-                        </a>
-                      </div>
-                    )}
                   </div>
 
                 </div>
