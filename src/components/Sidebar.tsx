@@ -55,14 +55,10 @@ export function Sidebar() {
             <MessageCircle className="w-5 h-5 text-pink-400" />
             Chats Fake
           </Link>
-          <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
-          <History className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Líneas</span>
-        </Link>
-        <Link href="/cuerpo-humano" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-red-500 active:text-red-500 min-w-[4rem] flex-shrink-0">
-          <Activity className="w-5 h-5" />
-          <span className="text-[10px] font-medium">Cuerpo</span>
-        </Link>
+          <Link href="/timeline" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+            <History className="w-5 h-5 text-emerald-400" />
+            Líneas de Tiempo
+          </Link>
           <Link href="/faceless-youtube" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
             <PlaySquare className="w-5 h-5 text-cyan-400" />
             Faceless YouTube
@@ -151,6 +147,10 @@ export function Sidebar() {
         <Link href="/timeline" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-emerald-400 active:text-emerald-400 min-w-[4rem] flex-shrink-0">
           <History className="w-5 h-5" />
           <span className="text-[10px] font-medium">Líneas</span>
+        </Link>
+        <Link href="/cuerpo-humano" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-red-500 active:text-red-500 min-w-[4rem] flex-shrink-0">
+          <Activity className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Cuerpo</span>
         </Link>
         <Link href="/faceless-youtube" className="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-cyan-400 active:text-cyan-400 min-w-[4rem] flex-shrink-0">
           <PlaySquare className="w-5 h-5" />
