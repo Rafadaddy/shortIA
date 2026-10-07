@@ -71,6 +71,13 @@ interface MultiSceneIdea {
   arc_summary: string;
 }
 
+interface DialogueIdea {
+  title: string;
+  hook_question: string;
+  dialogue_premise: string;
+  emotional_punchline: string;
+}
+
 interface ReflectionResult {
   quote: string;
   highlight_word: string;
@@ -111,6 +118,7 @@ interface SceneItem {
   narration_snippet: string;
   image_prompt: string;
   image_prompt_clean?: string;
+  video_motion_prompt?: string;
 }
 
 interface MultiSceneResult {
@@ -142,6 +150,9 @@ export default function ReflexionesIlustradasPage() {
   const [result, setResult] = useState<ReflectionResult | null>(null);
 
   // Estados MODO 2: Diálogo
+  const [isGeneratingDialogueIdeas, setIsGeneratingDialogueIdeas] = useState(false);
+  const [dialogueIdeas, setDialogueIdeas] = useState<DialogueIdea[]>([]);
+  const [selectedDialogueIdea, setSelectedDialogueIdea] = useState<DialogueIdea | null>(null);
   const [isGeneratingDialogue, setIsGeneratingDialogue] = useState(false);
   const [dialogueResult, setDialogueResult] = useState<DialogueResult | null>(null);
   const [dialogueCount, setDialogueCount] = useState<number>(3);
@@ -226,18 +237,44 @@ export default function ReflexionesIlustradasPage() {
     }
   };
 
-  // 3. MODO DIÁLOGO: Crear diálogo de 2 personajes (secuencia de viñetas con bocadillos de diálogo)
-  const createDialogue = async () => {
+  // 3. MODO DIÁLOGO: Proponer 4 ideas con gancho
+  const generateDialogueIdeas = async () => {
+    setIsGeneratingDialogueIdeas(true);
+    setDialogueIdeas([]);
+    setSelectedDialogueIdea(null);
+    setDialogueResult(null);
+    setDialogueImages({});
+    try {
+      const res = await aiFetch("/api/generate-illustration-reflection", {
+        action: "dialogue_ideas",
+        dialogueDynamic,
+        customTopic,
+        tone
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al proponer ideas de diálogo");
+      setDialogueIdeas(data.ideas || []);
+      showToast("¡4 Ideas de diálogo con gancho listas!", "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al generar ideas de diálogo", "error");
+    } finally {
+      setIsGeneratingDialogueIdeas(false);
+    }
+  };
+
+  // 3.1 MODO DIÁLOGO: Crear diálogo de 2 personajes (secuencia de viñetas con bocadillos de diálogo)
+  const createDialogue = async (ideaTopic?: string) => {
     setIsGeneratingDialogue(true);
     setDialogueResult(null);
     setDialogueImages({});
     setGeneratedImage(null);
     showToast("Creando viñetas de diálogo consecutivas...");
     try {
+      const topicToUse = ideaTopic || (selectedDialogueIdea ? `${selectedDialogueIdea.title}. Pregunta detonante: ${selectedDialogueIdea.hook_question}. Dilema: ${selectedDialogueIdea.dialogue_premise}` : customTopic);
       const res = await aiFetch("/api/generate-illustration-reflection", {
         action: "dialogue",
         dialogueDynamic,
-        customTopic,
+        customTopic: topicToUse,
         tone,
         dialogueCount,
         watermarkText: watermark
@@ -888,18 +925,129 @@ export default function ReflexionesIlustradasPage() {
                 </div>
               </div>
 
-              <button
-                onClick={createDialogue}
-                disabled={isGeneratingDialogue}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-lg shadow-amber-600/20 disabled:opacity-50"
-              >
-                {isGeneratingDialogue ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {dialogueCount} viñetas...</>
-                ) : (
-                  <><MessageSquareQuote className="w-4 h-4" /> Generar Secuencia de {dialogueCount} Viñetas de Diálogo (Estilo Cómic)</>
-                )}
-              </button>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={generateDialogueIdeas}
+                  disabled={isGeneratingDialogueIdeas || isGeneratingDialogue}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-amber-600/20 disabled:opacity-50"
+                >
+                  {isGeneratingDialogueIdeas ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Ideando 4 Diálogos con Gancho...</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Proponer 4 Ideas de Diálogo con Gancho</>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => createDialogue()}
+                  disabled={isGeneratingDialogue || isGeneratingDialogueIdeas}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-3.5 px-6 rounded-xl transition-all disabled:opacity-50"
+                >
+                  {isGeneratingDialogue ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {dialogueCount} viñetas...</>
+                  ) : (
+                    <><MessageSquareQuote className="w-4 h-4 text-amber-400" /> Generar Secuencia Directa ({dialogueCount} Viñetas)</>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* SELECCIÓN DE IDEAS DE DIÁLOGO */}
+            {dialogueIdeas.length > 0 && (
+              <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Feather className="w-5 h-5 text-amber-400" />
+                    <h2 className="text-lg font-bold text-white">2. Selecciona la Idea de Diálogo que prefieras</h2>
+                  </div>
+                  <button
+                    onClick={generateDialogueIdeas}
+                    disabled={isGeneratingDialogueIdeas}
+                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Otras ideas
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {dialogueIdeas.map((item, idx) => {
+                    const isThisSelectedAndLoading = isGeneratingDialogue && selectedDialogueIdea?.title === item.title;
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          if (isGeneratingDialogue) return;
+                          setSelectedDialogueIdea(item);
+                          createDialogue(`${item.title}. Pregunta detonante: ${item.hook_question}. Dilema: ${item.dialogue_premise}`);
+                        }}
+                        className={`cursor-pointer p-5 rounded-2xl border transition-all text-left space-y-3 relative overflow-hidden ${
+                          selectedDialogueIdea?.title === item.title
+                            ? "bg-amber-500/10 border-amber-500 shadow-lg shadow-amber-500/20 ring-2 ring-amber-500/30"
+                            : "bg-slate-950/80 border-slate-800 hover:border-amber-500/50"
+                        } ${isGeneratingDialogue && selectedDialogueIdea?.title !== item.title ? "opacity-50 pointer-events-none" : ""}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                            Conversación #{idx + 1}
+                          </div>
+                          {isThisSelectedAndLoading && (
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 bg-amber-500/20 px-2.5 py-1 rounded-full animate-pulse">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Creando viñetas...
+                            </div>
+                          )}
+                        </div>
+
+                        <h3 className="font-bold text-base text-white leading-snug">
+                          {item.title}
+                        </h3>
+
+                        <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-200/90 space-y-1">
+                          <span className="font-bold text-amber-400 block text-[11px] uppercase tracking-wider">
+                            ⚡ Pregunta Detonante / Gancho:
+                          </span>
+                          <p className="italic font-medium">&quot;{item.hook_question}&quot;</p>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          {item.dialogue_premise}
+                        </p>
+
+                        <div className="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800 text-xs text-slate-300">
+                          <span className="font-bold text-pink-400 block text-[10px] uppercase">♡ Remate Emocional:</span>
+                          <span className="italic text-slate-200">&quot;{item.emotional_punchline}&quot;</span>
+                        </div>
+
+                        <div className="pt-1 flex items-center justify-between text-xs text-slate-400">
+                          <span>Total: <strong className="text-amber-300">{dialogueCount} viñetas consecutivas</strong></span>
+                          <span className={`font-semibold flex items-center gap-1 ${isThisSelectedAndLoading ? "text-amber-300" : "text-amber-400 group-hover:underline"}`}>
+                            {isThisSelectedAndLoading ? (
+                              <><Loader2 className="w-3 h-3 animate-spin" /> Redactando escenas...</>
+                            ) : (
+                              <>Elegir este Diálogo →</>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* BANNER DE CARGA DIÁLOGO */}
+            {isGeneratingDialogue && (
+              <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-orange-950/40 border border-amber-500/40 rounded-3xl p-8 text-center space-y-3 animate-pulse shadow-2xl">
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+                <h3 className="text-lg font-bold text-white">
+                  Creando secuencia de {dialogueCount} Viñetas de Diálogo...
+                </h3>
+                <p className="text-sm text-slate-300 max-w-md mx-auto">
+                  Escribiendo el intercambio línea por línea con bocadillos de cómic bloqueados y expresiones emocionales conectadas.
+                </p>
+              </div>
+            )}
 
             {/* RESULTADO DIÁLOGO */}
             {dialogueResult && (
@@ -1389,6 +1537,26 @@ export default function ReflexionesIlustradasPage() {
                                 &quot;{scene.narration_snippet}&quot;
                               </p>
                             </div>
+
+                            {/* Prompt de Video con Movimiento (Image-to-Video) */}
+                            {scene.video_motion_prompt && (
+                              <div className="text-xs text-slate-300 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/30 space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1">
+                                    🎬 Prompt de Video / Animación:
+                                  </span>
+                                  <button
+                                    onClick={() => handleCopy(scene.video_motion_prompt || "", `motion_${scene.scene_number}`)}
+                                    className="text-[10px] text-indigo-300 hover:text-white flex items-center gap-1 bg-indigo-900/40 px-2 py-0.5 rounded border border-indigo-500/30 transition-colors"
+                                  >
+                                    {copiedStates[`motion_${scene.scene_number}`] ? <Check className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />} Copiar Movimiento
+                                  </button>
+                                </div>
+                                <p className="font-mono text-[11px] text-indigo-200/90 leading-relaxed select-all">
+                                  {scene.video_motion_prompt}
+                                </p>
+                              </div>
+                            )}
 
                             {promptMode === "with_text" && (
                               <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">

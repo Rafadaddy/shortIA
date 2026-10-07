@@ -60,35 +60,75 @@ export async function POST(req: NextRequest) {
     if (action === "multiscene_ideas") {
       const requestedCount = Math.min(Math.max(Number(body.sceneCount) || 3, 3), 8);
       const prompt = [
-        "Eres un creador viral de Reels y animaciones emotivas de desarrollo personal para TikTok y YouTube Shorts.",
-        `Propón 4 conceptos diferentes de historias para un Reel de ${requestedCount} escenas consecutivas con el personaje tierno blanco (blob).`,
+        "Eres un director creativo de micro-historias virales en video (TikTok, Reels, Shorts) y animación con IA (Runway Gen-3, Kling, Luma Dream Machine).",
+        `Propón 4 conceptos diferentes de mini-historias para un Reel de ${requestedCount} escenas consecutivas con el personaje tierno blanco (blob) y posibles personajes secundarios entrañables (ej: una abuelita blob, un pajarito herido, una pequeña mascota, un sabio anciano, o un amigo blob).`,
         `Categoría: "${category || 'Superar el Cansancio y Encontrar Paz'}".`,
         customTopic ? `Tema específico: "${customTopic}".` : "",
         `Tono: "${tone || 'Esperanzador y Cálido'}".`,
         "",
         "Cada idea debe incluir:",
-        "1. 'title': Un título o gancho de historia llamativo y emotivo.",
-        "2. 'story_premise': De qué trata la historia en 2 líneas (el conflicto inicial y la moraleja o alivio final).",
+        "1. 'title': Un título o gancho de historia muy llamativo y emotivo que atrape en los primeros 2 segundos.",
+        "2. 'story_premise': De qué trata la historia en 2 líneas (el conflicto inicial, el encuentro con personajes secundarios o revelación, y el alivio final).",
         "3. 'arc_summary': Breve descripción de cómo evoluciona la historia a lo largo de las escenas.",
         "",
         "Responde SOLO con JSON válido:",
         JSON.stringify({
           ideas: [
             {
-              title: "Aprender a soltar lo que pesa más que tú",
-              story_premise: "El personaje carga cosas del pasado hasta que decide descansar y vaciar su mochila.",
-              arc_summary: "Inicia agotado -> encuentra una flor en el camino -> suelta las piedras -> respira al atardecer."
+              title: "El día que un pequeño pajarito me enseñó a volar",
+              story_premise: "El personaje blob se siente demasiado pesado para avanzar, hasta que rescata a un pajarito que le recuerda que las alas se abren con calma.",
+              arc_summary: "Inicia sentado desanimado -> encuentra al pajarito -> le da agua y cariño -> ambos miran al horizonte listos para seguir."
             },
             {
-              title: "El día que dejó de compararse con los demás",
-              story_premise: "Ve a otros florecer rápido mientras él siente que va lento, hasta que comprende su propio ritmo.",
-              arc_summary: "Mira otros árboles floreciendo -> siente tristeza -> riega su propia semilla -> su jardín florece con amor."
+              title: "Aprender a soltar lo que pesa más que tú",
+              story_premise: "El personaje carga cosas del pasado hasta que un sabio anciano le enseña a vaciar su mochila en la orilla del lago.",
+              arc_summary: "Inicia agotado -> encuentra al anciano sabio -> vacía las piedras al agua -> respira ligero al atardecer."
             }
           ]
         }, null, 2)
       ].filter(Boolean).join("\n");
 
       const response = await chatCompletion(body, prompt, { temperature: 0.9 });
+      const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
+      return NextResponse.json(JSON.parse(cleanJson));
+    }
+
+    // Acción para proponer ideas de DIÁLOGOS / CHATS CON GANCHO (antes de generar las viñetas)
+    if (action === "dialogue_ideas") {
+      const { dialogueDynamic } = body;
+      const prompt = [
+        "Eres un guionista viral de cómics y micro-diálogos emocionales para redes sociales (estilo webcomics de parejas, amigos incondicionales y reflexiones profundas).",
+        "Propón 4 conceptos de conversaciones o diálogos con gancho magnético entre dos personajes tiernos minimalistas blancos (blobs).",
+        `Dinámica: "${dialogueDynamic || 'Amigos incondicionales apoyándose'}".`,
+        customTopic ? `Tema específico: "${customTopic}".` : "",
+        `Tono: "${tone || 'Conmovedor y Tierno'}".`,
+        "",
+        "Cada idea debe incluir:",
+        "1. 'title': Título o gancho de la conversación sumamente atractivo (ej: 'Lo que nunca nos atrevemos a decir en voz alta', 'Cuando el silencio dice más que mil palabras').",
+        "2. 'hook_question': La primera pregunta o detonante que abre la conversación y genera curiosidad inmediata.",
+        "3. 'dialogue_premise': De qué trata el intercambio y qué dilema o sentimiento resuelve.",
+        "4. 'emotional_punchline': La frase de cierre conmovedora o remate emocional del diálogo.",
+        "",
+        "Responde SOLO con JSON válido:",
+        JSON.stringify({
+          ideas: [
+            {
+              title: "El refugio de no tener que fingir",
+              hook_question: "¿Por qué siempre sonríes cuando en realidad estás cansado?",
+              dialogue_premise: "Uno de los personajes nota la tristeza oculta del otro y le ofrece un espacio seguro donde no necesita ser fuerte.",
+              emotional_punchline: "Conmigo no tienes que ser valiente. Puedes simplemente descansar. ♡"
+            },
+            {
+              title: "Promesas que se dicen sin hablar",
+              hook_question: "¿Podemos simplemente quedarnos aquí y no decir nada?",
+              dialogue_premise: "Conversación íntima al atardecer donde descubren que la mejor compañía es quien hace del silencio un hogar.",
+              emotional_punchline: "Elegir quedarme a tu lado es la decisión más fácil del mundo."
+            }
+          ]
+        }, null, 2)
+      ].filter(Boolean).join("\n");
+
+      const response = await chatCompletion(body, prompt, { temperature: 0.88 });
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       return NextResponse.json(JSON.parse(cleanJson));
     }
@@ -261,19 +301,20 @@ export async function POST(req: NextRequest) {
       const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
       const prompt = [
-        "Eres un director de cortometrajes virales y animaciones conmovedoras para TikTok, Instagram Reels y YouTube Shorts.",
-        `Crea el contenido narrativo para una historia visual secuencial de EXACTAMENTE ${requestedCount} escenas consecutivas con el personaje blanco tierno minimalista (blob).`,
+        "Eres un director de cortometrajes virales y animaciones conmovedoras para TikTok, Instagram Reels, YouTube Shorts y herramientas de animación por IA (Runway Gen-3 Alpha, Luma Dream Machine, Kling AI, Pika).",
+        `Crea el contenido narrativo para una mini-historia visual secuencial de EXACTAMENTE ${requestedCount} escenas consecutivas con el personaje blanco tierno minimalista (blob). En la historia pueden interactuar personajes secundarios entrañables (ejemplo: un pajarito o mariposa que lo acompaña, un gatito, un sabio anciano o abuelita blob, una plantita viviente, etc.) para darle dinamismo visual y riqueza narrativa.`,
         `Categoría: "${category || 'Superar la Ansiedad y Encontrar Paz'}".`,
         customTopic ? `Tema específico: "${customTopic}".` : "",
         `Tono: "${tone || 'Esperanzador y Cálido'}".`,
         `Semilla: ${seed}.`,
         "",
-        "REQUISITOS DE LA HISTORIA MULTIESCENA:",
+        "REQUISITOS DE LA HISTORIA MULTIESCENA Y VIDEO CON MOVIMIENTO:",
         `1. El array 'scenes' DEBE contener EXACTAMENTE ${requestedCount} objetos ordenados cronológicamente del 1 al ${requestedCount}:`,
         "   - 'scene_number': Número entero de escena (1, 2, ...).",
         "   - 'slide_text': Frase corta que va en la imagen (máximo 8 palabras).",
         "   - 'narration_snippet': Frase que dice la voz en off en esta escena (10-15 palabras).",
-        "   - 'action_description': Descripción breve en inglés de qué hace el personaje y en qué lugar está (ej: 'walking with heavy backpack on a misty road', 'sitting on a hill looking at a flower', 'smiling facing the golden sunset').",
+        "   - 'action_description': Descripción detallada en inglés de qué hace el personaje principal, si interactúa con algún personaje secundario (ej: tiny injured bird, friendly puppy, wise elderly blob mentor) y el escenario (ej: 'blob gently cupping hands to feed a tiny wounded sparrow under warm glowing tree').",
+        "   - 'video_motion_prompt': Prompt profesional de movimiento y cámara en inglés para herramientas Image-to-Video (Runway Gen-3 / Kling / Luma). Debe especificar tipo de movimiento de cámara, respiración, parpadeo o acción suave del personaje, partículas o luz ambiental, y fps (ej: 'Cinematic slow push-in shot, the white blob character gently blinks and looks at the tiny sparrow hopping on its palm, golden particles floating in warm evening light, smooth fluid 24fps motion, photorealistic bokeh background').",
         "2. 'full_script': El guion de locución completo y fluido.",
         "3. 'soundtrack': Música cinematográfica recomendada.",
         "4. 'hashtags': 5 hashtags virales.",
@@ -286,7 +327,8 @@ export async function POST(req: NextRequest) {
               scene_number: 1,
               slide_text: "Hay días donde la mente pesa más que el cuerpo.",
               narration_snippet: "Nos enseñaron que resistir siempre es de valientes, pero sostener tanto desgasta el alma.",
-              action_description: "walking slowly carrying an oversized heavy grey backpack, shoulders down, misty road at dawn"
+              action_description: "walking slowly carrying an oversized heavy grey backpack, shoulders down, misty road at dawn",
+              video_motion_prompt: "Cinematic slow steady tracking shot from the side, the white blob walks sluggishly with drooping shoulders under the heavy backpack, subtle fog drifting, soft ambient morning light, ultra smooth animation, 4k"
             }
           ],
           full_script: "Hay días donde la mente pesa más que el cuerpo...\n\nHasta que entiendes que soltar no es perder. Respira... hoy tu paz vale más que cualquier peso. Mañana será otro día. ♡",
@@ -310,7 +352,8 @@ export async function POST(req: NextRequest) {
           scene_number: nextNum,
           slide_text: nextNum === requestedCount ? "Respira. Tu paz vale más que todo." : `Paso ${nextNum}: Encuentra tu calma interior.`,
           narration_snippet: nextNum === requestedCount ? "Hoy decides abrazar tu paz y volver a empezar con amor." : "Avanza un paso a la vez, sin prisas y cuidando de ti.",
-          action_description: nextNum === requestedCount ? "standing with tiny open arms facing warm golden sunset, smiling peacefully" : "sitting quietly on a grass meadow looking at a bright glowing flower"
+          action_description: nextNum === requestedCount ? "standing with tiny open arms facing warm golden sunset, smiling peacefully with a cute tiny bird resting on shoulder" : "sitting quietly on a grass meadow looking at a bright glowing flower",
+          video_motion_prompt: "Smooth slow cinematic zoom in, gentle breeze moving surrounding grass, the cute blob smiles warmly and blinks slowly, golden hour warm lighting, cinematic 24fps"
         });
       }
 
@@ -318,15 +361,22 @@ export async function POST(req: NextRequest) {
         parsed.scenes = parsed.scenes.slice(0, requestedCount);
       }
 
-      // Sintetizar con precisión matemática el prompt SAME CHARACTER LOCKED para cada escena
+      // Sintetizar con precisión matemática los prompts para cada escena
       parsed.scenes.forEach((sc: any, idx: number) => {
         sc.scene_number = idx + 1;
         const actionDesc = sc.action_description || "peacefully walking through a serene natural landscape";
         const text = sc.slide_text || "Respira profundo y confía.";
 
+        // Prompt de imagen con texto
         sc.image_prompt = `SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle smile, rosy pink round cheeks, sticker style, wholesome, ${actionDesc}, background is soft photorealistic warm scenic landscape with cinematic lighting, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, very legible, Text: "${text}", in solid black #000000 with warm terracotta #8B3A3A accent, high contrast against sky.`;
         
+        // Prompt de imagen limpio sin texto (ideal para video y animación)
         sc.image_prompt_clean = `SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, gentle smile, rosy pink round cheeks, sticker style, wholesome, ${actionDesc}, background is soft photorealistic warm scenic landscape with cinematic lighting, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters, no text, no typography.`;
+
+        // Prompt de video con movimiento (I2V)
+        if (!sc.video_motion_prompt) {
+          sc.video_motion_prompt = `Cinematic slow push-in shot, the character gently animates with subtle body breathing and a warm peaceful blink, ${actionDesc}, soft ambient particles floating in golden light, smooth realistic motion, 24fps cinematic animation.`;
+        }
       });
 
       return NextResponse.json(parsed);
