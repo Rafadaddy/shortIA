@@ -349,8 +349,8 @@ export default function CuerpoHumanoPage() {
                     <div className="mb-4 relative pr-12">
                       <span className="text-xs font-semibold text-slate-500 uppercase">Narración Cautivadora</span>
                       <p className="text-red-200/90 text-sm mt-1 italic leading-relaxed">"{scene.narration}"</p>
-                      <button onClick={() => handleCopy(scene.narration, \`vo_\${idx}\`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
-                        {copiedStates[\`vo_\${idx}\`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-red-300 transition-colors">
+                        {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
                     </div>
 
@@ -367,8 +367,8 @@ export default function CuerpoHumanoPage() {
                             <button onClick={() => handleRegeneratePrompt(idx, "image")} disabled={regeneratingScene !== null} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-blue-300 disabled:opacity-50">
                               {regeneratingScene === idx && regeneratingType === "image" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => handleCopy(scene.image_prompt, \`img_\${idx}\`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-blue-300">
-                              {copiedStates[\`img_\${idx}\`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                            <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-blue-300">
+                              {copiedStates[`img_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                             </button>
                           </div>
                         </div>
@@ -382,8 +382,8 @@ export default function CuerpoHumanoPage() {
                             <button onClick={() => handleRegeneratePrompt(idx, "animation")} disabled={regeneratingScene !== null} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-green-300 disabled:opacity-50">
                               {regeneratingScene === idx && regeneratingType === "animation" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                             </button>
-                            <button onClick={() => handleCopy(scene.animation_prompt, \`ani_\${idx}\`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-green-300">
-                              {copiedStates[\`ani_\${idx}\`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                            <button onClick={() => handleCopy(scene.animation_prompt, `ani_${idx}`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-green-300">
+                              {copiedStates[`ani_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                             </button>
                           </div>
                         </div>
