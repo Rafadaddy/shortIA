@@ -872,21 +872,60 @@ export default function ReflexionesIlustradasPage() {
                     </p>
                   </div>
 
-                  {/* Prompt de Imagen */}
-                  <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 space-y-3">
+                  {/* Switch con o sin texto integrado en Diálogo */}
+                  <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-5 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4 text-blue-400" /> Formato del Prompt de Imagen
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {promptMode === "clean" 
+                            ? "✨ Ideal para reels con guion narrado: Imagen limpia y cinematográfica sin textos." 
+                            : "Incluye el texto del diálogo renderizado directamente en la imagen."}
+                        </p>
+                      </div>
+
+                      <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                        <button
+                          onClick={() => setPromptMode("clean")}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            promptMode === "clean"
+                              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                              : "text-slate-400 hover:text-white"
+                          }`}
+                        >
+                          🖼️ Limpia (Sin Texto / Para Guion)
+                        </button>
+                        <button
+                          onClick={() => setPromptMode("with_text")}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            promptMode === "with_text"
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                              : "text-slate-400 hover:text-white"
+                          }`}
+                        >
+                          💬 Con Texto Integrado
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                        Prompt de los 2 Personajes (Ideogram / Midjourney / DALL-E)
+                      <span className="text-xs font-bold text-blue-300">
+                        {promptMode === "clean" ? "Prompt Limpio sin Letras (Perfecto para narración):" : "Prompt con Diálogo Integrado:"}
                       </span>
                       <button
-                        onClick={() => handleCopy(dialogueResult.image_prompt, "dial_prompt_code")}
+                        onClick={() => handleCopy(
+                          promptMode === "clean" ? (dialogueResult.image_prompt_clean || dialogueResult.image_prompt) : dialogueResult.image_prompt,
+                          "dial_prompt_code"
+                        )}
                         className="text-xs text-blue-300 hover:text-white flex items-center gap-1 transition-colors"
                       >
-                        {copiedStates["dial_prompt_code"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar
+                        {copiedStates["dial_prompt_code"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Prompt {promptMode === "clean" ? "Limpio" : "con Texto"}
                       </button>
                     </div>
                     <div className="bg-slate-900/90 rounded-xl p-4 text-xs font-mono text-slate-300 leading-relaxed select-all border border-slate-800 max-h-48 overflow-y-auto">
-                      {dialogueResult.image_prompt}
+                      {promptMode === "clean" ? (dialogueResult.image_prompt_clean || dialogueResult.image_prompt) : dialogueResult.image_prompt}
                     </div>
                   </div>
 
@@ -1065,12 +1104,15 @@ export default function ReflexionesIlustradasPage() {
                       </button>
                       <button
                         onClick={() => {
-                          const allPrompts = multiSceneResult.scenes.map(s => `--- ESCENA #${s.scene_number} ---\n${s.image_prompt}`).join("\n\n");
+                          const allPrompts = multiSceneResult.scenes.map(s => {
+                            const p = promptMode === "clean" ? (s.image_prompt_clean || s.image_prompt) : s.image_prompt;
+                            return `--- ESCENA #${s.scene_number} (${promptMode === "clean" ? "LIMPIO SIN TEXTO" : "CON TEXTO"}) ---\n${p}`;
+                          }).join("\n\n");
                           handleCopy(allPrompts, "all_scene_prompts");
                         }}
                         className="flex items-center gap-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/30 text-xs font-bold py-2 px-3 rounded-xl hover:bg-blue-600/30 transition-all"
                       >
-                        {copiedStates["all_scene_prompts"] ? <><Check className="w-3.5 h-3.5" /> Copiados</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Todos los Prompts</>}
+                        {copiedStates["all_scene_prompts"] ? <><Check className="w-3.5 h-3.5" /> Copiados</> : <><ImageIcon className="w-3.5 h-3.5" /> Copiar Todos los Prompts ({promptMode === "clean" ? "Limpios" : "Con Texto"})</>}
                       </button>
                       <button
                         onClick={() => handleCopy(multiSceneResult.hashtags.join(" "), "multi_tags")}
@@ -1081,48 +1123,96 @@ export default function ReflexionesIlustradasPage() {
                     </div>
                   </div>
 
+                  {/* Selector de modo de prompt: Limpio (sin letras para guion) vs Con Texto */}
+                  <div className="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-blue-400" />
+                        Estilo de las Imágenes para el Reel
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {promptMode === "clean"
+                          ? "✨ Recomendado: Imágenes 100% limpias sin letras ni tipografía, donde la fuerza y emoción recaen en el guion de voz."
+                          : "Imágenes con la frase/subtítulo renderizada en la parte superior."}
+                      </p>
+                    </div>
+
+                    <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
+                      <button
+                        onClick={() => setPromptMode("clean")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          promptMode === "clean"
+                            ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        🖼️ Limpias (Sin Letras / Para Guion)
+                      </button>
+                      <button
+                        onClick={() => setPromptMode("with_text")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          promptMode === "with_text"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        📝 Con Texto Integrado
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Grid de Escenas Consecutivas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {multiSceneResult.scenes.map((scene) => (
-                      <div key={scene.scene_number} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                              Escena #{scene.scene_number}
-                            </span>
-                            <button
-                              onClick={() => handleCopy(scene.image_prompt, `scene_prompt_${scene.scene_number}`)}
-                              className="text-[11px] text-blue-300 hover:text-white flex items-center gap-1"
-                            >
-                              {copiedStates[`scene_prompt_${scene.scene_number}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Prompt
-                            </button>
-                          </div>
+                    {multiSceneResult.scenes.map((scene) => {
+                      const activeScenePrompt = promptMode === "clean" ? (scene.image_prompt_clean || scene.image_prompt) : scene.image_prompt;
 
-                          <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Texto en Imagen:</span>
-                            <p className="text-xs font-bold text-white leading-snug">
-                              &quot;{scene.slide_text}&quot;
-                            </p>
-                          </div>
+                      return (
+                        <div key={scene.scene_number} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                              <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                                Escena #{scene.scene_number}
+                              </span>
+                              <button
+                                onClick={() => handleCopy(activeScenePrompt, `scene_prompt_${scene.scene_number}`)}
+                                className="text-[11px] text-blue-300 hover:text-white flex items-center gap-1"
+                              >
+                                {copiedStates[`scene_prompt_${scene.scene_number}`] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Prompt {promptMode === "clean" ? "Limpio" : ""}
+                              </button>
+                            </div>
 
-                          <div className="text-xs text-slate-300 italic bg-blue-950/20 p-2.5 rounded-lg border border-blue-500/20">
-                            🗣️ {scene.narration_snippet}
-                          </div>
-                        </div>
+                            <div className="text-xs text-slate-200 bg-emerald-950/20 p-3 rounded-xl border border-emerald-500/20 space-y-1">
+                              <span className="text-[10px] font-bold text-emerald-400 uppercase block tracking-wider">
+                                🗣️ Narración de esta escena:
+                              </span>
+                              <p className="font-medium italic leading-relaxed">
+                                &quot;{scene.narration_snippet}&quot;
+                              </p>
+                            </div>
 
-                        {/* Generador individual de esta escena */}
-                        <div className="pt-2 border-t border-slate-800 space-y-3">
-                          <button
-                            onClick={() => generateSceneImage(scene.image_prompt, scene.scene_number)}
-                            disabled={generatingSceneIdx === scene.scene_number}
-                            className="w-full py-2 px-3 rounded-xl text-xs font-bold bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/30 transition-all flex items-center justify-center gap-1.5"
-                          >
-                            {generatingSceneIdx === scene.scene_number ? (
-                              <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
-                            ) : (
-                              <><ImageIcon className="w-3.5 h-3.5" /> Generar Imagen #{scene.scene_number}</>
+                            {promptMode === "with_text" && (
+                              <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Texto en Imagen:</span>
+                                <p className="text-xs font-bold text-white leading-snug">
+                                  &quot;{scene.slide_text}&quot;
+                                </p>
+                              </div>
                             )}
-                          </button>
+                          </div>
+
+                          {/* Generador individual de esta escena */}
+                          <div className="pt-2 border-t border-slate-800 space-y-3">
+                            <button
+                              onClick={() => generateSceneImage(activeScenePrompt, scene.scene_number)}
+                              disabled={generatingSceneIdx === scene.scene_number}
+                              className="w-full py-2 px-3 rounded-xl text-xs font-bold bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/30 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              {generatingSceneIdx === scene.scene_number ? (
+                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generando...</>
+                              ) : (
+                                <><ImageIcon className="w-3.5 h-3.5" /> Generar #{scene.scene_number} ({promptMode === "clean" ? "Limpia" : "con Texto"})</>
+                              )}
+                            </button>
 
                           {multiSceneImages[scene.scene_number] && (
                             <div className="space-y-2">
