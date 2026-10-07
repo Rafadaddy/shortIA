@@ -65,6 +65,12 @@ interface GeneratedIdea {
   visual_metaphor: string;
 }
 
+interface MultiSceneIdea {
+  title: string;
+  story_premise: string;
+  arc_summary: string;
+}
+
 interface ReflectionResult {
   quote: string;
   highlight_word: string;
@@ -143,6 +149,9 @@ export default function ReflexionesIlustradasPage() {
   const [generatingDialogueIdx, setGeneratingDialogueIdx] = useState<number | null>(null);
 
   // Estados MODO 3: Multiescena
+  const [isGeneratingMultiSceneIdeas, setIsGeneratingMultiSceneIdeas] = useState(false);
+  const [multiSceneIdeas, setMultiSceneIdeas] = useState<MultiSceneIdea[]>([]);
+  const [selectedMultiSceneIdea, setSelectedMultiSceneIdea] = useState<MultiSceneIdea | null>(null);
   const [isGeneratingMultiScene, setIsGeneratingMultiScene] = useState(false);
   const [multiSceneResult, setMultiSceneResult] = useState<MultiSceneResult | null>(null);
 
@@ -267,8 +276,34 @@ export default function ReflexionesIlustradasPage() {
     }
   };
 
-  // 4. MODO MULTIESCENA: Crear historia/carrusel de 3-4 escenas
-  const createMultiScene = async () => {
+  // 4. MODO MULTIESCENA: Proponer ideas/títulos de historias antes de generar
+  const generateMultiSceneIdeas = async () => {
+    setIsGeneratingMultiSceneIdeas(true);
+    setMultiSceneIdeas([]);
+    setSelectedMultiSceneIdea(null);
+    setMultiSceneResult(null);
+    setMultiSceneImages({});
+    try {
+      const res = await aiFetch("/api/generate-illustration-reflection", {
+        action: "multiscene_ideas",
+        category,
+        customTopic,
+        tone,
+        sceneCount
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al proponer ideas");
+      setMultiSceneIdeas(data.ideas || []);
+      showToast("¡Propuestas de historias listas!", "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al conectar", "error");
+    } finally {
+      setIsGeneratingMultiSceneIdeas(false);
+    }
+  };
+
+  // Crear historia/carrusel de escenas completas
+  const createMultiScene = async (customStory?: string) => {
     setIsGeneratingMultiScene(true);
     setMultiSceneResult(null);
     setMultiSceneImages({});
@@ -277,7 +312,7 @@ export default function ReflexionesIlustradasPage() {
       const res = await aiFetch("/api/generate-illustration-reflection", {
         action: "multiscene",
         category,
-        customTopic,
+        customTopic: customStory || (selectedMultiSceneIdea ? `${selectedMultiSceneIdea.title}: ${selectedMultiSceneIdea.story_premise}` : customTopic),
         tone,
         sceneCount,
         watermarkText: watermark
@@ -1129,18 +1164,124 @@ export default function ReflexionesIlustradasPage() {
                 </div>
               </div>
 
-              <button
-                onClick={createMultiScene}
-                disabled={isGeneratingMultiScene}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
-              >
-                {isGeneratingMultiScene ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {sceneCount} escenas...</>
-                ) : (
-                  <><PlaySquare className="w-4 h-4" /> Generar Reel de {sceneCount} Escenas Consecutivas ({sceneCount} Prompts)</>
-                )}
-              </button>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={generateMultiSceneIdeas}
+                  disabled={isGeneratingMultiSceneIdeas || isGeneratingMultiScene}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                >
+                  {isGeneratingMultiSceneIdeas ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Creando 4 Opciones de Historias...</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Proponer 4 Ideas de Historias</>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => createMultiScene()}
+                  disabled={isGeneratingMultiScene || isGeneratingMultiSceneIdeas}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-3 px-6 rounded-xl transition-all disabled:opacity-50"
+                >
+                  {isGeneratingMultiScene ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Escribiendo secuencia de {sceneCount} escenas...</>
+                  ) : (
+                    <><Wand2 className="w-4 h-4 text-blue-400" /> Generar Directo de {sceneCount} Escenas</>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* SELECCIÓN DE IDEAS DE HISTORIAS MODO MULTIESCENA */}
+            {multiSceneIdeas.length > 0 && (
+              <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Feather className="w-5 h-5 text-blue-400" />
+                    <h2 className="text-lg font-bold text-white">Elige la Historia que quieres desarrollar ({sceneCount} Escenas)</h2>
+                  </div>
+                  <button
+                    onClick={generateMultiSceneIdeas}
+                    disabled={isGeneratingMultiSceneIdeas}
+                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Otras historias
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {multiSceneIdeas.map((idea, idx) => {
+                    const isThisSelectedAndLoading = isGeneratingMultiScene && selectedMultiSceneIdea?.title === idea.title;
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          if (isGeneratingMultiScene) return;
+                          setSelectedMultiSceneIdea(idea);
+                          createMultiScene(`${idea.title}: ${idea.story_premise}`);
+                        }}
+                        className={`cursor-pointer p-5 rounded-2xl border transition-all text-left space-y-2.5 relative overflow-hidden ${
+                          selectedMultiSceneIdea?.title === idea.title
+                            ? "bg-blue-500/10 border-blue-500 shadow-lg shadow-blue-500/20 ring-2 ring-blue-500/30"
+                            : "bg-slate-950/80 border-slate-800 hover:border-blue-500/50"
+                        } ${isGeneratingMultiScene && selectedMultiSceneIdea?.title !== idea.title ? "opacity-50 pointer-events-none" : ""}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                            Historia #{idx + 1}
+                          </div>
+                          {isThisSelectedAndLoading && (
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 bg-blue-500/20 px-2.5 py-1 rounded-full animate-pulse">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Escribiendo {sceneCount} escenas...
+                            </div>
+                          )}
+                        </div>
+
+                        <h3 className="font-bold text-base text-white leading-snug">
+                          {idea.title}
+                        </h3>
+
+                        <div className="text-xs text-slate-300 leading-relaxed bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 space-y-1">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase block tracking-wider">Premisa:</span>
+                          <p>{idea.story_premise}</p>
+                          {idea.arc_summary && (
+                            <p className="text-[11px] text-blue-300/90 pt-1 italic border-t border-slate-800">
+                              Evolución: {idea.arc_summary}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="pt-1 flex items-center justify-between text-xs text-slate-400">
+                          <span>Total: <strong className="text-blue-300">{sceneCount} escenas e imágenes</strong></span>
+                          <span className={`font-semibold flex items-center gap-1 ${isThisSelectedAndLoading ? "text-blue-300" : "text-blue-400 group-hover:underline"}`}>
+                            {isThisSelectedAndLoading ? (
+                              <><Loader2 className="w-3 h-3 animate-spin" /> Redactando escenas...</>
+                            ) : (
+                              <>Elegir esta Historia →</>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* BANNER DE CARGA MULTIESCENA */}
+            {isGeneratingMultiScene && (
+              <div className="bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 border border-blue-500/40 rounded-3xl p-8 text-center space-y-3 animate-pulse shadow-2xl">
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+                <h3 className="text-lg font-bold text-white">
+                  Creando secuencia de {sceneCount} Escenas...
+                </h3>
+                <p className="text-sm text-slate-300 max-w-md mx-auto">
+                  Diseñando la narrativa continua, las acciones de cada escena y los {sceneCount} prompts con el personaje blanco bloqueado.
+                </p>
+              </div>
+            )}
 
             {/* RESULTADO MULTIESCENA */}
             {multiSceneResult && (

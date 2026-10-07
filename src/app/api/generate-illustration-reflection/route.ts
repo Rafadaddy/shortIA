@@ -56,6 +56,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(JSON.parse(cleanJson));
     }
 
+    // Acción para proponer ideas de HISTORIAS / REELS MULTIESCENA (antes de generar todas las escenas)
+    if (action === "multiscene_ideas") {
+      const requestedCount = Math.min(Math.max(Number(body.sceneCount) || 3, 3), 8);
+      const prompt = [
+        "Eres un creador viral de Reels y animaciones emotivas de desarrollo personal para TikTok y YouTube Shorts.",
+        `Propón 4 conceptos diferentes de historias para un Reel de ${requestedCount} escenas consecutivas con el personaje tierno blanco (blob).`,
+        `Categoría: "${category || 'Superar el Cansancio y Encontrar Paz'}".`,
+        customTopic ? `Tema específico: "${customTopic}".` : "",
+        `Tono: "${tone || 'Esperanzador y Cálido'}".`,
+        "",
+        "Cada idea debe incluir:",
+        "1. 'title': Un título o gancho de historia llamativo y emotivo.",
+        "2. 'story_premise': De qué trata la historia en 2 líneas (el conflicto inicial y la moraleja o alivio final).",
+        "3. 'arc_summary': Breve descripción de cómo evoluciona la historia a lo largo de las escenas.",
+        "",
+        "Responde SOLO con JSON válido:",
+        JSON.stringify({
+          ideas: [
+            {
+              title: "Aprender a soltar lo que pesa más que tú",
+              story_premise: "El personaje carga cosas del pasado hasta que decide descansar y vaciar su mochila.",
+              arc_summary: "Inicia agotado -> encuentra una flor en el camino -> suelta las piedras -> respira al atardecer."
+            },
+            {
+              title: "El día que dejó de compararse con los demás",
+              story_premise: "Ve a otros florecer rápido mientras él siente que va lento, hasta que comprende su propio ritmo.",
+              arc_summary: "Mira otros árboles floreciendo -> siente tristeza -> riega su propia semilla -> su jardín florece con amor."
+            }
+          ]
+        }, null, 2)
+      ].filter(Boolean).join("\n");
+
+      const response = await chatCompletion(body, prompt, { temperature: 0.9 });
+      const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
+      return NextResponse.json(JSON.parse(cleanJson));
+    }
+
     // Acción para generar la pieza completa: Frase + Metáfora + Prompt Profesional + Guion de Video
     if (action === "create") {
       const randomArchetype = METAPHOR_ARCHETYPES[Math.floor(Math.random() * METAPHOR_ARCHETYPES.length)];
