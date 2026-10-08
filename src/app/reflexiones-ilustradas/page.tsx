@@ -711,19 +711,18 @@ export default function ReflexionesIlustradasPage() {
 
                     {result.quote_lines && result.quote_lines.length > 0 ? (
                       <div className="py-2 space-y-1.5 max-w-lg mx-auto">
-                        {result.quote_lines.map((line, lIdx) => {
-                          const isTerracotta = line.color === "terracotta";
-                          const isBrush = line.style.includes("brush_script");
-                          const isUnderlined = line.style.includes("underlined");
+                        {result.quote_lines.map((line: any, lIdx: number) => {
+                          const isHighlighted = line.is_highlight || line.color === "#8B3A3A" || line.color === "terracotta" || (line.style && line.style.includes("brush_script"));
+                          const isUnderlined = line.style && line.style.includes("underlined");
 
                           return (
                             <div
                               key={lIdx}
-                              className={`leading-tight transition-all ${
-                                isBrush
-                                  ? "text-3xl sm:text-4xl font-serif italic font-bold tracking-wide"
-                                  : "text-2xl sm:text-3xl font-serif font-semibold tracking-normal text-slate-100"
-                              } ${isTerracotta ? "text-[#E07A5F]" : "text-white"}`}
+                              className={`leading-tight transition-all font-sans font-black tracking-tight ${
+                                isHighlighted
+                                  ? "text-3xl sm:text-4xl text-[#E07A5F]"
+                                  : "text-2xl sm:text-3xl text-white"
+                              }`}
                             >
                               <span className={isUnderlined ? "border-b-2 border-slate-300/80 pb-0.5" : ""}>
                                 {line.text}
