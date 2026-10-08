@@ -36,6 +36,11 @@ const MODES = [
 ];
 
 const CATEGORIES = [
+  { id: "finanzas_tiempo", label: "⏳ Tiempo vs Dinero (Psicología Financiera)", desc: "No pagas con dinero, pagas con horas de tu vida. Libertad sobre el tiempo." },
+  { id: "finanzas_ahorro", label: "🌱 Ahorro & Interés Compuesto", desc: "La semilla que plantas hoy te dará sombra mañana. Paciencia y constancia." },
+  { id: "finanzas_paz", label: "🕊️ Paz Mental vs Ansiedad Financiera", desc: "El fondo de emergencia, dormir con el corazón en calma y calma interior." },
+  { id: "finanzas_ego", label: "🪞 Ser Rico vs Aparentar (El Ego)", desc: "Dejar de gastar para impresionar a otros. Riqueza silenciosa y libertad." },
+  { id: "finanzas_deudas", label: "🛑 Deudas y Compras por Impulso", desc: "Romper las cadenas del crédito, compras emocionales y libertad mental." },
   { id: "ciclos", label: "💔 Cerrar Ciclos y Soltar", desc: "Superar el apego, despedidas sanas y aprender a dejar ir." },
   { id: "amor_propio", label: "🌱 Amor Propio y Límites", desc: "Poner límites con amor, no mendigar atención y valor propio." },
   { id: "errores", label: "🪨 Tropiezos y Perseverancia", desc: "Aprender de los errores sin castigarse, paciencia con el proceso." },
@@ -45,6 +50,7 @@ const CATEGORIES = [
 ];
 
 const DIALOGUE_DYNAMICS = [
+  { id: "finanzas_mente", label: "💰 Monigote vs Impulso de Comprar", desc: "El personaje debatiendo si comprar por impulso o cuidar su libertad futura." },
   { id: "amigos", label: "🤝 Amigos Incondicionales", desc: "Uno admite sentirse abrumado o triste y el otro lo reconforta con sabiduría." },
   { id: "pareja", label: "❤️ Pareja / Vínculo Sano", desc: "Momentos de vulnerabilidad mutua, afirmaciones de amor sincero y paz." },
   { id: "vocecita", label: "🧠 Monigote vs Vocecita Interior", desc: "El personaje hablando con su calma interior sobre no exigirse tanto." },

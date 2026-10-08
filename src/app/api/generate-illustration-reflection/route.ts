@@ -62,6 +62,42 @@ const METAPHOR_ARCHETYPES = [
     characters: "white blob standing in front of an oval mirror on the grass, touching its own cheek, while its reflection smiles back warmly with open bright eyes, surrounded by tiny sprouting daisies",
     setting: "serene peaceful garden at sunset, soft ethereal warm light",
     camera: "delicate centered composition, empty pastel sky at top"
+  },
+  {
+    theme: "La semilla y el árbol del interés compuesto (ahorro e inversión)",
+    characters: "cute minimalist white blob kneeling tenderly on soft soil, holding a tiny pastel watering can, watering a small glowing golden coin sprouting from the ground with two little green leaves, smiling with proud rosy blushing cheeks and gentle open black oval eyes",
+    setting: "peaceful sunlit countryside with an ethereal giant golden glowing oak tree in the background providing vast comforting shade, warm amber sunlight, magical dust particles",
+    camera: "eye-level heartwarming shot, clear spacious cream-colored sky in upper third"
+  },
+  {
+    theme: "El paraguas de la tranquilidad (fondo de emergencia y paz mental)",
+    characters: "cute chubby white blob peacefully sitting on a sturdy wooden stool sipping hot tea from a steaming pastel mug with curved closed eyes of total relief and content smile, sheltered completely under a large glowing golden umbrella",
+    setting: "dramatic dark rainy day outside with misty grey clouds and lightning in the distance, but the character is completely dry and bathed in warm amber light under the umbrella",
+    camera: "centered eye-level vertical shot, ample negative space at upper third"
+  },
+  {
+    theme: "El reloj de arena y el tiempo de vida (tiempo vs dinero)",
+    characters: "cute white blob holding a large elegant hourglass where falling golden coins transform into fluttering glowing butterflies at the bottom, expressive open black oval eyes looking with deep philosophical wonder and serene realization",
+    setting: "tranquil lakeside dock at golden hour sunset, soft ripples in the water, gentle mountain silhouette in background",
+    camera: "poetic medium vertical shot, clean gradient sunset sky above"
+  },
+  {
+    theme: "Rompiendo las cadenas de las deudas (libertad financiera)",
+    characters: "white blob standing tall with joyful open arms, small smile and happy curved eyes, celebrating as heavy dark metal chains attached to an oversized credit card shatter into glowing floating sparkles",
+    setting: "bright open green meadow under a fresh radiant morning sun breaking through clouds, fresh breeze",
+    camera: "triumphant dynamic shot, expansive airy morning sky in upper half"
+  },
+  {
+    theme: "El saco con goteras (gastos hormiga y consciencia)",
+    characters: "thoughtful white blob with curious expressive open dot eyes, examining with a golden needle and thread a small pinhole on a vintage burlap sack, while tiny glittering coins leave a subtle trail on the path",
+    setting: "charming winding cobblestone village lane in soft warm morning light, quaint stone walls and climbing ivy",
+    camera: "storytelling medium wide shot, uncluttered upper third"
+  },
+  {
+    theme: "Ser rico en silencio vs aparentar (el espejo del ego)",
+    characters: "on the left, a cute minimalist white blob in simple clean posture looking forward in complete peace with light backpack; on the right, a heavy ornate golden mirror showing a burdensome cape made of glowing debt chains which the blob calmly steps away from",
+    setting: "minimalist serene marble terrace overlooking a calm ocean at dawn, clean pastel sky",
+    camera: "side-by-side comparative shot, wide clear negative space above"
   }
 ];
 
@@ -73,11 +109,15 @@ export async function POST(req: NextRequest) {
     // Acción para generar ideas y temas variados
     if (action === "ideas") {
       const prompt = [
-        "Eres un creador viral de cómics y reflexiones ilustradas estilo 'Chispas de Inspiración', 'Cosas Bonitas' y 'Wholesome Webcomics'.",
-        "Tu objetivo es proponer 4 conceptos de reflexiones ilustradas con un personaje tierno minimalista blanco (estilo masita / blobby con mejillas rosadas).",
+        "Eres un creador viral de cómics y reflexiones ilustradas estilo 'Chispas de Inspiración', 'The Psychology of Money' y 'Wholesome Webcomics'.",
+        "Tu objetivo es proponer 4 conceptos de reflexiones ilustradas con un personaje tierno minimalista blanco (estilo masita / blobby con mejillas rosadas y ojos expresivos).",
         `Categoría solicitada: "${category || 'Superación Personal y Amor Propio'}".`,
         customTopic ? `Tema específico del usuario: "${customTopic}".` : "",
         `Tono: "${tone || 'Conmovedor y Sabio'}".`,
+        "",
+        "Si la categoría es de Finanzas Personales (Tiempo vs Dinero, Ahorro e Interés Compuesto, Paz Mental, El Ego y Apariencias, Deudas por Impulso):",
+        "- Las frases deben ser reflexiones psicológicas demoledoras sobre el dinero y la libertad (ej: 'No pagas con dinero, pagas con horas de tu vida', 'Ahorrar es comprar la sombra del futuro', 'Gastar para aparentar es el impuesto más caro a tu ego').",
+        "- Las metáforas visuales deben usar objetos poéticos: moneditas doradas que brotan como árboles, relojes de arena donde las monedas son mariposas, paraguas dorados que protegen de la lluvia de cuentas, etc.",
         "",
         "Cada idea debe incluir:",
         "1. 'quote': Una frase corta y profunda (máximo 14 palabras) que impacte al corazón.",
@@ -88,9 +128,9 @@ export async function POST(req: NextRequest) {
         `{
           "ideas": [
             {
-              "quote": "Tropezar no es malo, encariñarse con la piedra sí.",
-              "highlight": "encariñarse con la piedra",
-              "visual_metaphor": "El monigote blanco sentado en un camino abrazando tiernamente a una roca con mejillas rosadas."
+              "quote": "No pagas con dinero, pagas con horas de tu vida.",
+              "highlight": "horas de tu vida",
+              "visual_metaphor": "El monigote blanco abrazando un reloj de arena donde las monedas caen y se convierten en mariposas de tiempo libre."
             }
           ]
         }`
