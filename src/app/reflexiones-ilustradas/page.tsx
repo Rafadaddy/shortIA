@@ -78,9 +78,17 @@ interface DialogueIdea {
   emotional_punchline: string;
 }
 
+interface ReflectionQuoteLine {
+  text: string;
+  style: "serif" | "brush_script" | "brush_script_underlined" | string;
+  color: "black" | "terracotta" | string;
+}
+
 interface ReflectionResult {
   quote: string;
+  quote_lines?: ReflectionQuoteLine[];
   highlight_word: string;
+  eye_expression?: string;
   metaphor_description: string;
   image_prompt: string;
   image_prompt_clean?: string;
@@ -683,16 +691,73 @@ export default function ReflexionesIlustradasPage() {
                   </div>
 
                   <div className="bg-gradient-to-br from-pink-950/20 via-slate-950 to-slate-950 border-2 border-pink-500/30 rounded-2xl p-6 text-center space-y-4">
-                    <span className="text-[11px] font-black tracking-widest text-pink-400 uppercase block">
-                      Texto para la Imagen (Parte Superior)
-                    </span>
-                    <p className="text-2xl sm:text-3xl font-extrabold text-white leading-tight max-w-2xl mx-auto">
-                      &quot;{result.quote}&quot;
-                    </p>
-                    <div className="inline-block bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-bold px-3 py-1 rounded-full">
-                      Palabra resaltada con fondo pastel: <span>{result.highlight_word}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black tracking-widest text-pink-400 uppercase">
+                        Tipografía Bicolor (Estilo Chispas de Inspiración)
+                      </span>
+                      <button
+                        onClick={() => handleCopy(result.quote, "copy_full_quote")}
+                        className="text-xs text-pink-300 hover:text-white flex items-center gap-1 bg-pink-500/10 px-2.5 py-1 rounded-lg border border-pink-500/20 transition-colors"
+                      >
+                        {copiedStates["copy_full_quote"] ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copiar Frase
+                      </button>
+                    </div>
+
+                    {result.quote_lines && result.quote_lines.length > 0 ? (
+                      <div className="py-2 space-y-1.5 max-w-lg mx-auto">
+                        {result.quote_lines.map((line, lIdx) => {
+                          const isTerracotta = line.color === "terracotta";
+                          const isBrush = line.style.includes("brush_script");
+                          const isUnderlined = line.style.includes("underlined");
+
+                          return (
+                            <div
+                              key={lIdx}
+                              className={`leading-tight transition-all ${
+                                isBrush
+                                  ? "text-3xl sm:text-4xl font-serif italic font-bold tracking-wide"
+                                  : "text-2xl sm:text-3xl font-serif font-semibold tracking-normal text-slate-100"
+                              } ${isTerracotta ? "text-[#E07A5F]" : "text-white"}`}
+                            >
+                              <span className={isUnderlined ? "border-b-2 border-slate-300/80 pb-0.5" : ""}>
+                                {line.text}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-2xl sm:text-3xl font-extrabold text-white leading-tight max-w-2xl mx-auto">
+                        &quot;{result.quote}&quot;
+                      </p>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                      <div className="inline-block bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-bold px-3 py-1 rounded-full">
+                        Palabra clave: <span>{result.highlight_word}</span>
+                      </div>
+                      <div className="inline-block bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold px-3 py-1 rounded-full">
+                        🎨 Acabado: Serif clásica + Cursiva Terracota
+                      </div>
                     </div>
                   </div>
+
+                  {/* Detalle de ojos y expresión */}
+                  {result.eye_expression && (
+                    <div className="bg-slate-950/80 border border-indigo-500/30 rounded-2xl p-4 flex items-start gap-3">
+                      <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0 mt-0.5">
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-0.5">
+                          👀 Expresión de los Ojos en la Imagen
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          {result.eye_expression}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-2">
                     <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">

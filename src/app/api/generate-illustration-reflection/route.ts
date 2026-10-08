@@ -1,23 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatCompletion } from "@/lib/api-helpers";
 
-// Banco de metáforas poéticas para inyectar variedad infinita
+// Banco diverso de arquetipos de metáforas visuales, expresiones y composiciones
 const METAPHOR_ARCHETYPES = [
-  "Abrazar una roca o piedra sonriente en medio de un camino soleado al atardecer",
-  "Sentado en un sofá cálido tomando café con una taza en mano, viendo la silueta punteada vacía de alguien que se fue",
-  "Caminando con paso firme y mochila ligera hacia el sol, mientras otro personaje indeciso lo jalonea hacia atrás",
-  "Soltando con las manitas abiertas un globo rojo o un diente de león luminoso que vuela al cielo despejado",
-  "Regando con amor y paciencia una pequeña maceta de la que nace un brote verde brillante",
-  "Cosiéndose con aguja e hilo dorado (Kintsugi) una grieta suave en su pecho con una sonrisa serena",
-  "Dejando caer una pesada mochila llena de piedras grises junto a un banco de madera y respirando con alivio",
-  "Sentado junto a una ventana un día lluvioso, envuelto en una bufanda tejida, sosteniendo una taza humeante",
-  "Saliendo de una maceta diminuta y oscura para caminar descalzo sobre un prado verde iluminado",
-  "Dibujando con tiza un círculo protector suave alrededor de sí mismo en el suelo, mirando en paz",
-  "Colocándose a sí mismo una bandita o curita con un pequeño corazón rojo en el pecho",
-  "Sosteniendo un paraguas amarillo bajo una nube gris, sonriendo porque sus pies están a salvo",
-  "Mirando su propio reflejo en un charco de agua limpia y el reflejo le sonríe de vuelta con flores",
-  "Abrazándose a sí mismo con ternura bajo la luz de una farola cálida en una noche tranquila",
-  "Plantando una semilla brillante en la tierra bajo la lluvia suave con esperanza en los ojos"
+  {
+    theme: "Desamor e indiferencia en un parque",
+    characters: "left white blob walking away carrying a small brown backpack with head down, sad downturned mouth, expressive solid black oval eyes looking at ground with soft arched sad eyebrows floating above; right white blob sitting backward on the bench absorbed in a glowing smartphone with aloof indifferent expression",
+    setting: "wooden park bench on a warm autumn street at golden hour sunset, fallen maple leaves on cobblestone ground, vintage glowing lamppost, soft blurred trees in background, cinematic shallow depth of field",
+    camera: "eye-level medium wide shot, wide negative space sky at upper third"
+  },
+  {
+    theme: "Abrazo sanador a una roca (amor propio y soltar)",
+    characters: "cute minimalist white blob sitting cross-legged on the soft grass, tenderly embracing a round grey garden stone, open gentle black oval eyes with soft friendly curved eyebrows and a sweet serene smile, rosy pink blushing cheeks",
+    setting: "golden meadow at late afternoon, warm backlight glowing on the characters outlines, wildflowers, bokeh sunlight filtering through trees",
+    camera: "centered low angle shot with clean spacious pastel sky in top third"
+  },
+  {
+    theme: "La silla vacía y la taza caliente (paz en la soledad)",
+    characters: "cute white blob curled up comfortably in a cozy armchair holding a pastel mug with both hands, closed eyes curved in peaceful relief, small gentle smile, beside it is an empty chair with a faint dashed outline of someone who left",
+    setting: "warm hygge living room, sunset light streaming through window, wooden floor, soft blanket, floating dust motes",
+    camera: "cozy indoor shot, calm uncluttered wall space at upper third"
+  },
+  {
+    theme: "Caminar ligero hacia el sol (cerrar ciclos)",
+    characters: "cute white blob with a very tiny light satchel walking briskly forward with determination, open wide curious black oval eyes, confident slight smile, leaving behind an oversized heavy grey backpack lying open on the trail",
+    setting: "scenic mountain trail at sunrise, misty morning light, golden sun breaking through clouds",
+    camera: "wide cinematic shot, expansive clean morning sky in upper half"
+  },
+  {
+    theme: "Soltar el hilo que quema las manos",
+    characters: "white blob standing on a grassy hill gently opening both small hands, letting go of a bright red floating balloon drifting into the vast sky, expressive open eyes looking up with relief and quiet wonder, soft curved eyebrows",
+    setting: "windy grassy hilltop under a dramatic warm sunset sky, gentle breeze swaying grass",
+    camera: "atmospheric vertical composition, clean gradient sky above"
+  },
+  {
+    theme: "Regar el propio jardín interior (paciencia con uno mismo)",
+    characters: "white blob kneeling lovingly beside a tiny terracotta pot holding a little green watering can, smiling affectionately with rosy cheeks, watching a glowing green sprout bloom",
+    setting: "quaint sunlit greenhouse or balcony garden with hanging plants, warm golden sunlight streaming from the side",
+    camera: "eye-level tender shot, soft negative space at upper third"
+  },
+  {
+    theme: "Cosiéndose la herida dorada (Kintsugi emocional)",
+    characters: "white blob sitting peacefully cross-legged, holding a small golden needle and glowing thread, gently mending a soft hairline crack on its doughy chest with a calm courageous smile, tiny closed peaceful eyes",
+    setting: "warm serene room lit by fairy lights and candlelight, cozy minimalist hygge vibe",
+    camera: "intimate medium shot, clean soft bokeh background above"
+  },
+  {
+    theme: "El paraguas amarillo bajo la tormenta pasajera",
+    characters: "cute white blob standing cheerfully puddles holding a vibrant yellow umbrella, open solid black oval eyes looking playfully sideways, rosy blushing cheeks, smiling while rain falls around it but not on its head",
+    setting: "cozy city street after rain, wet pavement reflecting warm streetlights, gentle mist, golden hour dusk",
+    camera: "vertical street view, soft overcast sky at top third"
+  },
+  {
+    theme: "Dos amigos en una fogata bajo las estrellas",
+    characters: "two cute white blob characters sitting on a wooden log beside a tiny crackling campfire, wrapped in a chunky knit blanket, toast marshmallows, one resting head on the other's shoulder in complete safety and trust",
+    setting: "forest clearing at twilight, warm campfire glow, fairy-tale twilight sky",
+    camera: "warm atmospheric wide shot, spacious dusk sky above"
+  },
+  {
+    theme: "Mirarse al espejo y sonreírse con perdón",
+    characters: "white blob standing in front of an oval mirror on the grass, touching its own cheek, while its reflection smiles back warmly with open bright eyes, surrounded by tiny sprouting daisies",
+    setting: "serene peaceful garden at sunset, soft ethereal warm light",
+    camera: "delicate centered composition, empty pastel sky at top"
+  }
 ];
 
 export async function POST(req: NextRequest) {
@@ -135,48 +180,64 @@ export async function POST(req: NextRequest) {
 
     // Acción para generar la pieza completa: Frase + Metáfora + Prompt Profesional + Guion de Video
     if (action === "create") {
-      const randomArchetype = METAPHOR_ARCHETYPES[Math.floor(Math.random() * METAPHOR_ARCHETYPES.length)];
+      const chosenArchetype = METAPHOR_ARCHETYPES[Math.floor(Math.random() * METAPHOR_ARCHETYPES.length)];
       const seed = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
       const prompt = [
-        "Eres un director de arte y guionista de contenido viral especializado en 'Reflexiones Ilustradas con Personajes Tiernos'.",
-        "Estilo de referencia: Ilustraciones estilo 'Chispas de Inspiración', webcomics minimalistas tiernos (personaje blanco redondeado tipo blob / masita con mejillas rosadas y ojos cerrados en paz).",
+        "Eres el director de arte y guionista principal de páginas virales como 'Chispas de Inspiración', 'Cosas Bonitas' y webcomics minimalistas de reflexión profunda.",
+        "PERSONAJES: Personajes blancos de masa/blob extremadamente tiernos, con contorno negro limpio y grueso, sin pelo, sin ropa, proporciones chibi de 5 a 8 años.",
+        "IMPORTANTE SOBRE LOS OJOS Y EXPRESIONES: Los personajes NO siempre tienen los ojos cerrados. Varían según la emoción de la escena:",
+        "- En momentos de tristeza/soledad/duda: ojos abiertos expresivos formados por dos óvalos negros verticales sólidos (solid black vertical oval dots), con cejitas curvas flotantes arriba que transmiten melancolía o vulnerabilidad, y boca pequeña hacia abajo.",
+        "- En momentos de curiosidad o asombro: ojos abiertos redondos con cejas arqueadas hacia arriba.",
+        "- En momentos de frialdad/distancia del otro personaje: ojos de hendidura o mirada fija en el teléfono con ceja plana indiferente.",
+        "- En momentos de paz profunda, alivio o meditación: ojos cerrados en líneas curvas hacia arriba sonrientes.",
         "",
         `Categoría: "${category || 'Cerrar Ciclos y Soltar'}".`,
-        customTopic ? `Tema o idea base: "${customTopic}".` : "",
-        `Inspiración o arquetipo para variedad: "${randomArchetype}".`,
-        `Semilla de originalidad: ${seed}.`,
+        customTopic ? `Tema o idea base solicitada por el usuario: "${customTopic}".` : "",
+        `Arquetipo visual de inspiración (para garantizar máxima originalidad y variedad): "${chosenArchetype.theme}". Personajes: "${chosenArchetype.characters}". Escenario: "${chosenArchetype.setting}".`,
+        `Semilla única: ${seed}.`,
         "",
-        "REQUISITOS DEL CONTENIDO:",
-        "1. 'quote': Frase de reflexión impactante y memorable de 1 a 3 líneas (máximo 12-16 palabras). Debe ser profunda, madura y fácil de compartir.",
-        "2. 'highlight_word': La palabra o frase corta que llevará el resalte de color pastel en la imagen.",
-        "3. 'metaphor_description': Explicación en español de la escena y la metáfora visual (qué hace el personaje y qué simboliza).",
-        "4. 'image_prompt': PROMPT MAESTRO CON TEXTO INTEGRADO (Para Ideogram / Imagen 3 / DALL-E):",
-        "   - ESTRUCTURA EXACTA OBLIGATORIA (PERSONAJE BLOQUEADO + TIPOGRAFÍA BLOQUEADA BICOLOR):",
-        "     'SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, small smile, rosy pink round cheeks, sticker style, wholesome, [ACCIÓN EXACTA Y OBJETO METAFÓRICO], background is soft photorealistic [FONDO FOTORREALISTA CÁLIDO], 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, soft organic uneven baseline, very legible, bold weight, 3 to 4 centered lines, auto bicolor logic: the setup/context lines in solid black #000000, and the punchline/emotional keyword lines in warm terracotta reddish-brown #8B3A3A, same font family for all, no outline, no shadow, no extra colors, high contrast against sky. Text: \"[QUOTE]\", highlight the most emotional keyword of the phrase in warm pastel peach #F5C48E or terracotta #8B3A3A, rest of text in black #000000, high aesthetic, serene emotional atmosphere.'",
-        "5. 'image_prompt_clean': PROMPT MAESTRO LIMPIO (SIN TEXTO, para editar en Canva o CapCut):",
-        "   - 'SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, small smile, rosy pink round cheeks, sticker style, wholesome, [ACCIÓN EXACTA Y OBJETO METAFÓRICO], background is soft photorealistic [FONDO FOTORREALISTA CÁLIDO], 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters, no text, no typography.'",
-        "6. 'script_narration': Un guion de 20 a 30 segundos para video corto (TikTok / Reels / Shorts):",
-        "   - Gancho emotivo",
-        "   - Desarrollo con voz suave y reflexiva",
-        "   - Cierre contundente invitando a guardar o reflexionar.",
-        "7. 'soundtrack': Música recomendada (ej. 'Piano acústico lofi suave', 'Guitarra acústica melancólica').",
-        "8. 'hashtags': 5 hashtags virales relacionados con amor propio, reflexiones y desarrollo personal.",
+        "ESTRUCTURA EXACTA DE LA FRASE Y TIPOGRAFÍA (ESTILO CHISPAS DE INSPIRACIÓN):",
+        "La frase debe distribuirse armoniosamente en 3 o 4 líneas centradas en el tercio superior:",
+        "- Línea 1 (Contexto/Setup): Letras en serif elegante y sobria, color negro #000000 (Ej: 'No mendigues')",
+        "- Línea 2 (Palabra Clave Emocional 1): Tipografía caligráfica cursiva gruesa (brush script), color terracota cálido #8B3A3A o caramelo tostado #A04000 (Ej: 'presencia')",
+        "- Línea 3 (Conector/Contraste): Letras en serif sobria, color negro #000000 (Ej: 'donde sobra')",
+        "- Línea 4 (Palabra Clave Emocional 2): Tipografía cursiva gruesa negra #000000 con un trazo orgánico de pincelada o subrayado abajo (Ej: 'indiferencia.')",
+        "",
+        "CAMPOS REQUERIDOS EN EL JSON:",
+        "1. 'quote': La frase completa (ej: 'No mendigues presencia donde sobra indiferencia.').",
+        "2. 'quote_lines': Array de 3 a 4 líneas con la estructura exacta: [{ 'text': 'No mendigues', 'style': 'serif', 'color': 'black' }, { 'text': 'presencia', 'style': 'brush_script', 'color': 'terracotta' }, { 'text': 'donde sobra', 'style': 'serif', 'color': 'black' }, { 'text': 'indiferencia.', 'style': 'brush_script_underlined', 'color': 'black' }]",
+        "3. 'highlight_word': La palabra emocional principal (ej: 'presencia').",
+        "4. 'eye_expression': Descripción en español del tipo de ojos y expresión que tienen los personajes en esta escena (ej: 'Ojos abiertos en óvalos negros con cejas tristes caídas para el que se marcha, y mirada fija indiferente para el que mira el móvil').",
+        "5. 'metaphor_description': Explicación en español de la escena, los personajes y el mensaje poético.",
+        "6. 'image_prompt': PROMPT MAESTRO COMPLETO CON TEXTO INTEGRADO (Ideogram / Midjourney / DALL-E):",
+        "   Debe incluir la composición de los personajes (poses, ojos abiertos o cerrados según la emoción, ropa si aplica o accesorios como mochila/taza), fondo fotorrealista cálido, y la descripción exacta de la tipografía bicolor en el tercio superior despejado.",
+        "7. 'image_prompt_clean': PROMPT LIMPIO (SIN TEXTO NI TIPOGRAFÍA) con espacio libre en el tercio superior.",
+        "8. 'script_narration': Guion de locución de 20 a 30 segundos (Gancho emotivo -> Desarrollo con voz cálida -> Cierre reflexivo).",
+        "9. 'soundtrack': Música recomendada.",
+        "10. 'hashtags': 5 hashtags virales.",
         "",
         "Responde SOLO con JSON válido:",
         JSON.stringify({
-          quote: "Cuando la ausencia se vuelve alivio, el ciclo está cerrado.",
-          highlight_word: "alivio",
-          metaphor_description: "El personaje blanco sentado en un cómodo sofá tomando una taza caliente con una expresión de paz, mientras al lado en el cojín hay una silueta punteada vacía de la persona que se fue.",
-          image_prompt: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, small smile, rosy pink round cheeks, sticker style, wholesome, sitting on a cozy sofa holding a pink mug with two hands next to an empty cushion with a subtle dashed outline silhouette, background is soft photorealistic warm cozy living room with soft natural ambient lighting, 2D flat character over photorealistic background, vertical 9:16, Typography style LOCKED for all images: centered at upper third, handwritten casual bold rounded marker font, soft organic uneven baseline, very legible, bold weight, 3 to 4 centered lines, auto bicolor logic: the setup/context lines in solid black #000000, and the punchline/emotional keyword lines in warm terracotta reddish-brown #8B3A3A, same font family for all, no outline, no shadow, no extra colors, high contrast against sky. Text: \"Cuando la ausencia se vuelve alivio, el ciclo está cerrado.\", highlight the most emotional keyword of the phrase in warm pastel peach #F5C48E or terracotta #8B3A3A, rest of text in black #000000, high aesthetic, serene emotional atmosphere.",
-          image_prompt_clean: "SAME CHARACTER LOCKED: cute minimalist white blob character, bald, no hair, no clothes, no human skin, white body, thick bold black outline, flat simple colors, no shading, 5 to 8 years old child proportions, big round head, short chubby limbs, tiny closed eyes as simple black curved lines, small smile, rosy pink round cheeks, sticker style, wholesome, sitting on a cozy sofa holding a pink mug with two hands next to an empty cushion with a subtle dashed outline silhouette, background is soft photorealistic warm cozy living room with soft natural ambient lighting, 2D flat character over photorealistic background, vertical 9:16, empty space top third for text, clean background, no letters, no text, no typography.",
-          script_narration: "¿Alguna vez sentiste miedo de quedarte solo, pero cuando esa persona se fue, tu pecho por fin respiró en paz?\n\nNo todas las despedidas son pérdidas. A veces, la soledad es el abrazo más sincero que la vida te da para recordarte quién eres.\n\nCuando la ausencia se convierte en tranquilidad, no perdiste a nadie: te recuperaste a ti.",
-          soundtrack: "Piano lofi relajante con suave sonido de lluvia de fondo",
-          hashtags: ["#ReflexionesDeVida", "#AmorPropio", "#Soltar", "#PazMental", "#CerrarCiclos"]
+          quote: "No mendigues presencia donde sobra indiferencia.",
+          quote_lines: [
+            { text: "No mendigues", style: "serif", color: "black" },
+            { text: "presencia", style: "brush_script", color: "terracotta" },
+            { text: "donde sobra", style: "serif", color: "black" },
+            { text: "indiferencia.", style: "brush_script_underlined", color: "black" }
+          ],
+          highlight_word: "presencia",
+          eye_expression: "Ojos abiertos en óvalos negros verticales con cejitas curvas tristes flotando arriba para el personaje que camina; y mirada distante e indiferente hacia la pantalla para el otro personaje.",
+          metaphor_description: "En una banca de parque de madera bajo la luz dorada del atardecer otoñal, un personaje blanco con una pequeña mochila camina cabizbajo alejándose con tristeza pero dignidad, mientras en la banca otro personaje le da la espalda ensimismado en su teléfono celular.",
+          image_prompt: "SAME CHARACTER LOCKED, SAME STYLE LOCKED: cute minimalist white dough blob characters, thick clean black outlines, flat simple colors. On the left, a white blob character walks away carrying a brown backpack, head slightly tilted down, expressive open solid black oval eyes looking at ground, soft arched sad curved eyebrows floating above, tiny downturned mouth, rosy pink cheeks, melancholic vulnerable expression. On the right, another white blob sits backward on a weathered wooden park bench completely absorbed in a glowing smartphone, indifferent aloof posture. Setting: beautiful autumn park path at golden hour sunset, fallen orange maple leaves scattered on cobblestone ground, glowing vintage streetlamp, soft warm bokeh trees in background, cinematic depth of field, 2D flat comic characters over photorealistic warm background. Vertical 9:16 composition with wide clear negative space sky in upper third. Typography style LOCKED: centered at upper third, elegant multi-line composition: Line 1 'No mendigues' in clean elegant serif font black #000000, Line 2 'presencia' in prominent thick casual brush script calligraphy in warm terracotta reddish-brown #8B3A3A, Line 3 'donde sobra' in clean serif font black #000000, Line 4 'indiferencia.' in bold brush script with a subtle organic brush underline stroke underneath, perfectly legible, high contrast against sky, emotional storytelling, masterpiece, 8k.",
+          image_prompt_clean: "SAME CHARACTER LOCKED, SAME STYLE LOCKED: cute minimalist white dough blob characters, thick clean black outlines, flat simple colors. On the left, a white blob character walks away carrying a brown backpack, head slightly tilted down, expressive open solid black oval eyes looking at ground, soft arched sad curved eyebrows floating above, tiny downturned mouth, rosy pink cheeks, melancholic vulnerable expression. On the right, another white blob sits backward on a weathered wooden park bench completely absorbed in a glowing smartphone, indifferent aloof posture. Setting: beautiful autumn park path at golden hour sunset, fallen orange maple leaves scattered on cobblestone ground, glowing vintage streetlamp, soft warm bokeh trees in background, cinematic depth of field, 2D flat comic characters over photorealistic warm background. Vertical 9:16 composition, clean empty sky in upper third, negative space for text, no letters, no typography, no words, no text.",
+          script_narration: "¿Por qué insistimos en quedarnos donde ya no nos miran?\n\nA veces, el mayor acto de amor propio no es pedir que te elijan... es darte la media vuelta, respirar hondo y entender que tu valor no depende de la atención que alguien más no quiso darte.\n\nNo mendigues presencia donde sobra indiferencia. Tu paz está al final de ese camino. ♡",
+          soundtrack: "Piano acústico melancólico con sutil violonchelo que pasa a una melodía de alivio y superación",
+          hashtags: ["#ChispasDeInspiracion", "#AmorPropio", "#Soltar", "#CerrarCiclos", "#PazMental"]
         }, null, 2)
       ].filter(Boolean).join("\n");
 
-      const response = await chatCompletion(body, prompt, { temperature: 0.85 });
+      const response = await chatCompletion(body, prompt, { temperature: 0.88 });
       const cleanJson = response.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
       const parsed = JSON.parse(cleanJson);
 
