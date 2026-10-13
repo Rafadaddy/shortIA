@@ -414,6 +414,7 @@ export default function ReflexionesIlustradasPage() {
     if (!activePrompt) return;
     setIsGeneratingImage(true);
     setGeneratedImage(null);
+    showToast("Generando ilustración con IA... Espera unos segundos.");
     try {
       const res = await aiFetch("/api/generate-image", {
         prompt: activePrompt,
@@ -424,6 +425,7 @@ export default function ReflexionesIlustradasPage() {
       setGeneratedImage(data.imageBase64);
       showToast("¡Ilustración generada con éxito!", "success");
     } catch (e: any) {
+      console.error("Error en generateImage:", e);
       showToast(e.message || "Error al generar imagen", "error");
     } finally {
       setIsGeneratingImage(false);

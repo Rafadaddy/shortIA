@@ -18,9 +18,11 @@ export async function POST(req: NextRequest) {
     if (!geminiKey && process.env.GEMINI_API_KEY) {
       geminiKey = process.env.GEMINI_API_KEY;
     }
-    // Fallback de contingencia con la clave predeterminada de Gemini del proyecto
+
     if (!geminiKey) {
-      geminiKey = "AIzaSyDFklMKY9NMKGlNVmnLXQdpy3ACFsI1__E";
+      return NextResponse.json({ 
+        error: "Falta tu API Key de Google Gemini para generar imágenes. Ve al menú 'Ajustes' o 'Configuración' e ingresa tu Gemini API Key gratuita (de aistudio.google.com/apikey)." 
+      }, { status: 400 });
     }
 
     // Tomar la primera llave si hay multiples separadas por coma
@@ -32,6 +34,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ imageBase64: base64Image });
   } catch (error: any) {
     console.error("Error generating image:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const msg = error.message || "";
+    let friendlyError = msg;
+    if (msg.includes("403") || msg.includes("leaked") || msg.includes("PERMISSION_DENIED")) {
+      friendlyError = "Tu API Key de Gemini fue reportada o bloqueada por Google. Abre 'Configuración' e ingresa una nueva API Key de Google AI Studio.";
+    } else if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED")) {
+      friendlyError = "Límite de cuota alcanzado en Gemini. Espera un minuto o cambia tu clave en Configuración.";
+    }
+    return NextResponse.json({ error: friendlyError }, { status: 500 });
   }
 }
