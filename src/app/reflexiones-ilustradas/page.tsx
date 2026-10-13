@@ -29,6 +29,8 @@ import {
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
+import { saveMediaItem } from "@/lib/db";
+import { saveHistoryItem } from "@/lib/history-storage";
 
 // Modos principales de la pantalla (Pestañas de expansión)
 const MODES = [
@@ -265,6 +267,30 @@ export default function ReflexionesIlustradasPage() {
       if (!res.ok) throw new Error(data.error || "Error al redactar");
       setResult(data);
       showToast("¡Reflexión creada con éxito!", "success");
+
+      // Guardar automáticamente en la memoria local (IndexedDB y Borradores)
+      try {
+        saveMediaItem({
+          type: "reflection",
+          title: data.quote || "Reflexión Ilustrada",
+          category,
+          quote: data.quote,
+          quoteLines: data.quote_lines,
+          imagePrompt: data.image_prompt,
+          imagePromptClean: data.image_prompt_clean,
+          scriptNarration: data.script_narration,
+          hashtags: data.hashtags
+        });
+        saveHistoryItem({
+          category: "Reflexiones Ilustradas",
+          title: data.quote,
+          script: data.script_narration,
+          prompts: [{ title: data.quote, image_prompt: data.image_prompt, narration: data.script_narration }]
+        });
+      } catch (err) {
+        console.warn("Error guardando en memoria local:", err);
+      }
+
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 150);
@@ -424,6 +450,24 @@ export default function ReflexionesIlustradasPage() {
       if (!res.ok) throw new Error(data.error || "Error generando imagen");
       setGeneratedImage(data.imageBase64);
       showToast("¡Ilustración generada con éxito!", "success");
+
+      // Guardar imagen en la memoria IndexedDB para acceso instantáneo
+      try {
+        if (result?.quote) {
+          saveMediaItem({
+            type: "reflection",
+            title: result.quote,
+            category,
+            quote: result.quote,
+            quoteLines: result.quote_lines,
+            imagePrompt: activePrompt,
+            imageBase64: data.imageBase64,
+            scriptNarration: result.script_narration
+          });
+        }
+      } catch (err) {
+        console.warn("Error guardando imagen en IndexedDB:", err);
+      }
     } catch (e: any) {
       console.error("Error en generateImage:", e);
       showToast(e.message || "Error al generar imagen", "error");
