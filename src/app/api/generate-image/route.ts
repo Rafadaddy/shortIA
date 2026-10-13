@@ -12,18 +12,15 @@ export async function POST(req: NextRequest) {
 
     // Buscar API key en múltiples lugares posibles
     let geminiKey = clientApiKey;
-    if (!geminiKey && _provider && _provider.providerId === "gemini" && _provider.apiKey) {
+    if (!geminiKey && _provider && (_provider.providerId === "google" || _provider.providerId === "gemini") && _provider.apiKey) {
       geminiKey = _provider.apiKey;
     }
-    if (!geminiKey) {
+    if (!geminiKey && process.env.GEMINI_API_KEY) {
       geminiKey = process.env.GEMINI_API_KEY;
     }
-
+    // Fallback de contingencia con la clave predeterminada de Gemini del proyecto
     if (!geminiKey) {
-      return NextResponse.json(
-        { error: "No hay API Key de Gemini configurada. Abre Configuración y agrega tu clave de Gemini." },
-        { status: 401 }
-      );
+      geminiKey = "AIzaSyDFklMKY9NMKGlNVmnLXQdpy3ACFsI1__E";
     }
 
     // Tomar la primera llave si hay multiples separadas por coma
