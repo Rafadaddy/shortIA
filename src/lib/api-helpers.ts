@@ -85,25 +85,26 @@ export async function generateImageWithGemini(
   apiKey: string,
   aspectRatio: string = "1:1"
 ): Promise<string> {
-  // Map standard aspect ratios to Gemini supported formats
-  let geminiRatio = "1:1";
-  if (aspectRatio.includes("16:9")) geminiRatio = "16:9";
-  if (aspectRatio.includes("9:16")) geminiRatio = "9:16";
-  if (aspectRatio.includes("3:4")) geminiRatio = "3:4";
-  if (aspectRatio.includes("4:3")) geminiRatio = "4:3";
+  // Configurar ratio en el prompt para guiar al modelo
+  const ratioDescription = aspectRatio.includes("9:16") 
+    ? "Vertical format aspect ratio 9:16 portrait orientation" 
+    : aspectRatio.includes("16:9")
+    ? "Horizontal format aspect ratio 16:9 landscape orientation"
+    : `Aspect ratio ${aspectRatio}`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`;
+  const enhancedPrompt = `${prompt}. ${ratioDescription}.`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      instances: [{ prompt }],
-      parameters: {
-        sampleCount: 1,
-        aspectRatio: geminiRatio,
-        outputOptions: { mimeType: "image/jpeg" },
-      },
-    }),
+      contents: [
+        {
+          parts: [{ text: enhancedPrompt }]
+        }
+      ]
+    })
   });
 
   if (!response.ok) {
@@ -113,10 +114,14 @@ export async function generateImageWithGemini(
   }
 
   const data = await response.json();
-  if (data.predictions && data.predictions.length > 0) {
-    return data.predictions[0].bytesBase64Encoded;
+  if (data.candidates && data.candidates[0]?.content?.parts) {
+    for (const part of data.candidates[0].content.parts) {
+      if (part.inlineData && part.inlineData.data) {
+        return part.inlineData.data;
+      }
+    }
   }
-  
-  throw new Error("No se pudo generar la imagen con Gemini");
+
+  throw new Error("El modelo generó respuesta pero no devolvió los datos de la imagen");
 }
 

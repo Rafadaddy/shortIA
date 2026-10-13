@@ -22,7 +22,9 @@ import {
   MessageSquareQuote,
   Film,
   Users2,
-  PlaySquare
+  PlaySquare,
+  Volume2,
+  Play
 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
@@ -186,10 +188,32 @@ export default function ReflexionesIlustradasPage() {
   const [multiSceneImages, setMultiSceneImages] = useState<Record<number, string>>({});
   const [generatingSceneIdx, setGeneratingSceneIdx] = useState<number | null>(null);
 
+  // Estados de audio / locución con IA
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [audioBase64, setAudioBase64] = useState<string | null>(null);
+
   const resultRef = useRef<HTMLDivElement>(null);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const { handleCopy: copyToClipboard } = useCopyToClipboard();
   const { showToast } = useToast();
+
+  // Función para sintetizar audio de la narración
+  const generateSpeech = async (text: string) => {
+    if (!text) return;
+    setIsGeneratingAudio(true);
+    setAudioBase64(null);
+    try {
+      const res = await aiFetch("/api/generate-speech", { text });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al sintetizar voz");
+      setAudioBase64(data.audioBase64);
+      showToast("¡Locución de audio generada!", "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al generar audio", "error");
+    } finally {
+      setIsGeneratingAudio(false);
+    }
+  };
 
   const handleCopy = (text: string, key: string) => {
     copyToClipboard(text, key);
@@ -880,12 +904,25 @@ export default function ReflexionesIlustradasPage() {
                           {showScript ? "Ocultar Guion" : "Mostrar Guion"}
                         </button>
                         {showScript && (
-                          <button
-                            onClick={() => handleCopy(result.script_narration, "script_block")}
-                            className="text-xs text-emerald-300 hover:text-white flex items-center gap-1 transition-colors"
-                          >
-                            {copiedStates["script_block"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Guion
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => generateSpeech(result.script_narration)}
+                              disabled={isGeneratingAudio}
+                              className="text-xs bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded-lg border border-indigo-500/30 flex items-center gap-1.5 transition-all disabled:opacity-50 font-bold"
+                            >
+                              {isGeneratingAudio ? (
+                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sintetizando Voz...</>
+                              ) : (
+                                <><Volume2 className="w-3.5 h-3.5 text-indigo-400" /> Generar Audio MP3</>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleCopy(result.script_narration, "script_block")}
+                              className="text-xs text-emerald-300 hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800"
+                            >
+                              {copiedStates["script_block"] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />} Copiar Guion
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -895,6 +932,29 @@ export default function ReflexionesIlustradasPage() {
                         <div className="bg-slate-900/90 rounded-xl p-4 text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap select-all border border-slate-800">
                           {result.script_narration}
                         </div>
+
+                        {/* Reproductor de Audio si ya fue generado */}
+                        {audioBase64 && (
+                          <div className="bg-indigo-950/40 border border-indigo-500/40 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-xs font-bold text-indigo-300">
+                              <Volume2 className="w-4 h-4 text-indigo-400" />
+                              Locución Generada Lista:
+                            </div>
+                            <audio 
+                              controls 
+                              src={`data:audio/mp3;base64,${audioBase64}`} 
+                              className="w-full sm:w-64 h-8"
+                            />
+                            <a
+                              href={`data:audio/mp3;base64,${audioBase64}`}
+                              download="locucion_reflexion.mp3"
+                              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 transition-all shrink-0"
+                            >
+                              <Download className="w-3.5 h-3.5" /> Descargar MP3
+                            </a>
+                          </div>
+                        )}
+
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-slate-400">
                           <span><Music className="w-3.5 h-3.5 inline mr-1 text-amber-400" /><strong>Música:</strong> {result.soundtrack}</span>
                           <span><strong>Hashtags:</strong> {result.hashtags.join(" ")}</span>
