@@ -194,6 +194,10 @@ export default function ReflexionesIlustradasPage() {
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
 
+  // Estados de Previsualización de Video en Vivo (Efecto Ken Burns)
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const audioPreviewRef = useRef<HTMLAudioElement | null>(null);
+
   const resultRef = useRef<HTMLDivElement>(null);
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const { handleCopy: copyToClipboard } = useCopyToClipboard();
@@ -915,20 +919,100 @@ export default function ReflexionesIlustradasPage() {
 
                     {generatedImage && (
                       <div className="w-full max-w-sm space-y-4 pt-4">
-                        <div className="relative rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+                        {/* Contenedor del Reproductor con Efecto Video en Vivo */}
+                        <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-500/50 bg-black shadow-2xl aspect-[9/16] flex items-center justify-center group">
                           <img
                             src={`data:image/jpeg;base64,${generatedImage}`}
                             alt="Reflexión Ilustrada"
-                            className="w-full h-auto object-cover"
+                            className={`w-full h-full object-cover transition-transform duration-[12000ms] ease-out will-change-transform ${
+                              isPlayingPreview ? "scale-115 translate-y-2" : "scale-100"
+                            }`}
                           />
+
+                          {/* Overlay de gradiente estilo TikTok */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60 pointer-events-none" />
+
+                          {/* Botón flotante Play / Pause sobre el video */}
+                          <button
+                            onClick={() => {
+                              if (!audioBase64) {
+                                // Si no hay audio aún, lo sintetiza automáticamente
+                                generateSpeech(result?.script_narration || "");
+                              }
+                              if (isPlayingPreview) {
+                                audioPreviewRef.current?.pause();
+                                setIsPlayingPreview(false);
+                              } else {
+                                audioPreviewRef.current?.play();
+                                setIsPlayingPreview(true);
+                              }
+                            }}
+                            className="absolute z-20 p-4 rounded-full bg-slate-900/80 hover:bg-pink-600 text-white backdrop-blur-md border border-white/20 shadow-2xl transition-all transform hover:scale-110 active:scale-95"
+                          >
+                            {isPlayingPreview ? (
+                              <div className="w-6 h-6 flex items-center justify-center font-black text-sm">❚❚</div>
+                            ) : (
+                              <Play className="w-6 h-6 fill-white ml-0.5" />
+                            )}
+                          </button>
+
+                          {/* Badge de estado del reproductor */}
+                          <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white">
+                            <span className={`w-2 h-2 rounded-full ${isPlayingPreview ? "bg-rose-500 animate-ping" : "bg-emerald-400"}`} />
+                            {isPlayingPreview ? "Reproduciendo Short (Ken Burns)" : "Vista Previa de Video"}
+                          </div>
+
+                          {/* Tag de Marca de Agua / Título */}
+                          <div className="absolute bottom-3 left-3 right-3 z-10 text-center">
+                            <span className="text-[11px] font-medium text-white/90 drop-shadow-md">
+                              {watermark}
+                            </span>
+                          </div>
+
+                          {/* Audio oculto sincronizado con la previsualización */}
+                          {audioBase64 && (
+                            <audio
+                              ref={audioPreviewRef}
+                              src={`data:audio/mp3;base64,${audioBase64}`}
+                              onEnded={() => setIsPlayingPreview(false)}
+                              onPause={() => setIsPlayingPreview(false)}
+                              onPlay={() => setIsPlayingPreview(true)}
+                              className="hidden"
+                            />
+                          )}
                         </div>
-                        <a
-                          href={`data:image/jpeg;base64,${generatedImage}`}
-                          download="reflexion_ilustrada.jpg"
-                          className="w-full py-2.5 rounded-xl font-bold bg-emerald-600 text-white flex items-center justify-center gap-2 hover:bg-emerald-500 transition-colors text-xs shadow-lg shadow-emerald-600/20"
-                        >
-                          <Download className="w-4 h-4" /> Descargar Imagen 9:16
-                        </a>
+
+                        {/* Controles de descarga del Pack Creador */}
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <a
+                            href={`data:image/jpeg;base64,${generatedImage}`}
+                            download="imagen_short_9x16.jpg"
+                            className="py-2.5 px-3 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 flex items-center justify-center gap-1.5 transition-colors text-xs shadow-md"
+                          >
+                            <Download className="w-3.5 h-3.5 text-blue-400" /> Bajar Imagen
+                          </a>
+                          {audioBase64 ? (
+                            <a
+                              href={`data:audio/mp3;base64,${audioBase64}`}
+                              download="locucion_short.mp3"
+                              className="py-2.5 px-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-1.5 transition-colors text-xs shadow-md shadow-indigo-600/30"
+                            >
+                              <Download className="w-3.5 h-3.5" /> Bajar Voz MP3
+                            </a>
+                          ) : (
+                            <button
+                              onClick={() => generateSpeech(result?.script_narration || "")}
+                              disabled={isGeneratingAudio}
+                              className="py-2.5 px-3 rounded-xl font-bold bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white flex items-center justify-center gap-1.5 transition-all text-xs shadow-md shadow-pink-600/20 disabled:opacity-50"
+                            >
+                              {isGeneratingAudio ? (
+                                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Creando Voz...</>
+                              ) : (
+                                <><Mic className="w-3.5 h-3.5" /> Generar Voz</>
+                              )}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
