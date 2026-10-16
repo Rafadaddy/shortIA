@@ -32,11 +32,14 @@ interface TigerIdea {
 }
 
 interface TigerImagePrompt {
+  step?: string;
   version: string;
+  metaphor?: string;
   prompt: string;
 }
 
 interface TigerVideoPrompt {
+  step?: string;
   version: string;
   camera: string;
   motion: string;
@@ -44,10 +47,19 @@ interface TigerVideoPrompt {
   prompt: string;
 }
 
+interface TigerCombination {
+  format?: string;
+  structure?: string;
+  hook_formula?: string;
+  palette?: string;
+  scene_environments?: string[];
+}
+
 interface TigerData {
   title: string;
   theme: string;
   style: string;
+  combination?: TigerCombination;
   image_prompts: TigerImagePrompt[];
   video_prompts: TigerVideoPrompt[];
   script_audio: {
@@ -198,7 +210,7 @@ export default function TigreFinancieroPage() {
 
       <div className="relative z-10 max-w-5xl mx-auto space-y-8">
         
-        {/* HEADER DE RAFA DADDY - TIGRE FINANCIERO V3 */}
+        {/* HEADER DE RAFA DADDY - TIGRE FINANCIERO V4 */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
           <div className="flex items-center gap-3.5">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-orange-500/20 to-emerald-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-xl shadow-amber-500/10 text-2xl font-black">
@@ -207,19 +219,19 @@ export default function TigreFinancieroPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight [text-wrap:balance]">
-                  Rafa Daddy — Tigre Financiero V3
+                  Rafa Daddy — Tigre Financiero V4
                 </h1>
                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 uppercase tracking-wider">
-                  Pixar x Realismo
+                  Personaje Idéntico & Variedad Total
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 [text-wrap:pretty]">
-                Mascota financiera y mentor con traje azul marino, lentes dorados, 5 prompts de imagen 4:3, 5 de video 9:16 y guion V3.
+                Personaje bloqueado 100% idéntico ([CHARACTER] inmutable + NEGATIVE). Arco SHOCK → PROBLEMA → EXPLICACIÓN → SOLUCIÓN → VICTORIA con 5 escenas, ángulos e iluminación únicos.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-[#111216] text-amber-300 border border-white/10 shadow-sm">
-            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Viral Finance Hub
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Viral Finance Hub V4
           </div>
         </div>
 
@@ -344,17 +356,47 @@ export default function TigreFinancieroPage() {
           </div>
         )}
 
-        {/* RESULTADO COMPLETO RAFA DADDY V3 */}
+        {/* RESULTADO COMPLETO RAFA DADDY V4 */}
         {data && (
           <div className="space-y-8 animate-in fade-in duration-300">
             
-            {/* GUION DE AUDIO V3 */}
+            {/* CARD DE COMBINACIÓN USADA (VARIEDAD V4) */}
+            {data.combination && (
+              <div className="bg-[#090A0D] border border-amber-500/20 rounded-2xl p-4 sm:p-5 shadow-xl space-y-3">
+                <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                  <span className="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                    🎲 Combinación de Variedad Única (V4)
+                  </span>
+                  <span className="text-[11px] text-slate-400">Arco: SHOCK → PROBLEMA → EXPLICACIÓN → SOLUCIÓN → VICTORIA</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block font-semibold">Formato</span>
+                    <span className="text-white font-medium">{data.combination.format || "El Tigre Mentor"}</span>
+                  </div>
+                  <div className="bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block font-semibold">Estructura</span>
+                    <span className="text-white font-medium">{data.combination.structure || "Problema-Agitación-Solución"}</span>
+                  </div>
+                  <div className="bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block font-semibold">Fórmula Gancho</span>
+                    <span className="text-amber-300 font-medium">{data.combination.hook_formula || "Dato / Pregunta incómoda"}</span>
+                  </div>
+                  <div className="bg-white/[0.03] p-2.5 rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-500 uppercase block font-semibold">Paleta</span>
+                    <span className="text-emerald-400 font-medium">{data.combination.palette || "Navy & Gold"}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* GUION DE AUDIO V4 */}
             <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 uppercase">
-                      Guion V3 Estructurado
+                      Guion V4 Estructurado
                     </span>
                     <span className="text-xs text-slate-400">Branding solo al final</span>
                   </div>
@@ -423,11 +465,11 @@ export default function TigreFinancieroPage() {
                 </div>
               )}
 
-              {/* BLOQUES DEL GUION V3 */}
+              {/* BLOQUES DEL GUION V4 */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
                   <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
-                    ⚡ Gancho 3s (Directo al Problema)
+                    ⚡ Gancho 3s (Fórmula Viral)
                   </span>
                   <p className="text-xs font-medium text-white leading-relaxed">
                     "{data.script_audio.hook_3s}"
@@ -436,7 +478,7 @@ export default function TigreFinancieroPage() {
 
                 <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
                   <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
-                    🔍 Problema 15s (Dónde se va el dinero)
+                    🔍 Problema 15s (1-2 Ejemplos MX)
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     "{data.script_audio.problem_15s}"
@@ -445,7 +487,7 @@ export default function TigreFinancieroPage() {
 
                 <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
                   <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
-                    🛠️ Solución 20s (Sistema Concreto)
+                    🛠️ Solución 20s (Sistema + Frase)
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     "{data.script_audio.solution_20s}"
@@ -485,7 +527,7 @@ export default function TigreFinancieroPage() {
                 <div className="flex items-center gap-2">
                   <ImageIcon className="w-5 h-5 text-indigo-400" />
                   <h2 className="text-lg font-bold text-white tracking-tight">
-                    1) 5 Prompts de Imagen (Formato 4:3 para Flux / Midjourney / Leonardo)
+                    1) 5 Prompts de Imagen (Formato 4:3 con [CHARACTER] Inmutable + NEGATIVE)
                   </h2>
                 </div>
                 <span className="text-xs text-slate-400">Pixar x Realismo --ar 4:3 --style raw</span>
@@ -495,9 +537,16 @@ export default function TigreFinancieroPage() {
                 {data.image_prompts.map((img, idx) => (
                   <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-400">
-                        {img.version}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {img.step && (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            {img.step}
+                          </span>
+                        )}
+                        <span className="text-xs font-bold text-amber-400">
+                          {img.version}
+                        </span>
+                      </div>
                       <button
                         onClick={() => {
                           handleCopy(img.prompt, `img_${idx}`);
@@ -509,7 +558,12 @@ export default function TigreFinancieroPage() {
                         Copiar Prompt
                       </button>
                     </div>
-                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04]">
+                    {img.metaphor && (
+                      <div className="text-[11px] text-slate-400">
+                        <strong className="text-amber-400/90">Metáfora Visual:</strong> {img.metaphor}
+                      </div>
+                    )}
+                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04] whitespace-pre-wrap">
                       {img.prompt}
                     </p>
                   </div>
@@ -534,6 +588,11 @@ export default function TigreFinancieroPage() {
                   <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        {vid.step && (
+                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            {vid.step}
+                          </span>
+                        )}
                         <span className="text-xs font-bold text-rose-400">
                           {vid.version}
                         </span>
