@@ -237,7 +237,32 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
     }
 
     const data = JSON.parse(cleanJson);
-    return NextResponse.json(data);
+
+    // Normalizar estructura si el modelo usó nombres alternativos
+    const normalizedData = {
+      title: data.title || "Tigre Financiero V4",
+      theme: data.theme || topic || "Finanzas Personales",
+      style: data.style || tone || "Motivacional",
+      combination: data.combination || {
+        format: "El Tigre Mentor",
+        structure: "Problema-Agitación-Solución",
+        hook_formula: "Fórmula Viral",
+        palette: "Navy & Gold",
+        scene_environments: []
+      },
+      image_prompts: Array.isArray(data.image_prompts) ? data.image_prompts : [],
+      video_prompts: Array.isArray(data.video_prompts) ? data.video_prompts : [],
+      script_audio: data.script_audio || {
+        hook_3s: "El secreto que nadie te dijo sobre tu quincena...",
+        problem_15s: "Crees que ganas bien, pero las fugas invisibles te dejan sin un peso.",
+        solution_20s: "Aplica la regla de separar el 20% antes de pagar cualquier servicio hoy mismo.",
+        cta_final: "Sígueme para más del Tigre Financiero - Rafa Daddy",
+        full_speech: "Crees que ganas bien, pero las fugas invisibles te dejan sin un peso. Aplica la regla de separar el 20% antes de pagar cualquier servicio hoy mismo. Sígueme para más del Tigre Financiero - Rafa Daddy",
+        overlays: ["¿Dónde se fue?", "Aplica el 20%", "Separa primero", "No gastes todo", "Libertad financiera"]
+      }
+    };
+
+    return NextResponse.json(normalizedData);
   } catch (error: any) {
     console.error("Error generating tiger finance:", error);
     return NextResponse.json({ error: error.message || "Error interno generando pack V4" }, { status: 500 });

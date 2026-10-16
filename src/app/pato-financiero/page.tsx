@@ -156,21 +156,21 @@ export default function TigreFinancieroPage() {
       try {
         saveMediaItem({
           type: "general",
-          title: `Rafa Daddy: ${json.title}`,
+          title: `Rafa Daddy: ${tigerJson.title || "Tigre Financiero"}`,
           category: "Tigre Financiero",
-          quote: json.script_audio.hook_3s,
-          scriptNarration: json.script_audio.full_speech,
-          imagePrompt: json.image_prompts[0]?.prompt
+          quote: tigerJson.script_audio?.hook_3s || "",
+          scriptNarration: tigerJson.script_audio?.full_speech || "",
+          imagePrompt: tigerJson.image_prompts?.[0]?.prompt || ""
         });
         saveHistoryItem({
           category: "Tigre Financiero",
-          title: tigerJson.title,
-          script: tigerJson.script_audio.full_speech,
-          prompts: tigerJson.image_prompts.map((p: TigerImagePrompt, i: number) => ({
+          title: tigerJson.title || "Tigre Financiero",
+          script: tigerJson.script_audio?.full_speech || "",
+          prompts: (tigerJson.image_prompts || []).map((p: TigerImagePrompt, i: number) => ({
             scene_number: i + 1,
-            title: p.version,
-            image_prompt: p.prompt,
-            animation_prompt: tigerJson.video_prompts[i]?.prompt || ""
+            title: p.version || `Escena ${i + 1}`,
+            image_prompt: p.prompt || "",
+            animation_prompt: tigerJson.video_prompts?.[i]?.prompt || ""
           }))
         });
       } catch (err) {
