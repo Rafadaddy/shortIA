@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
 PSICOLOGÍA Y ROL DE RAFA DADDY:
 - Rafa Daddy es el MENTOR FINANCIERO Y AUDITOR DE ÉXITO. Él ya domina el dinero, es próspero y viste traje fino a la medida.
 - NUNCA habla como si él estuviera quebrado, endeudado o sin dinero hoy.
-- Le habla DIRECTO EN SEGUNDA PERSONA AL ESPECTADOR ("Tú", "Ganas bien pero...", "Te crees león gastando...").
+- HABLA EXCLUSIVAMENTE EN SEGUNDA PERSONA DIRECTA AL ESPECTADOR ("Tú", "pagas", "te gastas", "compras", "andas").
+- PROHIBIDO ABSOLUTAMENTE DECIR: "Yo el tigre", "Como tigre financiero", "Soy el tigre", "Yo Rafa Daddy", "Yo te digo", "Nosotros los tigres", "Mi manada". El personaje NUNCA habla de sí mismo como animal ni como tigre durante el guion.
+- Le habla de frente y al grano al espectador como un mentor humano con colmillo financiero: "Pagas una suscripción de Netflix que ni usas y no te das cuenta cómo se te van $400 al mes...", "Ganas $25,000 pero el día 20 ya no traes ni para la gasolina...".
 - En las escenas de SHOCK y PROBLEMA, el Tigre NO es la víctima miserable: él es el AUDITOR que te confronta, el mentor que examina el ticket con incredulidad, el que señala con su pata la trampa invisible de los MSI o los microgastos que están arruinando AL USUARIO.
 - En SOLUCIÓN y VICTORIA, te entrega el sistema con la seguridad de quien ya venció el juego financiero.
 `;
@@ -33,7 +35,7 @@ AUDIENCIA: Personas de 20 a 45 años con ingresos que sienten que el dinero se l
 TONO ELEGIDO: "${tone || 'Motivacional'}"
 
 REGLAS DE IDEAS:
-- Rafa Daddy actúa como el mentor financiero con colmillo que le abre los ojos al espectador.
+- Rafa Daddy actúa como el mentor financiero con colmillo que le abre los ojos al espectador hablando en SEGUNDA PERSONA ("Tú").
 - Gancho en los primeros 3 segundos directo al dolor financiero del espectador con fórmulas virales (pregunta incómoda, cálculo en vivo, contradicción, error invisible).
 - Cero clichés de autoayuda genérica; habla de sistemas concretos y cotidianos.
 
@@ -58,15 +60,23 @@ Genera el GUION DE AUDIO estructurado y combinación de variedad para:
 TEMA / IDEA ELEGIDA: "${userTopic}"
 ESTILO / TONO: "${selectedStyle}"
 
-REGLAS OBLIGATORIAS:
+REGLAS OBLIGATORIAS DEL GUION:
 - Duración total ≈38s hablados.
-- ROL: Rafa Daddy es el mentor financiero de traje impecable que te habla a TI espectador. NO habla como si él estuviera endeudado; habla como el que te desenmascara el error financiero.
-- GANCHO (0-3s): directo al problema del espectador, SIN decir tu nombre al inicio (ej: "Ganas \$30,000 pero el día 20 estás rascándole a la alcancía...").
-- PROBLEMA (3-18s): El Tigre explica dónde se va el dinero del usuario con 1-2 ejemplos cotidianos MX (Uber, Oxxo, tandas, MSI, café diario) con tono de mentor despierto.
-- SOLUCIÓN (18-38s): sistema concreto con números específicos y una frase memorable que él te enseña a aplicar.
-- CTA OBLIGATORIO SOLO AL FINAL: "Sígueme para más del Tigre Financiero - Rafa Daddy"
+- HÁBLALE DIRECTAMENTE A LA PERSONA ("TÚ"). Ejemplo: "Pagas Netflix, Spotify y el gym al que nunca vas, y luego te quejas de que no te alcanza...", "Ganas bien, pero el día 20 estás rascándole a la alcancía...".
+- PROHIBIDO ROTUNDAMENTE EN EL CUERPO DEL GUION:
+  * "Yo el tigre..."
+  * "Como tigre..."
+  * "Soy el tigre..."
+  * "Yo soy Rafa Daddy..."
+  * "¿Sabías que...?"
+  * "Si eres de los que..."
+  * "Hola a todos"
+  * "En este video"
+- GANCHO (0-3s): directo al problema del espectador, confrontativo o incómodo.
+- PROBLEMA (3-18s): Explica dónde se le va el dinero AL ESPECTADOR con 1-2 ejemplos cotidianos MX (Uber, Oxxo, tandas, MSI, café diario, suscripciones fantasmas).
+- SOLUCIÓN (18-38s): sistema concreto con números específicos y una regla práctica que la persona puede aplicar hoy.
+- CTA OBLIGATORIO SOLO AL FINAL (único lugar donde va el branding): "Sígueme para más del Tigre Financiero - Rafa Daddy"
 - OVERLAY: 5 textos cortos de máximo 5 palabras estilo viral (pregunta, número, orden, contraste, resultado).
-- PROHIBIDO antes del CTA: "¿Sabías que...?", "Si eres de los que...", "Hola a todos", "En este video", "Yo soy Rafa Daddy".
 
 Responde ÚNICAMENTE con un JSON válido:
 {
@@ -217,15 +227,16 @@ D) LO QUE DEBES GENERAR
    [CHARACTER block] + [emoción] + [acción/pose] + [metáfora visual ligada al tema, con utilería específica] + [escenario detallado] + [ángulo] + [iluminación] + [paleta] + ", vertical portrait format 9:16 for TikTok, photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 9:16 --style raw\\n\\n" + [NEGATIVE en línea aparte]
 2) 5 PROMPTS DE VIDEO (Kling / Runway / Luma / Pika, vertical 9:16, 5-8s), pensados para IMAGE-TO-VIDEO:
    [CHARACTER block] + ", same character as reference image, " + [acción principal (1 sola acción clara)] + ", " + [movimiento del personaje] + ", " + [movimiento de cámara] + ", " + [partículas/ambiente] + ", 6 seconds, vertical 9:16, photorealistic, consistent character, smooth motion, no morphing, no outfit change"
-3) GUION DE AUDIO en español (≈38s), SIN presentación al inicio:
-   - GANCHO (0-3s): fórmula elegida, directo al problema, sin decir nombre.
-   - PROBLEMA (3-18s): El Tigre explica dónde se va el dinero, con 1-2 ejemplos cotidianos MX.
-   - SOLUCIÓN (18-38s): sistema concreto y accionable, con al menos 1 número concreto y 1 frase memorable NUEVA.
+3) GUION DE AUDIO en español (≈38s), HABLADO DIRECTAMENTE AL ESPECTADOR ("TÚ"):
+   - ROL: Mentor financiero de traje impecable hablando de frente a quien ve el video.
+   - PROHIBIDO DECIR: "Yo el tigre", "Soy el tigre", "Como tigre", "Yo soy Rafa Daddy", "¿Sabías que...?", "Si eres de los que...", "Hola a todos", "En este video".
+   - GANCHO (0-3s): directo al problema del espectador ("Pagas suscripciones que ni usas...", "Ganas $20,000 pero el día 15 ya no traes nada...").
+   - PROBLEMA (3-18s): Explica dónde se le va el dinero AL ESPECTADOR con 1-2 ejemplos cotidianos MX (Netflix, Oxxo, Uber, MSI, tandas).
+   - SOLUCIÓN (18-38s): sistema concreto y accionable para el espectador con al menos 1 número concreto y 1 regla práctica.
    - CTA SOLO AL FINAL: "Sígueme para más del Tigre Financiero - Rafa Daddy"
    - OVERLAY: 5 textos de máx 5 palabras estilo viral (pregunta, número, orden, contraste, resultado).
 
-PROHIBIDO en el guion: "¿Sabías que...?", "Si eres de los que...", "Hola a todos", "Hoy vamos a hablar de", "En este video", "Yo soy Rafa Daddy" (antes del CTA).
-Branding SOLO al final.
+Branding y nombre del personaje ÚNICAMENTE al final en el CTA. Durante el video le habla en segunda persona ("tú").
 
 Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
 {
