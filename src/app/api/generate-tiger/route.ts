@@ -99,8 +99,8 @@ BANCOS DE INSPIRACIÓN A USAR:
 D) LO QUE DEBES GENERAR
 ══════════════════════════════════════
 0) COMBINACIÓN USADA (corta, en una línea por punto): formato, estructura, gancho, paleta y escenario de cada paso.
-1) 5 PROMPTS DE IMAGEN (Flux / Midjourney / Leonardo, 4:3), en inglés técnico, con este orden exacto:
-   [CHARACTER block] + [emoción] + [acción/pose] + [metáfora visual ligada al tema, con utilería específica] + [escenario detallado] + [ángulo] + [iluminación] + [paleta] + ", photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 4:3 --style raw\\n\\n" + [NEGATIVE en línea aparte]
+1) 5 PROMPTS DE IMAGEN (Flux / Midjourney / Leonardo, vertical 9:16 para TikTok/Reels), en inglés técnico, con este orden exacto:
+   [CHARACTER block] + [emoción] + [acción/pose] + [metáfora visual ligada al tema, con utilería específica] + [escenario detallado] + [ángulo] + [iluminación] + [paleta] + ", vertical portrait format 9:16 for TikTok, photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 9:16 --style raw\\n\\n" + [NEGATIVE en línea aparte]
 2) 5 PROMPTS DE VIDEO (Kling / Runway / Luma / Pika, vertical 9:16, 5-8s), pensados para IMAGE-TO-VIDEO:
    [CHARACTER block] + ", same character as reference image, " + [acción principal (1 sola acción clara)] + ", " + [movimiento del personaje] + ", " + [movimiento de cámara] + ", " + [partículas/ambiente] + ", 6 seconds, vertical 9:16, photorealistic, consistent character, smooth motion, no morphing, no outfit change"
 3) GUION DE AUDIO en español (≈38s), SIN presentación al inicio:
@@ -136,7 +136,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
       "step": "SHOCK",
       "version": "V1 - Shock Inicial",
       "metaphor": "Metáfora visual específica...",
-      "prompt": "${CHARACTER_BLOCK}, [emoción], [acción], [metáfora], [escenario], [ángulo], [luz], [paleta], photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 4:3 --style raw\\n\\n${NEGATIVE_PROMPT}"
+      "prompt": "${CHARACTER_BLOCK}, [emoción], [acción], [metáfora], [escenario], [ángulo], [luz], [paleta], vertical portrait format 9:16 for TikTok, photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 9:16 --style raw\\n\\n${NEGATIVE_PROMPT}"
     },
     {
       "step": "PROBLEMA",

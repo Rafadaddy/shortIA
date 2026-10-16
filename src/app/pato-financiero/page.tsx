@@ -228,7 +228,7 @@ export default function TigreFinancieroPage() {
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 [text-wrap:pretty]">
-                Personaje bloqueado 100% idéntico ([CHARACTER] inmutable + NEGATIVE). Arco SHOCK → PROBLEMA → EXPLICACIÓN → SOLUCIÓN → VICTORIA con 5 escenas, ángulos e iluminación únicos.
+                Personaje bloqueado 100% idéntico ([CHARACTER] inmutable + NEGATIVE). Formato vertical 9:16 para TikTok y Reels. Arco SHOCK → PROBLEMA → EXPLICACIÓN → SOLUCIÓN → VICTORIA con 5 escenas, ángulos e iluminación únicos.
               </p>
             </div>
           </div>
@@ -523,16 +523,18 @@ export default function TigreFinancieroPage() {
               </div>
             </div>
 
-            {/* SECCIÓN 1: 5 PROMPTS DE IMAGEN (4:3) PARA FLUX / MIDJOURNEY / LEONARDO */}
+            {/* SECCIÓN 1: 5 PROMPTS DE IMAGEN (VERTICAL 9:16 TIKTOK) */}
             <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
                 <div className="flex items-center gap-2">
                   <ImageIcon className="w-5 h-5 text-indigo-400" />
                   <h2 className="text-lg font-bold text-white tracking-tight">
-                    1) 5 Prompts de Imagen (Formato 4:3 con [CHARACTER] Inmutable + NEGATIVE)
+                    1) 5 Prompts de Imagen (Vertical 9:16 para TikTok / Reels con [CHARACTER] Inmutable)
                   </h2>
                 </div>
-                <span className="text-xs text-slate-400">Pixar x Realismo --ar 4:3 --style raw</span>
+                <span className="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                  TikTok 9:16 --ar 9:16 --style raw
+                </span>
               </div>
 
               <div className="space-y-3">
