@@ -36,6 +36,103 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido en este formato:
     }
   ]
 }`;
+    } else if (mode === "script_only") {
+      const selectedStyle = tone || "Motivacional";
+      const userTopic = topic || idea || "por qué no te alcanza la quincena aunque ganas bien";
+
+      prompt = `Eres RAFA DADDY - TIGRE FINANCIERO V4. Redactor experto de guiones virales para TikTok y Reels de finanzas personales.
+Genera el GUION DE AUDIO estructurado y combinación de variedad para:
+TEMA / IDEA ELEGIDA: "${userTopic}"
+ESTILO / TONO: "${selectedStyle}"
+
+REGLAS OBLIGATORIAS:
+- Duración total ≈38s hablados.
+- GANCHO (0-3s): directo al problema, SIN decir tu nombre al inicio.
+- PROBLEMA (3-18s): El Tigre explica dónde se va el dinero con 1-2 ejemplos cotidianos MX (Uber, Oxxo, tandas, MSI, café diario).
+- SOLUCIÓN (18-38s): sistema concreto con números específicos y una frase memorable.
+- CTA OBLIGATORIO SOLO AL FINAL: "Sígueme para más del Tigre Financiero - Rafa Daddy"
+- OVERLAY: 5 textos cortos de máximo 5 palabras estilo viral (pregunta, número, orden, contraste, resultado).
+- PROHIBIDO antes del CTA: "¿Sabías que...?", "Si eres de los que...", "Hola a todos", "En este video", "Yo soy Rafa Daddy".
+
+Responde ÚNICAMENTE con un JSON válido:
+{
+  "title": "${userTopic}",
+  "combination": {
+    "format": "Formato de serie elegido (ej. El Tigre Mentor)",
+    "structure": "Estructura elegida (ej. Problema-Agitación-Solución)",
+    "hook_formula": "Fórmula de gancho usada",
+    "palette": "Paleta visual recomendada (ej. Navy & Gold / Teal & Orange)"
+  },
+  "script_audio": {
+    "hook_3s": "Gancho demoledor directo al problema...",
+    "problem_15s": "Explicación del problema con ejemplos cotidianos...",
+    "solution_20s": "Sistema concreto con números y frase memorable...",
+    "cta_final": "Sígueme para más del Tigre Financiero - Rafa Daddy",
+    "full_speech": "Texto completo unificado de corrido listo para locución...",
+    "overlays": [
+      "Texto 1 Pregunta",
+      "Texto 2 Número",
+      "Texto 3 Orden",
+      "Texto 4 Contraste",
+      "Texto 5 Resultado"
+    ]
+  }
+}`;
+    } else if (mode === "prompts_images") {
+      const selectedStyle = tone || "Motivacional";
+      const userTopic = topic || idea || "Finanzas Personales";
+      const scriptText = current_script || "";
+
+      prompt = `Eres RAFA DADDY - TIGRE FINANCIERO V4. Director visual de IA.
+Crea 5 PROMPTS DE IMAGEN en formato VERTICAL 9:16 para TikTok/Reels basados en este guion:
+TEMA: "${userTopic}"
+GUION: "${scriptText}"
+
+Prioridad #1: el personaje se ve IDÉNTICO en las 5 imágenes.
+Prioridad #2: 5 escenas, emociones, ángulos e iluminación distintos (Arco: SHOCK → PROBLEMA → EXPLICACIÓN → SOLUCIÓN → VICTORIA).
+
+Copia EXACTO este bloque al inicio de CADA prompt:
+"${CHARACTER_BLOCK}"
+
+Y al final de cada prompt agrega:
+"${NEGATIVE_PROMPT}"
+
+Orden exacto de cada prompt:
+[CHARACTER block] + ", " + [emoción] + ", " + [acción/pose] + ", " + [metáfora visual ligada al tema con utilería] + ", " + [escenario detallado] + ", " + [ángulo] + ", " + [iluminación] + ", vertical portrait format 9:16 for TikTok, photorealistic, Pixar 3D style, cinematic lighting, ultra detailed, 8k --ar 9:16 --style raw\\n\\n${NEGATIVE_PROMPT}"
+
+Responde ÚNICAMENTE con un JSON válido:
+{
+  "image_prompts": [
+    { "step": "SHOCK", "version": "V1 - Shock Inicial", "metaphor": "Metáfora...", "prompt": "..." },
+    { "step": "PROBLEMA", "version": "V2 - Problema / Fuga", "metaphor": "...", "prompt": "..." },
+    { "step": "EXPLICACIÓN", "version": "V3 - Diagnóstico / Explicación", "metaphor": "...", "prompt": "..." },
+    { "step": "SOLUCIÓN", "version": "V4 - Sistema / Solución", "metaphor": "...", "prompt": "..." },
+    { "step": "VICTORIA", "version": "V5 - Éxito / Victoria", "metaphor": "...", "prompt": "..." }
+  ]
+}`;
+    } else if (mode === "prompts_videos") {
+      const selectedStyle = tone || "Motivacional";
+      const userTopic = topic || idea || "Finanzas Personales";
+
+      prompt = `Eres RAFA DADDY - TIGRE FINANCIERO V4. Director de animación y video para IA (Kling / Runway / Luma / Pika).
+Crea 5 PROMPTS DE VIDEO VERTICAL 9:16 pensados para IMAGE-TO-VIDEO basados en las 5 escenas del Tigre Financiero sobre: "${userTopic}".
+
+Copia EXACTO este bloque al inicio de CADA prompt:
+"${CHARACTER_BLOCK}"
+
+Estructura de cada prompt:
+[CHARACTER block] + ", same character as reference image, " + [acción principal clara] + ", " + [movimiento del personaje] + ", " + [movimiento de cámara] + ", " + [partículas/ambiente] + ", 6 seconds, vertical 9:16, photorealistic, consistent character, smooth motion, no morphing, no outfit change"
+
+Responde ÚNICAMENTE con un JSON válido:
+{
+  "video_prompts": [
+    { "step": "SHOCK", "version": "V1 - Shock Inicial", "camera": "Slow push-in", "motion": "Blinking and checking pockets", "particles": "Warm dust motes", "prompt": "..." },
+    { "step": "PROBLEMA", "version": "V2 - Problema", "camera": "...", "motion": "...", "particles": "...", "prompt": "..." },
+    { "step": "EXPLICACIÓN", "version": "V3 - Explicación", "camera": "...", "motion": "...", "particles": "...", "prompt": "..." },
+    { "step": "SOLUCIÓN", "version": "V4 - Solución", "camera": "...", "motion": "...", "particles": "...", "prompt": "..." },
+    { "step": "VICTORIA", "version": "V5 - Victoria", "camera": "...", "motion": "...", "particles": "...", "prompt": "..." }
+  ]
+}`;
     } else if (mode === "generate_full_v3" || mode === "generate_full_v4") {
       const selectedStyle = tone || "Motivacional";
       const userTopic = topic || idea || "por qué no te alcanza la quincena aunque ganas bien";

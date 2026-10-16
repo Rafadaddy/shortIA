@@ -105,6 +105,9 @@ export default function TigreFinancieroPage() {
 
   const [data, setData] = useState<TigerData | null>(null);
   const [isGeneratingFull, setIsGeneratingFull] = useState(false);
+  const [isGeneratingScript, setIsGeneratingScript] = useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [isGeneratingVideos, setIsGeneratingVideos] = useState(false);
 
   // Estados de audio
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
@@ -116,8 +119,6 @@ export default function TigreFinancieroPage() {
   // 1. Proponer ideas
   const generateIdeas = async () => {
     setIsGeneratingIdeas(true);
-    setIdeas(null);
-    setData(null);
     setAudioBase64(null);
     try {
       const res = await aiFetch("/api/generate-tiger", { mode: "ideas", topic, tone: style });
@@ -133,7 +134,112 @@ export default function TigreFinancieroPage() {
     }
   };
 
-  // 2. Generar el pack completo V4 (5 prompts imagen + 5 prompts video + guion V4)
+  // 2. Generar Solo Guion de Audio (Paso 2)
+  const generateScriptOnly = async (chosenTopic?: string) => {
+    const activeTopic = chosenTopic || topic;
+    setIsGeneratingScript(true);
+    setAudioBase64(null);
+    showToast("Creando Guion V4 con gancho...");
+    try {
+      const res = await aiFetch("/api/generate-tiger", {
+        mode: "script_only",
+        topic: activeTopic,
+        tone: style
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generando guion");
+      
+      setData((prev) => ({
+        ...(prev || {
+          theme: activeTopic,
+          style: style,
+          image_prompts: [],
+          video_prompts: []
+        }),
+        title: json.title || activeTopic,
+        theme: activeTopic,
+        style: style,
+        combination: json.combination,
+        script_audio: json.script_audio
+      }));
+      showToast("¡Guion V4 generado con éxito!", "success");
+    } catch (e: any) {
+      console.error("[Tigre Financiero Script Error]:", e);
+      showToast(e.message || "Error al generar guion", "error");
+    } finally {
+      setIsGeneratingScript(false);
+    }
+  };
+
+  // 3. Generar Solo 5 Prompts de Imagen (Paso 3)
+  const generateImagesOnly = async () => {
+    if (!data?.script_audio?.full_speech) {
+      showToast("Primero genera o selecciona un guion", "error");
+      return;
+    }
+    setIsGeneratingImages(true);
+    showToast("Generando 5 Prompts de Imagen (9:16)...");
+    try {
+      const res = await aiFetch("/api/generate-tiger", {
+        mode: "prompts_images",
+        topic: data.title || topic,
+        tone: style,
+        current_script: data.script_audio.full_speech
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generando imágenes");
+
+      setData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          image_prompts: json.image_prompts || []
+        };
+      });
+      showToast("¡5 Prompts de imagen (9:16) listos!", "success");
+    } catch (e: any) {
+      console.error("[Tigre Financiero Images Error]:", e);
+      showToast(e.message || "Error al generar prompts de imagen", "error");
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  };
+
+  // 4. Generar Solo 5 Prompts de Video (Paso 4)
+  const generateVideosOnly = async () => {
+    if (!data?.script_audio?.full_speech) {
+      showToast("Primero genera o selecciona un guion", "error");
+      return;
+    }
+    setIsGeneratingVideos(true);
+    showToast("Generando 5 Prompts de Video (9:16)...");
+    try {
+      const res = await aiFetch("/api/generate-tiger", {
+        mode: "prompts_videos",
+        topic: data.title || topic,
+        tone: style,
+        current_script: data.script_audio.full_speech
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generando videos");
+
+      setData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          video_prompts: json.video_prompts || []
+        };
+      });
+      showToast("¡5 Prompts de video (9:16) listos!", "success");
+    } catch (e: any) {
+      console.error("[Tigre Financiero Videos Error]:", e);
+      showToast(e.message || "Error al generar prompts de video", "error");
+    } finally {
+      setIsGeneratingVideos(false);
+    }
+  };
+
+  // 5. Generar el pack completo V4 directo
   const generateFullPack = async (customTopic?: string) => {
     setIsGeneratingFull(true);
     setData(null);
@@ -293,29 +399,45 @@ export default function TigreFinancieroPage() {
             </div>
           </div>
 
-          {/* BOTONES DE ACCIÓN */}
+          {/* BOTONES DE ACCIÓN PRINCIPAL */}
           <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/[0.06]">
+            {/* Paso 1: Ideas con gancho */}
             <button
-              onClick={() => generateFullPack()}
-              disabled={isGeneratingFull || isGeneratingIdeas}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-black font-black py-3.5 px-7 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-xl shadow-amber-500/25 disabled:opacity-50 text-sm"
+              onClick={generateIdeas}
+              disabled={isGeneratingIdeas || isGeneratingFull || isGeneratingScript}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-black font-black py-3.5 px-6 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-xl shadow-amber-500/20 disabled:opacity-50 text-sm"
             >
-              {isGeneratingFull ? (
-                <><Loader2 className="w-4 h-4 animate-spin text-black" /> Creando Pack Completo V4…</>
+              {isGeneratingIdeas ? (
+                <><Loader2 className="w-4 h-4 animate-spin text-black" /> Buscando Ganchos…</>
               ) : (
-                <><Wand2 className="w-4 h-4 text-black" /> Generar Pack Completo V4 Directo</>
+                <><Sparkles className="w-4 h-4 text-black" /> 1. Proponer 5 Ideas con Gancho</>
               )}
             </button>
 
+            {/* Paso 2: Crear Guion Directo */}
             <button
-              onClick={generateIdeas}
-              disabled={isGeneratingIdeas || isGeneratingFull}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#121419] hover:bg-[#1A1C22] text-slate-200 border border-white/10 font-bold py-3.5 px-6 rounded-xl transition-[transform,background-color] active:scale-[0.98] disabled:opacity-50 text-sm"
+              onClick={() => generateScriptOnly()}
+              disabled={isGeneratingScript || isGeneratingFull || isGeneratingIdeas}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#161922] hover:bg-[#1E2330] text-emerald-300 border border-emerald-500/30 font-black py-3.5 px-6 rounded-xl transition-[transform,background-color] active:scale-[0.98] disabled:opacity-50 text-sm shadow-lg shadow-emerald-500/10"
             >
-              {isGeneratingIdeas ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Buscando Ganchos…</>
+              {isGeneratingScript ? (
+                <><Loader2 className="w-4 h-4 animate-spin text-emerald-400" /> Creando Guion…</>
               ) : (
-                <><Sparkles className="w-4 h-4 text-amber-400" /> Proponer 5 Ideas con Gancho</>
+                <><Layers className="w-4 h-4 text-emerald-400" /> 2. Crear Solo Guion V4</>
+              )}
+            </button>
+
+            {/* Opcional: Generar Todo de un jalón */}
+            <button
+              onClick={() => generateFullPack()}
+              disabled={isGeneratingFull || isGeneratingIdeas || isGeneratingScript}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#121419] hover:bg-[#1A1C22] text-slate-300 hover:text-white border border-white/10 font-bold py-3.5 px-5 rounded-xl transition-[transform,background-color] active:scale-[0.98] disabled:opacity-50 text-xs sm:text-sm"
+              title="Genera todo junto en una sola petición"
+            >
+              {isGeneratingFull ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Generando Pack Completo…</>
+              ) : (
+                <><Wand2 className="w-4 h-4 text-amber-400" /> Generar Todo de Golpe</>
               )}
             </button>
           </div>
@@ -324,23 +446,28 @@ export default function TigreFinancieroPage() {
         {/* IDEAS PROPUESTAS */}
         {ideas && ideas.length > 0 && (
           <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
-            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" /> Selecciona la Idea que Prefieras
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-400" /> Paso 1: Elige tu Gancho Favorito
+              </h2>
+              <span className="text-xs text-slate-400">
+                Haz clic en una idea para generar únicamente su Guion de Audio sin atorarse
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {ideas.map((item, idx) => (
                 <div
                   key={idx}
-                  onClick={() => generateFullPack(`${item.title}: ${item.hook}`)}
-                  className="cursor-pointer p-5 rounded-2xl border bg-[#090A0C]/90 border-white/[0.07] hover:border-amber-500/50 hover:bg-[#121317] transition-all space-y-2.5 active:scale-[0.99] group"
+                  onClick={() => generateScriptOnly(`${item.title}: ${item.hook}`)}
+                  className="cursor-pointer p-5 rounded-2xl border bg-[#090A0C]/90 border-white/[0.07] hover:border-amber-500/60 hover:bg-[#121317] transition-all space-y-2.5 active:scale-[0.99] group"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
                       Idea #{idx + 1}
                     </span>
-                    <span className="text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
-                      Elegir y Generar →
+                    <span className="text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                      Elegir y Crear Guion <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
                   <h3 className="font-bold text-base text-white [text-wrap:balance]">
@@ -521,111 +648,148 @@ export default function TigreFinancieroPage() {
                   </div>
                 </div>
               </div>
+
+              {/* BARRA DE ACCIÓN PARA GENERAR PROMPTS PASO A PASO */}
+              <div className="pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+                <div className="text-xs text-slate-400">
+                  <strong className="text-white">Siguientes pasos:</strong> Genera las imágenes o videos paso a paso para evitar saturaciones.
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button
+                    onClick={generateImagesOnly}
+                    disabled={isGeneratingImages || isGeneratingVideos}
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                  >
+                    {isGeneratingImages ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Creando 5 Imágenes 9:16…</>
+                    ) : (
+                      <><ImageIcon className="w-4 h-4" /> 3. Generar 5 Prompts Imagen (9:16)</>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={generateVideosOnly}
+                    disabled={isGeneratingVideos || isGeneratingImages}
+                    className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-lg shadow-rose-600/20 disabled:opacity-50"
+                  >
+                    {isGeneratingVideos ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Creando 5 Videos 9:16…</>
+                    ) : (
+                      <><Video className="w-4 h-4" /> 4. Generar 5 Prompts Video (9:16)</>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* SECCIÓN 1: 5 PROMPTS DE IMAGEN (VERTICAL 9:16 TIKTOK) */}
-            <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
-                <div className="flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5 text-indigo-400" />
-                  <h2 className="text-lg font-bold text-white tracking-tight">
-                    1) 5 Prompts de Imagen (Vertical 9:16 para TikTok / Reels con [CHARACTER] Inmutable)
-                  </h2>
-                </div>
-                <span className="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                  TikTok 9:16 --ar 9:16 --style raw
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {data.image_prompts.map((img, idx) => (
-                  <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {img.step && (
-                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            {img.step}
-                          </span>
-                        )}
-                        <span className="text-xs font-bold text-amber-400">
-                          {img.version}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          handleCopy(img.prompt, `img_${idx}`);
-                          showToast("Prompt de imagen copiado", "success");
-                        }}
-                        className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
-                      >
-                        {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                        Copiar Prompt
-                      </button>
-                    </div>
-                    {img.metaphor && (
-                      <div className="text-[11px] text-slate-400">
-                        <strong className="text-amber-400/90">Metáfora Visual:</strong> {img.metaphor}
-                      </div>
-                    )}
-                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04] whitespace-pre-wrap">
-                      {img.prompt}
-                    </p>
+            {data.image_prompts && data.image_prompts.length > 0 && (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3.5">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-indigo-400" />
+                    <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      3) 5 Prompts de Imagen (Vertical 9:16 para TikTok / Flux / Midjourney)
+                    </h2>
                   </div>
-                ))}
+                  <span className="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                    --ar 9:16 --style raw
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {data.image_prompts.map((img, idx) => (
+                    <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {img.step && (
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              {img.step}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold text-amber-400">
+                            {img.version}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            handleCopy(img.prompt, `img_${idx}`);
+                            showToast("Prompt de imagen copiado", "success");
+                          }}
+                          className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
+                        >
+                          {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                          Copiar Prompt
+                        </button>
+                      </div>
+                      {img.metaphor && (
+                        <div className="text-[11px] text-slate-400">
+                          <strong className="text-amber-400/90">Metáfora Visual:</strong> {img.metaphor}
+                        </div>
+                      )}
+                      <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04] whitespace-pre-wrap">
+                        {img.prompt}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* SECCIÓN 2: 5 PROMPTS DE VIDEO (9:16) PARA KLING / RUNWAY / LUMA / PIKA */}
-            <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
-                <div className="flex items-center gap-2">
-                  <Video className="w-5 h-5 text-rose-400" />
-                  <h2 className="text-lg font-bold text-white tracking-tight">
-                    2) 5 Prompts de Video (Vertical 9:16 para Kling / Runway / Luma / Pika)
-                  </h2>
-                </div>
-                <span className="text-xs text-slate-400">Cámara + Movimiento + Partículas (5-8s)</span>
-              </div>
-
-              <div className="space-y-3">
-                {data.video_prompts.map((vid, idx) => (
-                  <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {vid.step && (
-                          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                            {vid.step}
-                          </span>
-                        )}
-                        <span className="text-xs font-bold text-rose-400">
-                          {vid.version}
-                        </span>
-                        <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
-                          📹 {vid.camera}
-                        </span>
-                        <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
-                          ✨ {vid.particles}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          handleCopy(vid.prompt, `vid_${idx}`);
-                          showToast("Prompt de video copiado", "success");
-                        }}
-                        className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
-                      >
-                        {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                        Copiar Video Prompt
-                      </button>
-                    </div>
-
-                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04]">
-                      {vid.prompt}
-                    </p>
+            {/* SECCIÓN 2: 5 PROMPTS DE VIDEO (9:16) PARA KLING / RUNWAY / LUMA / PIKA */}
+            {data.video_prompts && data.video_prompts.length > 0 && (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
+                <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+                  <div className="flex items-center gap-2">
+                    <Video className="w-5 h-5 text-rose-400" />
+                    <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      4) 5 Prompts de Video (Vertical 9:16 para Kling / Runway / Luma / Pika)
+                    </h2>
                   </div>
-                ))}
+                  <span className="text-xs text-slate-400">Cámara + Movimiento + Partículas (5-8s)</span>
+                </div>
+
+                <div className="space-y-3">
+                  {data.video_prompts.map((vid, idx) => (
+                    <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {vid.step && (
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                              {vid.step}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold text-rose-400">
+                            {vid.version}
+                          </span>
+                          <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                            📹 {vid.camera}
+                          </span>
+                          <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                            ✨ {vid.particles}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            handleCopy(vid.prompt, `vid_${idx}`);
+                            showToast("Prompt de video copiado", "success");
+                          }}
+                          className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
+                        >
+                          {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                          Copiar Video Prompt
+                        </button>
+                      </div>
+
+                      <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04]">
+                        {vid.prompt}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         )}
