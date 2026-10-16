@@ -77,9 +77,16 @@ const TIGER_STYLES = [
   { id: "Historia Personal", label: "🤝 Historia Personal", desc: "A mí me pasó, yo también cometí ese error." }
 ];
 
+export const TIGER_VOICE_OPTIONS = [
+  { id: "es-MX", label: "🇲🇽 Jorge / Rafa Daddy (México)", desc: "Español de México, ideal para el Tigre Financiero" },
+  { id: "es-US", label: "🇺🇸 Neutro / Internacional", desc: "Español neutro sin acento regional marcado" },
+  { id: "es-ES", label: "🇪🇸 Peninsular (España)", desc: "Castellano europeo" },
+];
+
 export default function TigreFinancieroPage() {
   const [topic, setTopic] = useState("¿Por qué no te alcanza la quincena aunque ganas bien?");
   const [style, setStyle] = useState("Motivacional");
+  const [selectedVoice, setSelectedVoice] = useState("es-MX");
   
   const [ideas, setIdeas] = useState<TigerIdea[] | null>(null);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
@@ -163,11 +170,12 @@ export default function TigreFinancieroPage() {
   };
 
   // Generar audio de la locución
-  const generateSpeech = async (text: string) => {
+  const generateSpeech = async (text: string, voiceChoice?: string) => {
     if (!text) return;
     setIsGeneratingAudio(true);
+    const chosenVoice = voiceChoice || selectedVoice;
     try {
-      const res = await aiFetch("/api/generate-speech", { text });
+      const res = await aiFetch("/api/generate-speech", { text, voice: chosenVoice, lang: chosenVoice });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error sintetizando voz");
       setAudioBase64(json.audioBase64);
@@ -355,20 +363,36 @@ export default function TigreFinancieroPage() {
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Selector de Voz para Tigre Financiero */}
+                  <div className="flex items-center gap-1.5 bg-[#121419] border border-white/10 rounded-xl px-2.5 py-1.5 shadow-sm">
+                    <span className="text-[11px] text-slate-400 font-medium">Voz:</span>
+                    <select
+                      value={selectedVoice}
+                      onChange={(e) => setSelectedVoice(e.target.value)}
+                      className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer pr-1"
+                    >
+                      {TIGER_VOICE_OPTIONS.map((v) => (
+                        <option key={v.id} value={v.id} className="bg-[#121419] text-white">
+                          {v.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <button
                     onClick={() => {
                       handleCopy(data.script_audio.full_speech, "full_script");
                       showToast("Guion completo copiado", "success");
                     }}
-                    className="bg-[#121419] hover:bg-[#1A1C22] text-slate-200 text-xs font-bold py-2.5 px-4 rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
+                    className="bg-[#121419] hover:bg-[#1A1C22] text-slate-200 text-xs font-bold py-2.5 px-3.5 rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
                   >
                     {copiedStates["full_script"] ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     Copiar Guion
                   </button>
 
                   <button
-                    onClick={() => generateSpeech(data.script_audio.full_speech)}
+                    onClick={() => generateSpeech(data.script_audio.full_speech, selectedVoice)}
                     disabled={isGeneratingAudio}
                     className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50"
                   >

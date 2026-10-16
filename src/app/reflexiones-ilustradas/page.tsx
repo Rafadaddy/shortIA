@@ -193,6 +193,7 @@ export default function ReflexionesIlustradasPage() {
   // Estados de audio / locución con IA
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState("es-MX");
 
   // Estados de Previsualización de Video en Vivo (Efecto Ken Burns)
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
@@ -204,12 +205,13 @@ export default function ReflexionesIlustradasPage() {
   const { showToast } = useToast();
 
   // Función para sintetizar audio de la narración
-  const generateSpeech = async (text: string) => {
+  const generateSpeech = async (text: string, voiceChoice?: string) => {
     if (!text) return;
     setIsGeneratingAudio(true);
     setAudioBase64(null);
+    const chosenVoice = voiceChoice || selectedVoice;
     try {
-      const res = await aiFetch("/api/generate-speech", { text });
+      const res = await aiFetch("/api/generate-speech", { text, voice: chosenVoice, lang: chosenVoice });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al sintetizar voz");
       setAudioBase64(data.audioBase64);
@@ -1055,9 +1057,23 @@ export default function ReflexionesIlustradasPage() {
                           {showScript ? "Ocultar Guion" : "Mostrar Guion"}
                         </button>
                         {showScript && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Selector de Voz */}
+                            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs">
+                              <span className="text-[10px] text-slate-400 font-medium">Voz:</span>
+                              <select
+                                value={selectedVoice}
+                                onChange={(e) => setSelectedVoice(e.target.value)}
+                                className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer"
+                              >
+                                <option value="es-MX" className="bg-slate-900 text-white">🇲🇽 México / Latino</option>
+                                <option value="es-US" className="bg-slate-900 text-white">🇺🇸 Neutro / Int.</option>
+                                <option value="es-ES" className="bg-slate-900 text-white">🇪🇸 España</option>
+                              </select>
+                            </div>
+
                             <button
-                              onClick={() => generateSpeech(result.script_narration)}
+                              onClick={() => generateSpeech(result.script_narration, selectedVoice)}
                               disabled={isGeneratingAudio}
                               className="text-xs bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded-lg border border-indigo-500/30 flex items-center gap-1.5 transition-all disabled:opacity-50 font-bold"
                             >
