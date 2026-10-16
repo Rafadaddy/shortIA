@@ -59,10 +59,11 @@ const CATEGORIES: NavCategory[] = [
       },
       {
         href: "/pato-financiero",
-        label: "Finanzas & Dinero",
-        desc: "Consejos, ahorro y mentalidad financiera con ganchos",
+        label: "Tigre Financiero V3",
+        desc: "Rafa Daddy: 5 Prompts 4:3, 5 Videos 9:16 y Guion V3",
         icon: DollarSign,
-        color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+        badge: "NUEVO 🐯",
+        color: "text-amber-400 bg-amber-500/10 border-amber-500/30"
       },
       {
         href: "/historietas",
@@ -393,11 +394,11 @@ export function Sidebar() {
         <Link
           href="/pato-financiero"
           className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-all ${
-            pathname === "/pato-financiero" ? "text-emerald-400 scale-105 font-bold" : "text-slate-400"
+            pathname === "/pato-financiero" ? "text-amber-400 scale-105 font-bold" : "text-slate-400"
           }`}
         >
-          <DollarSign className="w-5 h-5" />
-          <span className="text-[10px]">Finanzas</span>
+          <DollarSign className="w-5 h-5 text-amber-400" />
+          <span className="text-[10px]">Tigre V3</span>
         </Link>
 
         <Link

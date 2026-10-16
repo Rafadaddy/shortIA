@@ -1,404 +1,545 @@
 "use client";
+
 import { useState } from "react";
-import { Sparkles, PlaySquare, Copy, Check, Image as ImageIcon, Play, Loader2, RefreshCw, Wand2, Type, DollarSign } from "lucide-react";
+import { 
+  Sparkles, 
+  Copy, 
+  Check, 
+  Image as ImageIcon, 
+  Play, 
+  Loader2, 
+  Wand2, 
+  TrendingUp, 
+  Video, 
+  Mic, 
+  Layers, 
+  Download,
+  Volume2,
+  DollarSign,
+  ArrowRight
+} from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
 import { aiFetch } from "@/lib/ai-fetch";
+import { saveMediaItem } from "@/lib/db";
+import { saveHistoryItem } from "@/lib/history-storage";
 
-interface DuckIdea {
+interface TigerIdea {
   title: string;
   hook: string;
   pain_point: string;
   why_it_works: string;
 }
 
-interface Scene {
-  scene_number: number;
-  narration: string;
-  visual_concept: string;
-  image_prompt: string;
-  animation_prompt: string;
-  duration: string;
+interface TigerImagePrompt {
+  version: string;
+  prompt: string;
 }
 
-interface Thumbnail {
-  text: string;
-  image_prompt: string;
+interface TigerVideoPrompt {
+  version: string;
+  camera: string;
+  motion: string;
+  particles: string;
+  prompt: string;
 }
 
-interface DuckData {
+interface TigerData {
   title: string;
-  thumbnail: Thumbnail;
-  scenes: Scene[];
+  theme: string;
+  style: string;
+  image_prompts: TigerImagePrompt[];
+  video_prompts: TigerVideoPrompt[];
+  script_audio: {
+    hook_3s: string;
+    problem_15s: string;
+    solution_20s: string;
+    cta_final: string;
+    full_speech: string;
+    overlays: string[];
+  };
 }
 
-const duckTopics = [
-  "Mentalidad Millonaria y Disciplina",
-  "Ahorro Extremo e Inteligente",
-  "Destruir Deudas (Coppel, Tarjetas)",
-  "Hacer más dinero (Side Hustles)",
-  "Inversión para principiantes (CETES, NU)",
-  "Errores financieros que te mantienen pobre",
-  "El uso correcto de Tarjetas de Crédito",
-  "Negocios y Emprendimiento con poco capital"
+const TIGER_TOPICS = [
+  "¿Por qué no te alcanza la quincena aunque ganas bien?",
+  "La trampa mortal de pagar solo el mínimo de la tarjeta",
+  "Gastos hormiga que te roban $3,000 pesos cada mes",
+  "La diferencia psicológica entre ser rico y verse rico",
+  "Cómo ahorrar tu primer fondo de paz mental de $10,000",
+  "El error de ahorrar en el banco en vez de invertir en CETES",
+  "Compras emocionales: por qué compras cosas que no necesitas"
 ];
 
-const duckTones = [
-  "Mentor Multimillonario (Educado y directo)",
-  "Aristocrático y Sofisticado (Estilo Rico McPato)",
-  "Crudo y Realista (Sin anestesia, pero con clase)",
-  "Sarcástico y Burlón (De la ignorancia financiera)",
-  "Motivacional de Alto Nivel (Mentalidad de Magnate)"
+const TIGER_STYLES = [
+  { id: "Motivacional", label: "🔥 Motivacional", desc: "Directo, energético, tú puedes y mentalidad de logro." },
+  { id: "Educativo", label: "📚 Educativo", desc: "Paso a paso, datos concretos y explicación clara." },
+  { id: "Polémico", label: "⚡ Polémico", desc: "Te mintieron, nadie te dijo esto y romper mitos." },
+  { id: "Historia Personal", label: "🤝 Historia Personal", desc: "A mí me pasó, yo también cometí ese error." }
 ];
 
-const duckStyles = [
-  "Oficina Lujosa (Rascacielos)",
-  "Bóveda de Banco llena de Oro",
-  "Wall Street (Trading Floor)",
-  "Urbano Nocturno (Callejón con luces neón)",
-  "Interior de Jet Privado"
-];
-
-export default function PatoFinancieroPage() {
-  const [topic, setTopic] = useState("");
-  const [tone, setTone] = useState(duckTones[0]);
-  const [visualStyle, setVisualStyle] = useState(duckStyles[0]);
-  const [sceneCount, setSceneCount] = useState<number>(8);
-  const [duration, setDuration] = useState("10 Segundos");
-
-  const [ideas, setIdeas] = useState<DuckIdea[] | null>(null);
-  const [selectedIdea, setSelectedIdea] = useState<DuckIdea | null>(null);
+export default function TigreFinancieroPage() {
+  const [topic, setTopic] = useState("¿Por qué no te alcanza la quincena aunque ganas bien?");
+  const [style, setStyle] = useState("Motivacional");
+  
+  const [ideas, setIdeas] = useState<TigerIdea[] | null>(null);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
 
-  const [scriptText, setScriptText] = useState("");
-  const [isGeneratingScript, setIsGeneratingScript] = useState(false);
+  const [data, setData] = useState<TigerData | null>(null);
+  const [isGeneratingFull, setIsGeneratingFull] = useState(false);
 
-  const [data, setData] = useState<DuckData | null>(null);
-  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  
+  // Estados de audio
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [audioBase64, setAudioBase64] = useState<string | null>(null);
+
   const { copiedStates, handleCopy } = useCopyToClipboard();
   const { showToast } = useToast();
-  
-  const [regeneratingScene, setRegeneratingScene] = useState<number | null>(null);
-  const [regeneratingType, setRegeneratingType] = useState<"image" | "animation" | null>(null);
 
+  // 1. Proponer ideas
   const generateIdeas = async () => {
-    // if (!topic) return;
     setIsGeneratingIdeas(true);
     setIdeas(null);
-    setSelectedIdea(null);
-    setScriptText("");
     setData(null);
+    setAudioBase64(null);
     try {
-      const res = await aiFetch("/api/generate-duck", { mode: "ideas", topic, tone });
-      if (!res.ok) throw new Error("Error");
+      const res = await aiFetch("/api/generate-tiger", { mode: "ideas", topic, tone: style });
+      if (!res.ok) throw new Error("Error generando ideas");
       const json = await res.json();
       setIdeas(json.ideas);
-    } catch (error) {
-      showToast("Error al generar ideas", "error");
+      showToast("¡5 Ideas con gancho listas!", "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al generar ideas", "error");
     } finally {
       setIsGeneratingIdeas(false);
     }
   };
 
-  const selectIdeaAndGenerateScript = async (idea: DuckIdea) => {
-    setSelectedIdea(idea);
-    setIsGeneratingScript(true);
+  // 2. Generar el pack completo V3 (5 prompts imagen + 5 prompts video + guion V3)
+  const generateFullPack = async (customTopic?: string) => {
+    setIsGeneratingFull(true);
     setData(null);
+    setAudioBase64(null);
+    const activeTopic = customTopic || topic;
+    showToast("Generando 5 Prompts de Imagen, 5 de Video y Guion V3...");
     try {
-      const res = await aiFetch("/api/generate-duck", { mode: "script_only", idea: idea.hook, tone, sceneCount, duration });
-      if (!res.ok) throw new Error("Error");
-      const json = await res.json();
-      setScriptText(json.script);
-    } catch (error) {
-      showToast("Error al generar el guion", "error");
-    } finally {
-      setIsGeneratingScript(false);
-    }
-  };
-
-  const improveScript = async (instruction: string) => {
-    if (!scriptText) return;
-    setIsGeneratingScript(true);
-    try {
-      const res = await aiFetch("/api/generate-duck", { mode: "improve_script", current_script: scriptText, instruction, tone });
-      if (!res.ok) throw new Error("Error");
-      const json = await res.json();
-      setScriptText(json.script);
-    } catch (error) {
-      showToast("Error al modificar el guion", "error");
-    } finally {
-      setIsGeneratingScript(false);
-    }
-  };
-
-  const generateFullVideo = async () => {
-    if (!scriptText) return;
-    setIsGeneratingVideo(true);
-    try {
-      const res = await aiFetch("/api/generate-duck", { mode: "full_from_script", current_script: scriptText, visualStyle, sceneCount, duration });
-      if (!res.ok) throw new Error("Error");
-      const json = await res.json();
-      setData(json);
-    } catch (error) {
-      showToast("Error al generar escenas", "error");
-    } finally {
-      setIsGeneratingVideo(false);
-    }
-  };
-
-  const handleRegeneratePrompt = async (sceneIndex: number, promptType: "image" | "animation") => {
-    if (!data || regeneratingScene !== null) return;
-    setRegeneratingScene(sceneIndex);
-    setRegeneratingType(promptType);
-    
-    try {
-      const scene = data.scenes[sceneIndex];
-      const res = await aiFetch("/api/generate-duck", {
-        mode: "single_prompt",
-        prompt_type: promptType,
-        scene_number: scene.scene_number,
-        narration: scene.narration,
-        visual_concept: scene.visual_concept,
-        existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
-        visualStyle
+      const res = await aiFetch("/api/generate-tiger", {
+        mode: "generate_full_v3",
+        topic: activeTopic,
+        tone: style
       });
-      
-      const json = await res.json();
-      const newData = { ...data };
-      if (promptType === "image") {
-        newData.scenes[sceneIndex].image_prompt = json.image_prompt;
-      } else {
-        newData.scenes[sceneIndex].animation_prompt = json.animation_prompt;
+      if (!res.ok) throw new Error("Error en la generación");
+      const json: TigerData = await res.json();
+      setData(json);
+      showToast("¡Pack completo de Rafa Daddy generado con éxito!", "success");
+
+      // Auto-guardado en memoria local IndexedDB y Borradores
+      try {
+        saveMediaItem({
+          type: "general",
+          title: `Rafa Daddy: ${json.title}`,
+          category: "Tigre Financiero",
+          quote: json.script_audio.hook_3s,
+          scriptNarration: json.script_audio.full_speech,
+          imagePrompt: json.image_prompts[0]?.prompt
+        });
+        saveHistoryItem({
+          category: "Tigre Financiero",
+          title: json.title,
+          script: json.script_audio.full_speech,
+          prompts: json.image_prompts.map((p, i) => ({
+            scene_number: i + 1,
+            title: p.version,
+            image_prompt: p.prompt,
+            animation_prompt: json.video_prompts[i]?.prompt
+          }))
+        });
+      } catch (err) {
+        console.warn("Error guardando en memoria:", err);
       }
-      setData(newData);
-    } catch (error) {
-      showToast("Error al regenerar el prompt", "error");
+    } catch (e: any) {
+      showToast(e.message || "Error al generar pack", "error");
     } finally {
-      setRegeneratingScene(null);
-      setRegeneratingType(null);
+      setIsGeneratingFull(false);
     }
   };
 
-  const handleCopyAll = () => {
-    if (!data) return;
-    let text = `🎥 TÍTULO: ${data.title}\n\n`;
-    text += `🖼️ MINIATURA:\nTexto: ${data.thumbnail.text}\nPrompt: ${data.thumbnail.image_prompt}\n\n---\n\n`;
-    data.scenes.forEach((s) => {
-      text += `🎬 ESCENA ${s.scene_number}\n`;
-      text += `🗣️ Narración: ${s.narration}\n`;
-      text += `👁️ Visual: ${s.visual_concept}\n`;
-      text += `🎨 Prompt Imagen: ${s.image_prompt}\n`;
-      text += `✨ Prompt Animación: ${s.animation_prompt}\n\n`;
-    });
-    handleCopy(text, "all");
-    showToast("Guion completo copiado", "success");
+  // Generar audio de la locución
+  const generateSpeech = async (text: string) => {
+    if (!text) return;
+    setIsGeneratingAudio(true);
+    try {
+      const res = await aiFetch("/api/generate-speech", { text });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error sintetizando voz");
+      setAudioBase64(json.audioBase64);
+      showToast("¡Audio de locución generado!", "success");
+    } catch (e: any) {
+      showToast(e.message || "Error al sintetizar voz", "error");
+    } finally {
+      setIsGeneratingAudio(false);
+    }
   };
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] p-4 md:p-6 lg:p-12 selection:bg-emerald-500/30">
-      <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
+    <main className="min-h-screen bg-[#08090A] pt-16 md:pt-20 pb-20 px-4 sm:px-6 lg:px-8 text-slate-100 selection:bg-amber-500/30">
+      
+      {/* Resplandor ambiental de fondo */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[8%] left-[20%] w-[500px] h-[500px] rounded-full bg-amber-500/[0.04] blur-3xl" />
+        <div className="absolute bottom-[10%] right-[15%] w-[550px] h-[550px] rounded-full bg-emerald-500/[0.04] blur-3xl" />
+      </div>
 
-        <header className="text-center space-y-4">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
-            <DollarSign className="w-8 h-8 md:w-10 md:h-10 text-emerald-500" />
-            EL PATO CAPITALISTA
-          </h1>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Generador exclusivo de guiones y visuales para tu canal de finanzas con tu Pato Millonario.
-          </p>
-        </header>
-
-        {/* PASO 1 */}
-        <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
-            <div className="bg-emerald-500/20 text-emerald-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">Configuración del Video</h2>
+      <div className="relative z-10 max-w-5xl mx-auto space-y-8">
+        
+        {/* HEADER DE RAFA DADDY - TIGRE FINANCIERO V3 */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
+          <div className="flex items-center gap-3.5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-orange-500/20 to-emerald-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-xl shadow-amber-500/10 text-2xl font-black">
+              🐯
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight [text-wrap:balance]">
+                  Rafa Daddy — Tigre Financiero V3
+                </h1>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 uppercase tracking-wider">
+                  Pixar x Realismo
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1 [text-wrap:pretty]">
+                Mascota financiera y mentor con traje azul marino, lentes dorados, 5 prompts de imagen 4:3, 5 de video 9:16 y guion V3.
+              </p>
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-[#111216] text-amber-300 border border-white/10 shadow-sm">
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Viral Finance Hub
+          </div>
+        </div>
+
+        {/* PANEL DE CONFIGURACIÓN PRINCIPAL */}
+        <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" /> Configuración del Video Financiero
+            </h2>
+            <span className="text-xs text-slate-400 hidden sm:inline">Personaliza el tema y estilo</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* TEMA FINANCIERO */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Tema Financiero</label>
+              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                Tema del Video
+              </label>
               <input
                 type="text"
                 value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                placeholder="Ej. Ahorro, Escribe el tuyo o déjalo en blanco"
-                list="topic-list" onFocus={(e) => e.target.select()} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-emerald-500 outline-none"
+                onChange={e => setTopic(e.target.value)}
+                placeholder="Ej. Por qué no te alcanza la quincena..."
+                list="tiger-topic-list"
+                className="w-full bg-[#090A0C] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
               />
-              <datalist id="topic-list">
-                <option value="🎲 Aleatorio / Sorpréndeme" />
-                <option value="✨ Tema Libre (Borra esto y escribe el tuyo)" />
-                {duckTopics.map(n => <option key={n} value={n} />)}
+              <datalist id="tiger-topic-list">
+                {TIGER_TOPICS.map(t => <option key={t} value={t} />)}
               </datalist>
             </div>
+
+            {/* SELECTOR DE ESTILO / TONO */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Tono del Pato</label>
-              <select value={tone} onChange={(e) => setTone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-emerald-500 outline-none">
-                {duckTones.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Estilo Visual (Entorno)</label>
-              <select value={visualStyle} onChange={(e) => setVisualStyle(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-emerald-500 outline-none">
-                {duckStyles.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            
-            <div className="space-y-2 lg:col-span-1">
-              <label className="text-sm font-medium text-slate-300">Duración/Escena</label>
-              <select value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200">
-                <option value="5 Segundos">5 Segundos</option>
-                <option value="10 Segundos">10 Segundos</option>
-                <option value="15 Segundos">15 Segundos</option>
-              </select>
-            </div>
-            <div className="space-y-2 lg:col-span-2">
-              <label className="text-sm font-medium text-slate-300">Cantidad de Escenas (Paneles)</label>
-              <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
-                <input type="range" min="3" max="15" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-emerald-500" />
-                <span className="text-emerald-400 font-bold min-w-[2ch]">{sceneCount}</span>
+              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                Estilo / Tono de Voz
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {TIGER_STYLES.map(s => {
+                  const isSelected = style === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setStyle(s.id)}
+                      className={`p-3 rounded-xl border text-left transition-[background-color,border-color,transform] active:scale-[0.98] ${
+                        isSelected
+                          ? "bg-amber-500/[0.1] border-amber-500/70 text-white shadow-md shadow-amber-500/10 ring-1 ring-amber-500/30"
+                          : "bg-[#090A0C]/90 border-white/[0.07] text-slate-400 hover:text-white hover:border-white/[0.15]"
+                      }`}
+                    >
+                      <div className="font-bold text-xs">{s.label}</div>
+                      <div className="text-[10px] text-slate-500 truncate mt-0.5">{s.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          <button onClick={generateIdeas} disabled={isGeneratingIdeas} className="w-full py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 flex items-center justify-center gap-2 transition-all">
-            {isGeneratingIdeas ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />} Generar Ideas de "{topic}"
-          </button>
+          {/* BOTONES DE ACCIÓN */}
+          <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/[0.06]">
+            <button
+              onClick={() => generateFullPack()}
+              disabled={isGeneratingFull || isGeneratingIdeas}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-black font-black py-3.5 px-7 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-xl shadow-amber-500/25 disabled:opacity-50 text-sm"
+            >
+              {isGeneratingFull ? (
+                <><Loader2 className="w-4 h-4 animate-spin text-black" /> Creando Pack Completo V3…</>
+              ) : (
+                <><Wand2 className="w-4 h-4 text-black" /> Generar Pack Completo V3 Directo</>
+              )}
+            </button>
 
-          {ideas && (
-            <div className="mt-8 space-y-4 animate-in fade-in">
-              <h3 className="text-lg font-semibold text-emerald-300 mb-2">Selecciona una idea para desarrollar el guion:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {ideas.map((idea, idx) => (
-                  <button key={idx} onClick={() => selectIdeaAndGenerateScript(idea)} disabled={isGeneratingScript} className="text-left bg-slate-950 border border-slate-800 p-4 rounded-xl hover:border-emerald-500/50 hover:bg-slate-900 transition group disabled:opacity-50">
-                    <p className="font-bold text-emerald-400 mb-1">{idea.title}</p>
-                    <p className="text-sm text-slate-300 mb-2 italic">&quot;{idea.hook}&quot;</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* PASO 2 */}
-        {(isGeneratingScript || scriptText) && (
-          <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
-            <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
-              <div className="bg-emerald-500/20 text-emerald-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">2</div>
-              <h2 className="text-xl font-bold text-white">Edición de Guion (El Pato Habla)</h2>
-            </div>
-            
-            {isGeneratingScript && !scriptText ? (
-              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-                <Loader2 className="w-10 h-10 animate-spin text-emerald-500 mb-4" />
-                <p className="animate-pulse">Escribiendo con mentalidad de tiburón...</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <textarea value={scriptText} onChange={(e) => setScriptText(e.target.value)} className="w-full h-64 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200 focus:border-emerald-500 outline-none resize-none leading-relaxed" />
-                <div className="flex flex-wrap gap-3">
-                  <button onClick={() => improveScript("Hazlo más largo y detallado")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><Type className="w-4 h-4" /> Más largo</button>
-                  <button onClick={() => improveScript("Hazlo más educado, sofisticado pero muy exigente")} disabled={isGeneratingScript} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg flex justify-center items-center gap-2 transition-colors"><RefreshCw className="w-4 h-4" /> Más Clase y Exigencia</button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* PASO 3 */}
-        {scriptText && !isGeneratingScript && (
-          <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6 animate-in slide-in-from-bottom-4">
-            <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
-              <div className="bg-emerald-500/20 text-emerald-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">3</div>
-              <h2 className="text-xl font-bold text-white">Generar Escenas Visuales</h2>
-            </div>
-            <button onClick={generateFullVideo} disabled={isGeneratingVideo} className="w-full py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2 transition-all">
-              {isGeneratingVideo ? <><Loader2 className="w-5 h-5 animate-spin" /> Creando arte visual...</> : <><ImageIcon className="w-5 h-5" /> Generar Prompts del Pato</>}
+            <button
+              onClick={generateIdeas}
+              disabled={isGeneratingIdeas || isGeneratingFull}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#121419] hover:bg-[#1A1C22] text-slate-200 border border-white/10 font-bold py-3.5 px-6 rounded-xl transition-[transform,background-color] active:scale-[0.98] disabled:opacity-50 text-sm"
+            >
+              {isGeneratingIdeas ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Buscando Ganchos…</>
+              ) : (
+                <><Sparkles className="w-4 h-4 text-amber-400" /> Proponer 5 Ideas con Gancho</>
+              )}
             </button>
           </div>
+        </div>
+
+        {/* IDEAS PROPUESTAS */}
+        {ideas && ideas.length > 0 && (
+          <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
+            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-400" /> Selecciona la Idea que Prefieras
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {ideas.map((item, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => generateFullPack(`${item.title}: ${item.hook}`)}
+                  className="cursor-pointer p-5 rounded-2xl border bg-[#090A0C]/90 border-white/[0.07] hover:border-amber-500/50 hover:bg-[#121317] transition-all space-y-2.5 active:scale-[0.99] group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                      Idea #{idx + 1}
+                    </span>
+                    <span className="text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
+                      Elegir y Generar →
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-base text-white [text-wrap:balance]">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-amber-200/90 italic bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+                    "{item.hook}"
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    <strong className="text-slate-300">Dolor:</strong> {item.pain_point}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
-        {/* PASO 4 */}
+        {/* RESULTADO COMPLETO RAFA DADDY V3 */}
         {data && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8">
-            <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl">
-              <div className="flex justify-between items-center mb-8 border-b border-slate-800/60 pb-6">
+          <div className="space-y-8 animate-in fade-in duration-300">
+            
+            {/* GUION DE AUDIO V3 */}
+            <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">{data.title}</h2>
-                  <p className="text-emerald-400 text-sm font-semibold">Tema listo para grabar</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 uppercase">
+                      Guion V3 Estructurado
+                    </span>
+                    <span className="text-xs text-slate-400">Branding solo al final</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                    {data.title}
+                  </h2>
                 </div>
-                <button onClick={handleCopyAll} className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 py-2 px-4 rounded-xl text-sm font-semibold hover:bg-emerald-600/40 transition-colors">
-                  {copiedStates['all'] ? <><Check className="w-4 h-4" /> Copiado</> : <><Copy className="w-4 h-4" /> Copiar Todo</>}
-                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      handleCopy(data.script_audio.full_speech, "full_script");
+                      showToast("Guion completo copiado", "success");
+                    }}
+                    className="bg-[#121419] hover:bg-[#1A1C22] text-slate-200 text-xs font-bold py-2.5 px-4 rounded-xl border border-white/10 flex items-center gap-1.5 transition-colors"
+                  >
+                    {copiedStates["full_script"] ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    Copiar Guion
+                  </button>
+
+                  <button
+                    onClick={() => generateSpeech(data.script_audio.full_speech)}
+                    disabled={isGeneratingAudio}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+                  >
+                    {isGeneratingAudio ? (
+                      <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Sintetizando…</>
+                    ) : (
+                      <><Volume2 className="w-3.5 h-3.5" /> Generar Audio MP3</>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* Thumbnail */}
-              <div className="bg-slate-950 p-6 rounded-2xl border border-emerald-500/30 mb-8 relative">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><ImageIcon className="w-5 h-5 text-emerald-400" /> Idea de Miniatura</h3>
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-xs font-bold text-emerald-400 uppercase">Texto Sugerido:</span>
-                    <p className="text-white font-bold text-lg mt-1">{data.thumbnail.text}</p>
+              {/* Reproductor de Audio si ya fue generado */}
+              {audioBase64 && (
+                <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
+                    <Volume2 className="w-4 h-4 text-emerald-400" />
+                    Locución de Rafa Daddy Lista:
                   </div>
-                  <div>
-                    <span className="text-xs font-bold text-emerald-400 uppercase">Prompt de Imagen:</span>
-                    <p className="text-slate-300 font-mono text-sm mt-1">{data.thumbnail.image_prompt}</p>
-                  </div>
+                  <audio controls src={`data:audio/mp3;base64,${audioBase64}`} className="w-full sm:w-64 h-8" />
+                  <a
+                    href={`data:audio/mp3;base64,${audioBase64}`}
+                    download="locucion_tigre_financiero.mp3"
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shrink-0"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Bajar MP3
+                  </a>
+                </div>
+              )}
+
+              {/* BLOQUES DEL GUION V3 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
+                  <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
+                    ⚡ Gancho 3s (Directo al Problema)
+                  </span>
+                  <p className="text-xs font-medium text-white leading-relaxed">
+                    "{data.script_audio.hook_3s}"
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
+                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">
+                    🔍 Problema 15s (Dónde se va el dinero)
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    "{data.script_audio.problem_15s}"
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#090A0C] border border-white/[0.06] space-y-1.5">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    🛠️ Solución 20s (Sistema Concreto)
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    "{data.script_audio.solution_20s}"
+                  </p>
                 </div>
               </div>
 
-              {/* Scenes */}
-              <div className="space-y-6">
-                {data.scenes.map((scene, idx) => (
-                  <div key={scene.scene_number} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 relative group overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-slate-700 group-hover:bg-emerald-500/50 transition-colors"></div>
-                    <span className="bg-slate-800 text-slate-300 font-bold px-3 py-1 rounded-full text-sm mb-4 inline-block">Escena {scene.scene_number}</span>
-                    <div className="mb-4 relative pr-12">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Narración</span>
-                      <p className="text-emerald-200/90 text-sm mt-1 italic leading-relaxed">"{scene.narration}"</p>
-                      <button onClick={() => handleCopy(scene.narration, `vo_${idx}`)} className="absolute right-0 top-0 text-xs bg-slate-800 p-2 rounded-lg hover:bg-slate-700 text-emerald-300 transition-colors">
-                        {copiedStates[`vo_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {/* CTA Y TEXTOS OVERLAY */}
+              <div className="p-4 rounded-2xl bg-[#050607] border border-white/[0.08] space-y-3">
+                <div className="flex items-center justify-between border-b border-white/[0.04] pb-2">
+                  <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                    📢 CTA Final Obligatorio:
+                  </span>
+                  <span className="text-xs font-bold text-white bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/30">
+                    "{data.script_audio.cta_final}"
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    📱 5 Overlays para Pantalla (Máximo 5 palabras estilo viral):
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {data.script_audio.overlays.map((ov, oi) => (
+                      <span key={oi} className="text-xs font-semibold bg-white/[0.05] border border-white/10 px-2.5 py-1 rounded-lg text-slate-200">
+                        {oi + 1}. {ov}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 1: 5 PROMPTS DE IMAGEN (4:3) PARA FLUX / MIDJOURNEY / LEONARDO */}
+            <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5 text-indigo-400" />
+                  <h2 className="text-lg font-bold text-white tracking-tight">
+                    1) 5 Prompts de Imagen (Formato 4:3 para Flux / Midjourney / Leonardo)
+                  </h2>
+                </div>
+                <span className="text-xs text-slate-400">Pixar x Realismo --ar 4:3 --style raw</span>
+              </div>
+
+              <div className="space-y-3">
+                {data.image_prompts.map((img, idx) => (
+                  <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-400">
+                        {img.version}
+                      </span>
+                      <button
+                        onClick={() => {
+                          handleCopy(img.prompt, `img_${idx}`);
+                          showToast("Prompt de imagen copiado", "success");
+                        }}
+                        className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
+                      >
+                        {copiedStates[`img_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        Copiar Prompt
                       </button>
                     </div>
-                    <div className="mb-4">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Visual</span>
-                      <p className="text-slate-300 text-sm mt-1">{scene.visual_concept}</p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative">
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="text-xs text-blue-400 uppercase flex items-center gap-1 font-bold"><ImageIcon className="w-3.5 h-3.5" /> Image Prompt</span>
-                          <div className="flex gap-1.5">
-                            <button onClick={() => handleRegeneratePrompt(idx, "image")} disabled={regeneratingScene !== null} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-blue-300 disabled:opacity-50">
-                              {regeneratingScene === idx && regeneratingType === "image" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                            </button>
-                            <button onClick={() => handleCopy(scene.image_prompt, `img_${idx}`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-blue-300">
-                              {copiedStates[`img_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.image_prompt}</p>
-                      </div>
-                      <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 relative">
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="text-xs text-green-400 uppercase flex items-center gap-1 font-bold"><Sparkles className="w-3.5 h-3.5" /> Animation Prompt</span>
-                          <div className="flex gap-1.5">
-                            <button onClick={() => handleRegeneratePrompt(idx, "animation")} disabled={regeneratingScene !== null} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-green-300 disabled:opacity-50">
-                              {regeneratingScene === idx && regeneratingType === "animation" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                            </button>
-                            <button onClick={() => handleCopy(scene.animation_prompt, `ani_${idx}`)} className="bg-slate-800 p-1.5 rounded-md hover:bg-slate-700 text-green-300">
-                              {copiedStates[`ani_${idx}`] ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-400 font-mono leading-relaxed">{scene.animation_prompt}</p>
-                      </div>
-                    </div>
+                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04]">
+                      {img.prompt}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* SECCIÓN 2: 5 PROMPTS DE VIDEO (9:16) PARA KLING / RUNWAY / LUMA / PIKA */}
+            <div className="bg-[#0F1013] border border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+                <div className="flex items-center gap-2">
+                  <Video className="w-5 h-5 text-rose-400" />
+                  <h2 className="text-lg font-bold text-white tracking-tight">
+                    2) 5 Prompts de Video (Vertical 9:16 para Kling / Runway / Luma / Pika)
+                  </h2>
+                </div>
+                <span className="text-xs text-slate-400">Cámara + Movimiento + Partículas (5-8s)</span>
+              </div>
+
+              <div className="space-y-3">
+                {data.video_prompts.map((vid, idx) => (
+                  <div key={idx} className="bg-[#090A0C] border border-white/[0.06] p-4 rounded-2xl space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-rose-400">
+                          {vid.version}
+                        </span>
+                        <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                          📹 {vid.camera}
+                        </span>
+                        <span className="text-[10px] text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                          ✨ {vid.particles}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          handleCopy(vid.prompt, `vid_${idx}`);
+                          showToast("Prompt de video copiado", "success");
+                        }}
+                        className="text-xs bg-[#14151B] hover:bg-[#1D1E26] text-slate-300 hover:text-white px-3 py-1 rounded-lg border border-white/10 flex items-center gap-1 transition-colors"
+                      >
+                        {copiedStates[`vid_${idx}`] ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        Copiar Video Prompt
+                      </button>
+                    </div>
+
+                    <p className="text-xs font-mono text-slate-300 select-all leading-relaxed bg-[#050607] p-3 rounded-xl border border-white/[0.04]">
+                      {vid.prompt}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
 
