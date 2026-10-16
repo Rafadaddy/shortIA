@@ -29,7 +29,21 @@ export async function chatCompletion(
     }
   }
 
-  
+  // PRIORIDAD 2: Groq del servidor (Activo y ultra rápido)
+  if (groqKey) {
+    const model = "openai/gpt-oss-120b";
+    console.log(`[API-Helpers] Usando API key GROQ del servidor | Modelo: ${model}`);
+    try {
+      return await generateChatCompletion(
+        { providerId: "groq", apiKey: groqKey, model },
+        [{ role: "user", content: prompt }],
+        { temperature: options?.temperature, jsonMode: options?.jsonMode ?? true }
+      );
+    } catch (groqErr) {
+      console.warn("[API-Helpers] Error con Groq, probando otros...", groqErr);
+    }
+  }
+
   const nvidiaKey = process.env.NVIDIA_API_KEY;
   console.log("[API-Helpers] NVIDIA_API_KEY from env:", nvidiaKey ? "EXISTS" : "NOT FOUND");
 

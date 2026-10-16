@@ -229,10 +229,17 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
     if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
     cleanJson = cleanJson.trim();
 
+    // Extraer bloque JSON si el modelo incluyó texto antes o después
+    const firstBrace = cleanJson.indexOf('{');
+    const lastBrace = cleanJson.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+    }
+
     const data = JSON.parse(cleanJson);
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Error generating tiger finance:", error);
-    return NextResponse.json({ error: error.message || "Error interno" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Error interno generando pack V4" }, { status: 500 });
   }
 }
