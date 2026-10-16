@@ -238,7 +238,13 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un JSON válido con esta estructura:
 
     const data = JSON.parse(cleanJson);
 
-    // Normalizar estructura si el modelo usó nombres alternativos
+    if (mode === "ideas") {
+      return NextResponse.json({
+        ideas: Array.isArray(data.ideas) ? data.ideas : []
+      });
+    }
+
+    // Normalizar estructura si el modelo usó nombres alternativos en pack completo
     const normalizedData = {
       title: data.title || "Tigre Financiero V4",
       theme: data.theme || topic || "Finanzas Personales",
