@@ -121,34 +121,36 @@ export default function TigreFinancieroPage() {
     setAudioBase64(null);
     try {
       const res = await aiFetch("/api/generate-tiger", { mode: "ideas", topic, tone: style });
-      if (!res.ok) throw new Error("Error generando ideas");
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error generando ideas");
       setIdeas(json.ideas);
       showToast("¡5 Ideas con gancho listas!", "success");
     } catch (e: any) {
+      console.error("[Tigre Financiero Ideas Error]:", e);
       showToast(e.message || "Error al generar ideas", "error");
     } finally {
       setIsGeneratingIdeas(false);
     }
   };
 
-  // 2. Generar el pack completo V3 (5 prompts imagen + 5 prompts video + guion V3)
+  // 2. Generar el pack completo V4 (5 prompts imagen + 5 prompts video + guion V4)
   const generateFullPack = async (customTopic?: string) => {
     setIsGeneratingFull(true);
     setData(null);
     setAudioBase64(null);
     const activeTopic = customTopic || topic;
-    showToast("Generando 5 Prompts de Imagen, 5 de Video y Guion V3...");
+    showToast("Generando 5 Prompts de Imagen, 5 de Video y Guion V4...");
     try {
       const res = await aiFetch("/api/generate-tiger", {
-        mode: "generate_full_v3",
+        mode: "generate_full_v4",
         topic: activeTopic,
         tone: style
       });
-      if (!res.ok) throw new Error("Error en la generación");
-      const json: TigerData = await res.json();
-      setData(json);
-      showToast("¡Pack completo de Rafa Daddy generado con éxito!", "success");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error en la generación");
+      const tigerJson: TigerData = json;
+      setData(tigerJson);
+      showToast("¡Pack completo de Rafa Daddy V4 generado con éxito!", "success");
 
       // Auto-guardado en memoria local IndexedDB y Borradores
       try {
@@ -162,13 +164,13 @@ export default function TigreFinancieroPage() {
         });
         saveHistoryItem({
           category: "Tigre Financiero",
-          title: json.title,
-          script: json.script_audio.full_speech,
-          prompts: json.image_prompts.map((p, i) => ({
+          title: tigerJson.title,
+          script: tigerJson.script_audio.full_speech,
+          prompts: tigerJson.image_prompts.map((p: TigerImagePrompt, i: number) => ({
             scene_number: i + 1,
             title: p.version,
             image_prompt: p.prompt,
-            animation_prompt: json.video_prompts[i]?.prompt
+            animation_prompt: tigerJson.video_prompts[i]?.prompt || ""
           }))
         });
       } catch (err) {
@@ -299,9 +301,9 @@ export default function TigreFinancieroPage() {
               className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-600 hover:from-amber-400 hover:to-emerald-500 text-black font-black py-3.5 px-7 rounded-xl transition-[transform,background-color] active:scale-[0.98] shadow-xl shadow-amber-500/25 disabled:opacity-50 text-sm"
             >
               {isGeneratingFull ? (
-                <><Loader2 className="w-4 h-4 animate-spin text-black" /> Creando Pack Completo V3…</>
+                <><Loader2 className="w-4 h-4 animate-spin text-black" /> Creando Pack Completo V4…</>
               ) : (
-                <><Wand2 className="w-4 h-4 text-black" /> Generar Pack Completo V3 Directo</>
+                <><Wand2 className="w-4 h-4 text-black" /> Generar Pack Completo V4 Directo</>
               )}
             </button>
 

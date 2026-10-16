@@ -32,6 +32,7 @@ export async function generateChatCompletion(
         const completion = await groq.chat.completions.create({
           messages,
           model,
+          max_tokens: 4096,
           ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
           temperature,
         });
