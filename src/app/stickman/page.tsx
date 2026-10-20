@@ -53,8 +53,8 @@ export default function StickmanVideoPage() {
     setData(null);
     try {
       const res = await aiFetch("/api/generate-stickman", { mode: "ideas", topic });
-      if (!res.ok) throw new Error("Error al generar ideas");
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error al generar ideas");
       setIdeas(json.ideas);
     } catch (error) {
       console.error(error);
@@ -74,8 +74,8 @@ export default function StickmanVideoPage() {
         idea: idea.hook,
         sceneCount
       });
-      if (!res.ok) throw new Error("Error al generar el guion");
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error al generar el guion");
       setScriptText(json.script);
     } catch (error) {
       console.error(error);
@@ -94,8 +94,8 @@ export default function StickmanVideoPage() {
         current_script: scriptText,
         instruction
       });
-      if (!res.ok) throw new Error("Error al modificar el guion");
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error al modificar el guion");
       setScriptText(json.script);
     } catch (error) {
       console.error(error);
@@ -114,8 +114,8 @@ export default function StickmanVideoPage() {
         current_script: scriptText,
         sceneCount
       });
-      if (!res.ok) throw new Error("Error al generar escenas");
       const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Error al generar escenas");
       setData(json);
     } catch (error) {
       console.error(error);

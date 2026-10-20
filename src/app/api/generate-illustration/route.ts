@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion, generateImageWithGemini } from "@/lib/api-helpers";
+import { chatJsonCompletion, generateImageWithGemini } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -101,9 +101,8 @@ Responde SOLO con un JSON válido en este formato:
   ]
 }
 `;
-      const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.95 });
-      const clean = jsonText.replace(/^[\s\S]*?```(?:json)?\n?|```\s*$/g, "").trim();
-      return NextResponse.json(JSON.parse(clean));
+      const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.95 });
+      return NextResponse.json(data);
     } else {
       prompt = `
 Eres un experto director de arte y creador de contenido viral de clase mundial para redes sociales (Instagram, TikTok, Facebook).
@@ -157,8 +156,7 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
 `;
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.8 });
-    const data = JSON.parse(jsonText);
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.8 });
 
     // Si tenemos una key de Gemini (ya sea en env o en el cliente), intentamos generar la imagen real
     // Esto evita que solo te devuelva texto y te da la imagen final.
@@ -172,7 +170,10 @@ Responde ÚNICA Y EXCLUSIVAMENTE con un objeto JSON válido con esta estructura:
         data.generated_image_base64 = base64Image;
         console.log("[Ilustraciones] ¡Imagen generada con éxito!");
       } catch (e) {
-        console.error("[Ilustraciones] Error al generar la imagen con Gemini:", e);
+        const errMsg = e instanceof Error ? e.message : String(e);
+        console.error("[Ilustraciones] Error al generar la imagen con Gemini:", errMsg);
+        // Reportamos el error para que la UI pueda mostrarlo (antes se tragaba en silencio)
+        data.image_error = errMsg;
       }
     }
 

@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatJsonCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -108,17 +108,11 @@ Responde SOLO con JSON válido:
       }
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode === "script" ? 0.9 : 0.75 });
-    
-    let cleanJson = jsonText.trim();
-    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
-    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
-    
-    const data = JSON.parse(cleanJson.trim());
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: mode === "script" ? 0.9 : 0.75 });
     return NextResponse.json(data);
   } catch (error: unknown) {
-    console.error("Error generating timeline:", error);
-    return NextResponse.json({ error: "Error desconocido" }, { status: 500 });
+    const errMsg = error instanceof Error ? error.message : "Error desconocido";
+    console.error("Error generating timeline:", errMsg);
+    return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 }

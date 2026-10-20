@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, Copy, Check, ListOrdered, Loader2, ImageIcon, Mic, Hash, Award, RefreshCw, Wand2 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+import { aiFetch, getGoogleApiKey } from "@/lib/ai-fetch";
 
 const NICHES = [
   "Ahorro de Dinero y Finanzas",
@@ -154,7 +154,7 @@ export default function ListasViralesPage() {
     if (!prompt) return;
     setGeneratingCardImages(prev => ({ ...prev, [cardKey]: true }));
     try {
-      const res = await aiFetch("/api/generate-image", { prompt, aspectRatio: "9:16" });
+      const res = await aiFetch("/api/generate-image", { prompt, aspectRatio: "9:16", clientApiKey: getGoogleApiKey() });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error generando imagen");
       setGeneratedImages(prev => ({ ...prev, [cardKey]: json.imageBase64 }));

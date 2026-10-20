@@ -94,6 +94,78 @@ export async function chatCompletion(
   throw new Error("No hay API key configurada. Abre Configuracion y agrega una API key.");
 }
 
+// ---------- Parsing robusto de JSON ----------
+
+export class JsonParseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "JsonParseError";
+  }
+}
+
+/**
+ * Extrae y parsea JSON de una respuesta de modelo. Tolerante a:
+ * - fences de markdown (```json ... ```)
+ * - texto explicativo antes/después del JSON
+ * Si no hay JSON o está truncado/roto, lanza JsonParseError con contexto.
+ */
+export function parseJsonResponse(text: string): unknown {
+  if (!text || !text.trim()) {
+    throw new JsonParseError("El modelo devolvió una respuesta vacía.");
+  }
+  const clean = text
+    .replace(/```(?:json|javascript|js)?/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  const firstBrace = clean.indexOf("{");
+  const firstBracket = clean.indexOf("[");
+  if (firstBrace === -1 && firstBracket === -1) {
+    throw new JsonParseError(`El modelo no devolvió JSON. Respuesta: "${clean.slice(0, 120)}"`);
+  }
+  const start =
+    firstBrace === -1 ? firstBracket : firstBracket === -1 ? firstBrace : Math.min(firstBrace, firstBracket);
+
+  const end = Math.max(clean.lastIndexOf("}"), clean.lastIndexOf("]"));
+  if (end <= start) {
+    throw new JsonParseError(`El modelo no devolvió JSON completo. Respuesta: "${clean.slice(0, 120)}"`);
+  }
+
+  const candidate = clean.slice(start, end + 1);
+  try {
+    return JSON.parse(candidate);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    throw new JsonParseError(`JSON inválido del modelo: ${msg}. Inicio: "${candidate.slice(0, 100)}"`);
+  }
+}
+
+/**
+ * Igual que chatCompletion, pero devuelve el JSON ya parseado.
+ * Si el JSON llega malformado (p. ej. truncado por max_tokens), reintenta la
+ * generación una vez más antes de fallar. Solo reintenta errores de parseo,
+ * no errores de proveedor (claves, cuota, etc.).
+ */
+export async function chatJsonCompletion(
+  requestBody: Record<string, unknown>,
+  prompt: string,
+  options?: { temperature?: number; jsonMode?: boolean; retries?: number }
+): Promise<any> {
+  const retries = options?.retries ?? 1;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const jsonText = await chatCompletion(requestBody, prompt, options);
+      return parseJsonResponse(jsonText);
+    } catch (e) {
+      const isParseError = e instanceof JsonParseError;
+      if (!isParseError || attempt === retries) {
+        throw e;
+      }
+      console.warn(`[API-Helpers] JSON malformado, reintentando generación (intento ${attempt + 2} de ${retries + 1})...`);
+    }
+  }
+}
+
 export async function generateImageWithGemini(
   prompt: string,
   apiKey: string,

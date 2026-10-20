@@ -32,7 +32,7 @@ export async function generateChatCompletion(
         const completion = await groq.chat.completions.create({
           messages,
           model,
-          max_tokens: 4096,
+          max_tokens: 8192,
           ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
           temperature,
         });
@@ -57,7 +57,7 @@ export async function generateChatCompletion(
         const userMessages = messages.filter(m => m.role === "user");
         const response = await anthropic.messages.create({
           model,
-          max_tokens: 4096,
+          max_tokens: 8192,
           system: systemMessage,
           messages: userMessages.map(m => ({ role: "user" as const, content: m.content })),
         });

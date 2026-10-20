@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatJsonCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,8 +59,7 @@ Responde SOLO con un JSON válido:
   "image_prompt": "El nuevo prompt visual en inglés..."
 }
 `;
-      const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.9 });
-      const data = JSON.parse(jsonText);
+      const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.9 });
       return NextResponse.json(data);
     }
 
@@ -120,16 +119,7 @@ INSTRUCCIÓN FINAL:
 CADA VEZ que genere contenido: Elige un SUB-TEMA ESPECÍFICO no usado antes. NO repitas conceptos. Crea EXACTAMENTE ${panelCount} paneles en el array 'panels'. Mantén el tono emocional, reflexivo, cercano, elegante. NUNCA CORTES EL JSON.
 `;
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.85 });
-    
-    // Safely parse JSON in case of markdown backticks
-    let cleanJson = jsonText.trim();
-    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
-    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
-    cleanJson = cleanJson.trim();
-
-    const data = JSON.parse(cleanJson);
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.85 });
     return NextResponse.json(data);
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : "Error desconocido";

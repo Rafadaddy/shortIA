@@ -125,12 +125,15 @@ export default function IlustracionesPage() {
         textSurface,
         mode: "image"
       });
-      if (!res.ok) throw new Error("Error en la solicitud");
       const generatedData = await res.json();
+      if (!res.ok) throw new Error(generatedData.error || "Error en la solicitud");
       setData(generatedData);
+      if (generatedData.image_error) {
+        showToast(`Prompt generado, pero la imagen falló: ${generatedData.image_error}`, "error");
+      }
     } catch (error) {
       console.error(error);
-      showToast("Hubo un error al generar la ilustración.", "error");
+      showToast(error instanceof Error ? error.message : "Hubo un error al generar la ilustración.", "error");
     } finally {
       setIsGenerating(false);
     }
@@ -149,13 +152,13 @@ export default function IlustracionesPage() {
         suggested_phrase: data.suggested_phrase,
         existing_prompt: data.image_prompt,
       });
-      if (!res.ok) throw new Error("Error al regenerar");
       const newData = await res.json();
+      if (!res.ok) throw new Error(newData.error || "Error al regenerar");
       setData({ ...data, image_prompt: newData.image_prompt });
       showToast("Prompt regenerado exitosamente", "success");
     } catch (error) {
       console.error(error);
-      showToast("Error al regenerar el prompt.", "error");
+      showToast(error instanceof Error ? error.message : "Error al regenerar el prompt.", "error");
     } finally {
       setRegenerating(false);
     }

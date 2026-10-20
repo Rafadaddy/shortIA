@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatJsonCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -155,14 +155,7 @@ Responde SOLO con JSON válido:
       }
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode?.includes("script") || mode === "ideas" ? 0.9 : 0.7 });
-    let cleanJson = jsonText.trim();
-    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
-    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
-    cleanJson = cleanJson.trim();
-    
-    const data = JSON.parse(cleanJson);
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: mode?.includes("script") || mode === "ideas" ? 0.9 : 0.7 });
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Error generating mexico:", error.message);

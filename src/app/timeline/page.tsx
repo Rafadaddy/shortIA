@@ -46,8 +46,8 @@ export default function TimelinePage() {
 
     try {
       const res = await aiFetch("/api/generate-timeline", { mode: "ideas" });
-      if (!res.ok) throw new Error("Error");
       const generated = await res.json();
+      if (!res.ok) throw new Error(generated.error || "Error");
       if (generated.ideas) setIdeas(generated.ideas);
     } catch (error) {
       showToast("Error al generar ideas.", "error");
@@ -66,8 +66,8 @@ export default function TimelinePage() {
 
     try {
       const res = await aiFetch("/api/generate-timeline", { mode: "script", topic: finalTopic, stepCount });
-      if (!res.ok) throw new Error("Error");
       const generated = await res.json();
+      if (!res.ok) throw new Error(generated.error || "Error");
       if (generated.script) {
         setCurrentScript(generated.script);
         setData({ title: generated.title || topic, script: generated.script, reference_prompt: "", timeline: [] });
@@ -92,8 +92,8 @@ export default function TimelinePage() {
         characterRef: currentScript || data?.script || "",
         stepCount 
       });
-      if (!res.ok) throw new Error("Error");
       const generated = await res.json();
+      if (!res.ok) throw new Error(generated.error || "Error");
       setData(prev => ({
         title: prev?.title || topic,
         script: prev?.script || currentScript,
@@ -129,8 +129,8 @@ export default function TimelinePage() {
         existing_image_prompt: promptType === "image" ? scene.image_prompt : scene.video_prompt,
       });
       
-      if (!res.ok) throw new Error("Error regenerando");
       const generated = await res.json();
+      if (!res.ok) throw new Error(generated.error || "Error regenerando");
       
       const newData = { ...data };
       if (promptType === "image") {

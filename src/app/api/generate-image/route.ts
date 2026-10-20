@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
     let friendlyError = msg;
     if (msg.includes("403") || msg.includes("leaked") || msg.includes("PERMISSION_DENIED")) {
       friendlyError = "Tu API Key de Gemini fue reportada o bloqueada por Google. Abre 'Configuración' e ingresa una nueva API Key de Google AI Studio.";
+    } else if (msg.includes("API_KEY_INVALID") || msg.includes("not valid") || msg.includes("400")) {
+      friendlyError = "Tu API Key de Gemini no es válida. Abre 'Configuración' e ingresa una clave nueva de aistudio.google.com/apikey.";
     } else if (msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED")) {
       friendlyError = "Límite de cuota alcanzado en Gemini. Espera un minuto o cambia tu clave en Configuración.";
     }

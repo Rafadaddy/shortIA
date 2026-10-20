@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatJsonCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +9,12 @@ export async function POST(req: NextRequest) {
 
     let prompt = "";
     const count = sceneCount || 10;
+
+    // Blindaje: los modos que trabajan sobre un guion necesitan que llegue
+    const needsScript = mode === "full_from_script" || mode === "improve_script";
+    if (needsScript && (typeof current_script !== "string" || !current_script.trim())) {
+      return NextResponse.json({ error: "Falta el guion (current_script vacío). Genera primero el guion y vuelve a intentarlo." }, { status: 400 });
+    }
 
     if (mode === "ideas") {
       prompt = `Eres un experto creador de contenido para YouTube especializado en videos educativos, de psicología y curiosidades animadas con "stickman" (monigotes).
@@ -136,14 +142,7 @@ Reply ONLY with a valid JSON:
 }`;
     }
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: mode?.includes("script") || mode === "ideas" ? 0.9 : 0.7 });
-    let cleanJson = jsonText.trim();
-    if (cleanJson.startsWith('```json')) cleanJson = cleanJson.substring(7);
-    else if (cleanJson.startsWith('```')) cleanJson = cleanJson.substring(3);
-    if (cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3);
-    cleanJson = cleanJson.trim();
-    
-    const data = JSON.parse(cleanJson);
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: mode?.includes("script") || mode === "ideas" ? 0.9 : 0.7 });
     return NextResponse.json(data);
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : "Unknown error";

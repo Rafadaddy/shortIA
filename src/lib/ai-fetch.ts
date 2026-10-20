@@ -32,6 +32,18 @@ export function getProviderConfig(): { providerId: string; apiKey: string; model
   }
 }
 
+export function getGoogleApiKey(): string | null {
+  try {
+    const saved = localStorage.getItem("ai-studio-settings");
+    if (!saved) return null;
+    const parsed = JSON.parse(saved);
+    const google = parsed.providers?.find((p: AIProvider) => p.id === "google");
+    return google?.apiKey || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function aiFetch(url: string, body: Record<string, unknown>): Promise<Response> {
   const config = getProviderConfig();
   if (!config) {

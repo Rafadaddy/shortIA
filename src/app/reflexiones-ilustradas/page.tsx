@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { useToast } from "@/components/Toast";
-import { aiFetch } from "@/lib/ai-fetch";
+import { aiFetch, getGoogleApiKey } from "@/lib/ai-fetch";
 import { saveMediaItem } from "@/lib/db";
 import { saveHistoryItem } from "@/lib/history-storage";
 
@@ -370,7 +370,8 @@ export default function ReflexionesIlustradasPage() {
     try {
       const res = await aiFetch("/api/generate-image", {
         prompt,
-        aspectRatio: "9:16"
+        aspectRatio: "9:16",
+        clientApiKey: getGoogleApiKey()
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error generando viñeta");
@@ -450,7 +451,8 @@ export default function ReflexionesIlustradasPage() {
     try {
       const res = await aiFetch("/api/generate-image", {
         prompt: activePrompt,
-        aspectRatio: "9:16"
+        aspectRatio: "9:16",
+        clientApiKey: getGoogleApiKey()
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error generando imagen");
@@ -489,7 +491,8 @@ export default function ReflexionesIlustradasPage() {
     try {
       const res = await aiFetch("/api/generate-image", {
         prompt,
-        aspectRatio: "9:16"
+        aspectRatio: "9:16",
+        clientApiKey: getGoogleApiKey()
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error generando imagen");

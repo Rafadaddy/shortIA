@@ -10,6 +10,7 @@ import {
 import { useToast } from "@/components/Toast";
 import { useCopyToClipboard } from "@/lib/useCopyToClipboard";
 import { saveHistoryItem } from "@/lib/history-storage";
+import { aiFetch } from "@/lib/ai-fetch";
 
 interface Scene {
   scene_number: number;
@@ -176,11 +177,7 @@ export default function MotivationalVideos() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "ideas", niche: getEffectiveNiche() }),
-      });
+      const res = await aiFetch("/api/generate-motivational", { mode: "ideas", niche: getEffectiveNiche() });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || "Error al generar ideas");
@@ -201,16 +198,12 @@ export default function MotivationalVideos() {
     setIsGeneratingScript(true);
     setData(null);
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "script_only",
-          niche: getEffectiveNiche(),
-          idea: idea.hook,
-          tone,
-          sceneCount
-        }),
+      const res = await aiFetch("/api/generate-motivational", {
+        mode: "script_only",
+        niche: getEffectiveNiche(),
+        idea: idea.hook,
+        tone,
+        sceneCount
       });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -241,14 +234,10 @@ export default function MotivationalVideos() {
     if (!scriptText) return;
     setIsGeneratingScript(true);
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "improve_script",
-          current_script: scriptText,
-          instruction
-        }),
+      const res = await aiFetch("/api/generate-motivational", {
+        mode: "improve_script",
+        current_script: scriptText,
+        instruction
       });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -271,16 +260,12 @@ export default function MotivationalVideos() {
     setData(null);
 
     try {
-      const res = await fetch("/api/generate-motivational", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "full_from_script",
-          current_script: scriptText,
-          style,
-          duration,
-          sceneCount
-        }),
+      const res = await aiFetch("/api/generate-motivational", {
+        mode: "full_from_script",
+        current_script: scriptText,
+        style,
+        duration,
+        sceneCount
       });
 
       if (!res.ok) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chatCompletion } from "@/lib/api-helpers";
+import { chatJsonCompletion } from "@/lib/api-helpers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -63,8 +63,7 @@ Responde SOLO con un JSON válido:
   "image_prompt": "El nuevo prompt visual en inglés..."
 }
 `;
-      const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.9 });
-      const data = JSON.parse(jsonText);
+      const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.9 });
       return NextResponse.json(data);
     }
 
@@ -166,8 +165,7 @@ Responde SOLO con un JSON válido:
 }
 `;
 
-    const jsonText = await chatCompletion(requestBody, prompt, { temperature: 0.85 });
-    const data = JSON.parse(jsonText);
+    const data = await chatJsonCompletion(requestBody, prompt, { temperature: 0.85 });
 
     return NextResponse.json(data);
   } catch (error: unknown) {
