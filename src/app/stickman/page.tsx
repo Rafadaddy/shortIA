@@ -26,7 +26,9 @@ interface Idea {
 
 export default function StickmanVideoPage() {
   const [topic, setTopic] = useState("");
-  const [sceneCount, setSceneCount] = useState<number>(10);
+  const [sceneCount, setSceneCount] = useState<number>(6);
+  const [aspectRatio, setAspectRatio] = useState<"9:16" | "16:9" | "1:1">("9:16");
+  const [visualTheme, setVisualTheme] = useState<"monochrome_yellow" | "dark_neon_cyan" | "classic_paper" | "minimal_mono">("monochrome_yellow");
 
   const [ideas, setIdeas] = useState<Idea[] | null>(null);
   const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null);
@@ -112,7 +114,9 @@ export default function StickmanVideoPage() {
       const res = await aiFetch("/api/generate-stickman", {
         mode: "full_from_script",
         current_script: scriptText,
-        sceneCount
+        sceneCount,
+        aspectRatio,
+        visualTheme
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error al generar escenas");
@@ -138,7 +142,9 @@ export default function StickmanVideoPage() {
         scene_number: scene.scene_number,
         scene_context: scene.voiceover,
         existing_prompt: promptType === "image" ? scene.image_prompt : scene.animation_prompt,
-        base_prompt: data.base_prompt
+        base_prompt: data.base_prompt,
+        aspectRatio,
+        visualTheme
       });
       
       if (!res.ok) throw new Error("Error al regenerar");
@@ -179,12 +185,15 @@ export default function StickmanVideoPage() {
       <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
 
         <header className="text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
+            🎬 Director Framework (kaomei style)
+          </div>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-4">
             <PlaySquare className="w-8 h-8 md:w-10 md:h-10 text-purple-400" />
-            Stickman YouTube (Wizard)
+            Stickman Video Director
           </h1>
           <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-            Crea videos animados explicativos paso a paso con máxima retención.
+            Crea videos animados explicativos con dirección cinematográfica, consistencia estética y alto contraste.
           </p>
         </header>
 
@@ -192,7 +201,7 @@ export default function StickmanVideoPage() {
         <div className="bg-slate-900/50 p-5 md:p-8 rounded-3xl border border-slate-800/60 shadow-2xl backdrop-blur-xl space-y-6">
           <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-4">
             <div className="bg-purple-500/20 text-purple-400 w-8 h-8 flex items-center justify-center rounded-full font-bold">1</div>
-            <h2 className="text-xl font-bold text-white">Configuración e Ideas</h2>
+            <h2 className="text-xl font-bold text-white">Configuración del Director</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,11 +216,53 @@ export default function StickmanVideoPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Número de Escenas (Define el largo del guion)</label>
+              <label className="text-sm font-medium text-slate-300">Número de Escenas ({sceneCount === 6 ? "Recomendado: 6 escenas = 1 minuto" : `${sceneCount} escenas`})</label>
               <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 rounded-xl p-3">
-                <input type="range" min="3" max="15" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-purple-500" />
+                <input type="range" min="3" max="12" value={sceneCount} onChange={(e) => setSceneCount(parseInt(e.target.value))} className="w-full accent-purple-500" />
                 <span className="text-purple-400 font-bold min-w-[2ch]">{sceneCount}</span>
               </div>
+            </div>
+          </div>
+
+          {/* CONTROLES DE DIRECCIÓN CINEMATOGRÁFICA */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Formato / Proporción (Aspect Ratio)</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "9:16", label: "📱 9:16", desc: "TikTok / Shorts" },
+                  { id: "16:9", label: "💻 16:9", desc: "YouTube" },
+                  { id: "1:1", label: "⬛ 1:1", desc: "Cuadrado" },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setAspectRatio(item.id as any)}
+                    className={`p-2.5 rounded-xl border text-center transition-all ${
+                      aspectRatio === item.id
+                        ? "bg-purple-600/20 border-purple-500 text-white shadow-md shadow-purple-500/10"
+                        : "bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="font-bold text-xs">{item.label}</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">{item.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Tema Visual & Paleta</label>
+              <select
+                value={visualTheme}
+                onChange={(e) => setVisualTheme(e.target.value as any)}
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none cursor-pointer"
+              >
+                <option value="monochrome_yellow">⚡ Alto Contraste + Acento Amarillo Eléctrico (#FFD700)</option>
+                <option value="dark_neon_cyan">🌌 Modo Oscuro + Acento Cyan Neón (#00FFFF)</option>
+                <option value="classic_paper">📝 Cuaderno de Bocetos + Acento Rojo Fresa (#FF3366)</option>
+                <option value="minimal_mono">⚪ Blanco & Negro Minimalista Puro</option>
+              </select>
             </div>
           </div>
 

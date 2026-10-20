@@ -5,10 +5,34 @@ import { chatJsonCompletion } from "@/lib/api-helpers";
 export async function POST(req: NextRequest) {
   try {
     const requestBody = await req.json();
-    const { topic, mode, idea, sceneCount, current_script, instruction, scene_number, existing_prompt, prompt_type, base_prompt, scene_context } = requestBody;
+    const { 
+      topic, 
+      mode, 
+      idea, 
+      sceneCount, 
+      current_script, 
+      instruction, 
+      scene_number, 
+      existing_prompt, 
+      prompt_type, 
+      base_prompt, 
+      scene_context,
+      aspectRatio = "9:16",
+      visualTheme = "monochrome_yellow"
+    } = requestBody;
 
     let prompt = "";
-    const count = sceneCount || 10;
+    const count = sceneCount || 6;
+
+    // Directrices de Director Cinematográfico inspiradas en stickman-video-director
+    const THEME_STYLES: Record<string, string> = {
+      monochrome_yellow: "High-contrast minimalist aesthetic, solid pure black ink lines on crisp white background with selective vibrant electric yellow (#FFD700) accent on key emotional props/elements, zero messy hatching, clean vector look.",
+      dark_neon_cyan: "Dark mode aesthetic, pure pitch-black background with bold luminous white stick figure outlines and vivid electric cyan (#00FFFF) accent highlights on critical objects and icons.",
+      classic_paper: "Hand-drawn paper notebook sketch aesthetic, clean charcoal ink linework with warm subtle paper texture and cherry red (#FF3366) accent marks for emphasis.",
+      minimal_mono: "Ultra-pure monochrome, crisp bold black outlines on seamless bright white canvas, absolute minimalism, zero distractions, timeless explainer cartoon style."
+    };
+
+    const chosenThemeDesc = THEME_STYLES[visualTheme] || THEME_STYLES.monochrome_yellow;
 
     // Blindaje: los modos que trabajan sobre un guion necesitan que llegue
     const needsScript = mode === "full_from_script" || mode === "improve_script";
@@ -90,51 +114,47 @@ Responde SOLO con un JSON válido:
         "animation_prompt": "English animation prompt..."
       }`).join(',\n      ');
 
-      prompt = `1. ROLE
-You are a professional AI YouTube content creator and visual storytelling expert specializing in simple stickman animations.
+      prompt = `1. ROLE: STICKMAN VIDEO DIRECTOR (Inspired by kaomei / stickman-video-director)
+You are an award-winning animation director and AI prompt engineer specializing in viral, high-retention stickman explainer videos (like MinutePhysics, Kurzgesagt, and viral TikTok/YouTube explainers).
 
-El usuario ya aprobó el guion en español. YO, el sistema, lo he dividido en EXACTAMENTE ${count} escenas para ti.
+The user approved the script. It has been pre-split into EXACTLY ${count} sequential scenes (approx 8-10 seconds per scene).
 
-AQUÍ ESTÁN TUS ESCENAS PRE-DIVIDIDAS (NO LAS ALTERES, USA ESTE TEXTO EXACTO PARA EL "voiceover"):
+SCENES BREAKDOWN:
 ${scenesTextBlocks}
 
-TU TAREA:
-1. Toma cada una de las ${count} escenas.
-2. Genera los prompts visuales en INGLÉS para ilustrar cada escena.
-3. Genera un "base_prompt" general para el personaje.
+TARGET FORMAT & VISUAL CONTRACT:
+- Aspect Ratio: ${aspectRatio} (${aspectRatio === "9:16" ? "Vertical for TikTok/Shorts/Reels with centered safe zone" : aspectRatio === "16:9" ? "Horizontal for YouTube widescreen" : "Square 1:1 format"})
+- Visual Theme / Art Direction: ${chosenThemeDesc}
+- Line Weight: Consistent bold clean stroke lines (approx 4-6px weight), consistent minimalist circle head, expressively animated limbs, no strange morphing or hyper-realistic textures.
+- Camera Framing Variety across scenes: Mix Wide Establishing shots, Dynamic Tracking, Over-the-shoulder, Top-down desktop view, and Punchy Close-ups on the stickman's facial reaction.
 
-OUTPUT FORMAT:
+TASK:
+1. Generate the Character Base Prompt locking down the persistent character traits.
+2. For each scene, generate:
+   - "image_prompt": Production-ready prompt for Flux/Midjourney/Leonardo. Begins with "Stickman animation scene, same character continuity...". Specifies exact camera angle, character action/pose, props, emotional expression, high-contrast theme, and aspect ratio flags (${aspectRatio === "9:16" ? "--ar 9:16" : aspectRatio === "16:9" ? "--ar 16:9" : "--ar 1:1"}).
+   - "animation_prompt": Directed prompt for Kling/Runway/Luma/Gemini Omni Flash. Specifies smooth 2D stickman motion, exact camera push/pan, secondary action (bouncing icon, floating lightbulb, sweating marks), loop/transition smoothness, no morphing.
 
-Step 1 - Character Base Prompt
-Create a Stickman Base Design Prompt.
-- Overall vibe: Cheerful, modern, engaging.
-- Style: Modern 2D vector animation style, cute stylized stickman wearing a trendy hoodie and sneakers, perfectly round head, casual messy hair, thick black outlines, flat solid colors.
-- MUST include: "High quality vector art, crisp thick outlines, white background, trendy youth clothing, cheerful anime-like eyes".
-
-Step 2 - Scene Prompts (Image & Animation)
-For each scene:
-- image_prompt: Start with "Use the same stickman character as before." Describe Pose, Action, Expression, Prop. 16:9 aspect ratio.
-- animation_prompt: Short animation instructions (only arms, head, expression, props).
-
-CRITICAL: The 'title' and 'voiceover' MUST be in SPANISH. The prompts MUST be in ENGLISH.
+CRITICAL: The 'title' and 'voiceover' MUST be in Spanish. The prompts MUST be in English.
 
 Respond ONLY with a valid JSON object matching this structure:
 {
   "title": "Título del video en español",
-  "base_prompt": "The Stickman Base Design Prompt in English...",
+  "base_prompt": "Persistent Stickman Director Character & Style Contract in English...",
   "scenes": [
     ${scenesTemplate}
   ]
 }`;
     } else if (mode === "single_prompt") {
-      prompt = `You are an expert AI YouTube content creator...
+      prompt = `You are a professional Stickman Video Director (inspired by kaomei style).
 Regenerate ONLY the ${prompt_type === 'image' ? 'Image Prompt' : 'Animation Prompt'} for Scene ${scene_number}.
 
 Context: "${scene_context}"
 ${prompt_type === 'image' ? `Stickman Base Prompt: "${base_prompt}"` : ''}
+Theme: ${chosenThemeDesc}
+Aspect Ratio: ${aspectRatio}
 Previous Prompt (DO NOT REPEAT): "${existing_prompt}"
 
-RULES: Make it different. Keep it simple and visual. ${prompt_type === 'image' ? '- Start with "Use the same stickman character as before." Aspect ratio 16:9.' : '- Slow minimal movements.'}
+RULES: Make it punchy, dynamic and visually memorable. ${prompt_type === 'image' ? `Start with "Stickman animation scene, same character continuity...". Include camera framing and ${aspectRatio === "9:16" ? "--ar 9:16" : aspectRatio === "16:9" ? "--ar 16:9" : "--ar 1:1"}.` : 'Specify camera pan/push-in and 2D stickman motion without morphing.'}
 
 Reply ONLY with a valid JSON:
 {
